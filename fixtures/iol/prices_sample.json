@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-08-24T15:00:00Z",
+  "ccl_rate": 1320.0,
+  "cedear_prices": {
+    "TSLA": {
+      "ultimo_precio": 30000,
+      "cierre_anterior": 29500,
+      "apertura": 29800,
+      "maximo": 30200,
+      "minimo": 29400
+    },
+    "AAPL": {
+      "ultimo_precio": 25000,
+      "cierre_anterior": 24800,
+      "apertura": 24900,
+      "maximo": 25100,
+      "minimo": 24700
+    },
+    "MSFT": {
+      "ultimo_precio": 40000,
+      "cierre_anterior": 39800,
+      "apertura": 39900,
+      "maximo": 40200,
+      "minimo": 39600
+    }
+  },
+  "underlying_prices_usd": {
+    "TSLA": 299.50,
+    "AAPL": 189.25,
+    "MSFT": 415.80
+  }
+}

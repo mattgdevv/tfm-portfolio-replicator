@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-08-24T15:00:00Z",
+  "broker": "MOCK_IOL", 
+  "description": "Portfolio sample para testing con CEDEARs reales disponibles en BYMA",
+  "positions": [
+    {
+      "symbol": "TSLA",
+      "quantity": 100,
+      "is_cedear": true,
+      "underlying_symbol": "TSLA"
+    },
+    {
+      "symbol": "AAPL", 
+      "quantity": 50,
+      "is_cedear": true,
+      "underlying_symbol": "AAPL"
+    },
+    {
+      "symbol": "MSFT",
+      "quantity": 75,
+      "is_cedear": true,
+      "underlying_symbol": "MSFT"
+    },
+    {
+      "symbol": "MELI",
+      "quantity": 25,
+      "is_cedear": true,
+      "underlying_symbol": "MELI"
+    },
+    {
+      "symbol": "BABA",
+      "quantity": 200,
+      "is_cedear": true,
+      "underlying_symbol": "BABA"
+    }
+  ]
+}
