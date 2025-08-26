@@ -68,7 +68,7 @@ class PortfolioReplicator:
             print("3. Ver lista de CEDEARs disponibles")
             print("4. Configurar fuente de cotización CCL")
             print("5. Salir")
-            print("6. Actualizar/chequear registro de CEDEARs (BYMA)")
+            print("6. Actualizar ratios de CEDEARs (PDF BYMA)")
             print("7. Probar análisis de variaciones de CEDEARs")
             print("8. Refrescar CCL (ignorar cache)")
             
@@ -430,10 +430,22 @@ class PortfolioReplicator:
                 try:
                     print(f"\n🔍 Analizando oportunidades de arbitraje (threshold: 0.5%)...")
                     
-                    # Configurar sesión IOL si está disponible
-                    iol_session = self.iol_integration.session if self.iol_integration and hasattr(self.iol_integration, 'session') else None
-                    if iol_session:
-                        unified_analysis.set_iol_session(iol_session)
+                    # Para Excel: por defecto modo limited, preguntar si usar IOL
+                    iol_session = None
+                    if (self.iol_integration and hasattr(self.iol_integration, 'session') 
+                        and self.iol_integration.session):
+                        print("🔑 Credenciales IOL detectadas.")
+                        use_iol = input("¿Usar IOL para análisis más preciso? (s/n): ").strip().lower()
+                        if use_iol == 's':
+                            iol_session = self.iol_integration.session
+                            print("🔴 Modo: COMPLETO (IOL + Finnhub)")
+                        else:
+                            print("🟡 Modo: LIMITADO (BYMA + Finnhub)")
+                    else:
+                        print("🟡 Modo: LIMITADO (BYMA + Finnhub)")
+                    
+                    # Siempre configurar la sesión (puede ser None)
+                    unified_analysis.set_iol_session(iol_session)
                     
                     # Realizar análisis unificado
                     analysis_result = await unified_analysis.analyze_portfolio(portfolio, threshold=0.005)
@@ -528,26 +540,30 @@ class PortfolioReplicator:
         print(f"\n📊 Total de CEDEARs: {len(cedeares)}")
 
     def update_byma_cedeares(self):
-        """Descarga o chequea el archivo de CEDEARs de BYMA."""
-        if self.byma_file.exists():
-            mtime = datetime.fromtimestamp(self.byma_file.stat().st_mtime)
-            age_days = (datetime.now() - mtime).days
-            print(f"\n📅 Última actualización de byma_cedeares.json: {mtime.strftime('%Y-%m-%d %H:%M:%S')} ({age_days} días atrás)")
-            if age_days < 15:
-                print("✅ El archivo está actualizado (<15 días). No es necesario descargar.")
-                return
-            else:
-                print("⚠️  El archivo tiene más de 15 días. Se recomienda actualizar.")
-        print("\n🔄 Descargando datos de CEDEARs desde BYMA...")
+        """Descarga y parsea el PDF de BYMA para obtener ratios de CEDEARs."""
+        print("\n🔄 Descargando y procesando PDF de CEDEARs desde BYMA...")
         try:
-            response = requests.post(self.byma_url, json=self.byma_payload, headers=self.byma_headers, verify=False)
-            response.raise_for_status()
-            data = response.json()
-            with open(self.byma_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-            print(f"✅ Archivo guardado como {self.byma_file} ({len(data)} CEDEARs)")
+            import subprocess
+            result = subprocess.run([
+                "python", "scripts/download_byma_pdf.py"
+            ], capture_output=True, text=True, cwd=".")
+            
+            if result.returncode == 0:
+                print("✅ PDF procesado exitosamente")
+                if "CEDEARs" in result.stdout:
+                    # Extraer número de CEDEARs del output
+                    lines = result.stdout.strip().split('\n')
+                    for line in lines:
+                        if "Total de CEDEARs:" in line:
+                            print(f"✅ {line}")
+                            break
+                else:
+                    print("✅ Archivo byma_cedeares_pdf.json actualizado")
+            else:
+                print(f"❌ Error procesando PDF: {result.stderr}")
+                
         except Exception as e:
-            print(f"❌ Error al descargar o guardar datos: {e}")
+            print(f"❌ Error ejecutando download_byma_pdf.py: {e}")
     
     async def configure_ccl_source(self):
         """Configura la fuente de cotización CCL"""
@@ -694,8 +710,8 @@ class PortfolioReplicator:
         
         try:
             # Configurar el servicio unificado
+            unified_analysis.set_iol_session(iol_session)  # Siempre configurar
             if iol_session:
-                unified_analysis.set_iol_session(iol_session)
                 print("🔴 Modo: COMPLETO (IOL + Finnhub)")
             else:
                 print("🟡 Modo: LIMITADO (BYMA + Finnhub)")

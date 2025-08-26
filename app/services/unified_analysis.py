@@ -10,7 +10,7 @@ import logging
 
 from .international_prices import international_price_service
 from .dollar_rate import dollar_service
-from .arbitrage_detector import ArbitrageDetector, ArbitrageOpportunity
+from .arbitrage_detector import arbitrage_detector, ArbitrageOpportunity
 from ..processors.cedeares import CEDEARProcessor
 from ..models.portfolio import Portfolio, Position
 
@@ -21,7 +21,7 @@ class UnifiedAnalysisService:
     
     def __init__(self):
         self.cedear_processor = CEDEARProcessor()
-        self.arbitrage_detector = ArbitrageDetector()
+        self.arbitrage_detector = arbitrage_detector  # Usar instancia global
     
     def set_iol_session(self, session):
         """Configura sesión IOL para análisis completo"""
