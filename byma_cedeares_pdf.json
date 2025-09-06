@@ -1,0 +1,2690 @@
+[
+  {
+    "symbol": "MMM",
+    "company_name": "3M Company",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ABT",
+    "company_name": "Abbott Labs",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ABBV",
+    "company_name": "AbbVie Inc.",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ANF",
+    "company_name": "Abercrombie & Fitch Co",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ACN",
+    "company_name": "Accenture",
+    "market": "NYSE",
+    "ratio": "75:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ADGO",
+    "company_name": "Adecoagro S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ADS",
+    "company_name": "Adidas AG",
+    "market": "XETRA",
+    "ratio": "22:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ADBE",
+    "company_name": "Adobe Systems Incorporated",
+    "market": "NASDAQ",
+    "ratio": "44:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JMIA",
+    "company_name": "Adr Jumia Technologies Ag",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AAP",
+    "company_name": "Advanced Auto Parts Inc",
+    "market": "NYSE",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AMD",
+    "company_name": "Advanced Micro Devices, Inc.",
+    "market": "NASDAQ",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AEG",
+    "company_name": "Aegon N.V.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AEM",
+    "company_name": "Agnico Eagle Mines Limited",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ABNB",
+    "company_name": "Airbnb Inc",
+    "market": "NASDAQ GS",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BABA",
+    "company_name": "Alibaba Group Holding Limited",
+    "market": "NYSE",
+    "ratio": "9:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GOOGL",
+    "company_name": "Alphabet Inc.",
+    "market": "NASDAQ",
+    "ratio": "58:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AABA",
+    "company_name": "Altaba Inc.",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MO",
+    "company_name": "Altria Group Inc.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AOCA",
+    "company_name": "Aluminum Corp Of China",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AMZN",
+    "company_name": "Amazon.Com, Inc.",
+    "market": "NYSE",
+    "ratio": "144:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ABEV",
+    "company_name": "Ambev S.A.",
+    "market": "NASDAQ",
+    "ratio": "1:3",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ABEV3",
+    "company_name": "Ambev S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AMX",
+    "company_name": "America Movil",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AAL",
+    "company_name": "American Airlines Group Inc",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AXP",
+    "company_name": "American Express Co",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AIG",
+    "company_name": "American International Group (AIG)",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AMGN",
+    "company_name": "Amgen Inc.",
+    "market": "NASDAQ",
+    "ratio": "30:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ADI",
+    "company_name": "Analog Devices",
+    "market": "NASDAQ",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AAPL",
+    "company_name": "Apple Inc.",
+    "market": "NASDAQ",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AMAT",
+    "company_name": "Applied Materials Inc.",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ARCO",
+    "company_name": "Arcos Dorados Holdings Inc.",
+    "market": "NYSE",
+    "ratio": "1:2",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ARKK",
+    "company_name": "ARK INNOVATION",
+    "market": "NYSE ARCA",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ARM",
+    "company_name": "",
+    "market": "NASDAQ",
+    "ratio": "27:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ASML",
+    "company_name": "",
+    "market": "NASDAQ GS",
+    "ratio": "146:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AZN",
+    "company_name": "Astrazeneca Plc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TEAM",
+    "company_name": "ATLASSIAN CORPORATION",
+    "market": "NASDAQ GS",
+    "ratio": "47:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "T",
+    "company_name": "At &T Inc.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ADP",
+    "company_name": "Automatic Data Processing Inc.",
+    "market": "NASDAQ",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AVY",
+    "company_name": "Avery Dennison Corp.",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CAR",
+    "company_name": "Avis Budget Group Inc.",
+    "market": "NASDAQ",
+    "ratio": "26:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BIDU",
+    "company_name": "Baidu, Inc.",
+    "market": "NASDAQ",
+    "ratio": "11:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BKR",
+    "company_name": "Baker Hughes Co",
+    "market": "NASDAQ",
+    "ratio": "7:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BBD",
+    "company_name": "Banco Bradesco S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BBDC3",
+    "company_name": "Banco Bradesco S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BPA11",
+    "company_name": "Banco BTG Pactual S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BBAS3",
+    "company_name": "Banco do Brasil S.A.",
+    "market": "B3",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ITUB3",
+    "company_name": "Banco Itaú Unibanco S.A",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BSBR",
+    "company_name": "Banco Santander (Brasil) S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SAN",
+    "company_name": "Banco Santander S.A",
+    "market": "NYSE",
+    "ratio": "1:4",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BCS",
+    "company_name": "Barclays Bank Plc",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "B",
+    "company_name": "Barrick Gold Corp",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BAS",
+    "company_name": "Basf SE",
+    "market": "FRANKFURT",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BAYN",
+    "company_name": "Bayer AG",
+    "market": "FRANKFURT",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BRKB",
+    "company_name": "Berkshire Hathaway Inc.",
+    "market": "NYSE",
+    "ratio": "22:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BHP",
+    "company_name": "Bhp Group Ltd",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BBV",
+    "company_name": "Bilbao Vizcaya Argentaria S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BIOX",
+    "company_name": "Bioceres Crop Solutions Corp.",
+    "market": "NYSE AMERICAN",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BIIB",
+    "company_name": "Biogen Inc.",
+    "market": "NASDAQ",
+    "ratio": "13:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BITF",
+    "company_name": "Bitfarms Ltd.",
+    "market": "NASDAQ GM",
+    "ratio": "1:5",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BB",
+    "company_name": "Blackberry Limited",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BKNG",
+    "company_name": "Booking",
+    "market": "NASDAQ",
+    "ratio": "700:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BP",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LND",
+    "company_name": "Brasilagro - Co Brasileira de Propriedades Agrícolas",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BAK",
+    "company_name": "Braskem SA",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BRFS",
+    "company_name": "BRF S.A.",
+    "market": "NYSE",
+    "ratio": "1:3",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BMY",
+    "company_name": "Bristol-Myers Squibb Company",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AVGO",
+    "company_name": "Broadcom Inc.",
+    "market": "NASDAQ",
+    "ratio": "39:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BNG",
+    "company_name": "Bunge Limited",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AI",
+    "company_name": "C3.AI INC",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CAJ",
+    "company_name": "Canon Inc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CAH",
+    "company_name": "Cardinal Health Inc",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CCL",
+    "company_name": "Carnival",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CAT",
+    "company_name": "Caterpillar Inc",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CLS",
+    "company_name": "CELESTICA INC",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CX",
+    "company_name": "Cemex S.A.B. de CV",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EBR",
+    "company_name": "Centrais Eléctricas Brasileiras S.A. - Eletrobras",
+    "market": "NYSE",
+    "ratio": "1:4",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SCHW",
+    "company_name": "Charles Schwab",
+    "market": "NYSE",
+    "ratio": "13:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CVX",
+    "company_name": "Chevron Corp.",
+    "market": "NYSE",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LFC",
+    "company_name": "China Life Insurance",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SNP",
+    "company_name": "China Petroleum & Chem",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SBSP3",
+    "company_name": "Cia Saneamento Básico de SP",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CSCO",
+    "company_name": "Cisco Systems Inc",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "C",
+    "company_name": "Citigroup Inc",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KOFM",
+    "company_name": "Coca-Cola Femsa, S.A.B. De C.V.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CDE",
+    "company_name": "Coeur Mining Inc.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "COIN",
+    "company_name": "Coinbase Global Inc",
+    "market": "NASDAQ",
+    "ratio": "27:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CL",
+    "company_name": "Colgate Palmolive Co",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CBRD",
+    "company_name": "Companhia Brasileira De Dis NPV ADR",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ELP",
+    "company_name": "Companhia Paranaense de Energía - COPEL",
+    "market": "NYSE",
+    "ratio": "1:3",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SID",
+    "company_name": "Companhia Siderúrgica Nacional",
+    "market": "NYSE",
+    "ratio": "1:8",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CSNA3",
+    "company_name": "Companhia Siderúrgica Nacional S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CEG",
+    "company_name": "CONSTELLATION ENERGY CORPORATION",
+    "market": "NASDAQ GS",
+    "ratio": "45:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GLW",
+    "company_name": "Corning Inc.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CAAP",
+    "company_name": "Corporación America Airports S.A.",
+    "market": "NYSE",
+    "ratio": "1:4",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "COST",
+    "company_name": "Costco Wholesale Corp",
+    "market": "NASDAQ",
+    "ratio": "48:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CS",
+    "company_name": "Credit Suisse Group",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CVS",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DHR",
+    "company_name": "Danaher Corp",
+    "market": "NYSE",
+    "ratio": "54:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BSN",
+    "company_name": "Danone",
+    "market": "FRANKFURT",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DECK",
+    "company_name": "DECKERS OUTDOOR CORPORATION",
+    "market": "NYSE",
+    "ratio": "25:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DE",
+    "company_name": "Deere & Co.",
+    "market": "NYSE",
+    "ratio": "40:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DAL",
+    "company_name": "Delta Air Lines",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DTEA",
+    "company_name": "Deutsche Telekom Ag",
+    "market": "OTC US",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DEO",
+    "company_name": "Diageo PLC",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SPXL",
+    "company_name": "DIREXION DAILY S&P 500 BULL 3X",
+    "market": "NYSE ARCA",
+    "ratio": "25:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DOCU",
+    "company_name": "DocuSign Inc.",
+    "market": "NASDAQ",
+    "ratio": "22:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DOW",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DD",
+    "company_name": "Dupont de Nemours Inc.",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EOAN",
+    "company_name": "E.On Se",
+    "market": "FRANKFURT",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EBAY",
+    "company_name": "Ebay Inc.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EA",
+    "company_name": "Electronic Arts Inc",
+    "market": "NASDAQ",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LLY",
+    "company_name": "Eli Lilly and Company",
+    "market": "NYSE",
+    "ratio": "56:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ERJ",
+    "company_name": "Embraer-Empresa Brasileira de Aeronáutica S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLE",
+    "company_name": "ENERGY SELECT SECTOR SPDR FUND",
+    "market": "NYSE ARCA",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "E",
+    "company_name": "Eni Spa",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EFX",
+    "company_name": "Equifax Inc.",
+    "market": "NYSE",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EQNR",
+    "company_name": "Equinor Asa",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GLD",
+    "company_name": "ETF SPDR GOLD TRUST",
+    "market": "NYSE",
+    "ratio": "50:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ETSY",
+    "company_name": "Etsy Inc.",
+    "market": "NASDAQ",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XOM",
+    "company_name": "Exxon Mobil Corporation",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FNMA",
+    "company_name": "Fed. Natl, Mortgage - Fannie Mae",
+    "market": "OTC",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FDX",
+    "company_name": "Fedex Corp",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RACE",
+    "company_name": "Ferrari",
+    "market": "NYSE",
+    "ratio": "83:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLF",
+    "company_name": "FINANCIAL SELECT SECTOR SPDR FUND",
+    "market": "NYSE ARCA",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FSLR",
+    "company_name": "First Solar Inc.",
+    "market": "NASDAQ",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLU",
+    "company_name": "First Trust NASDAQ Cybersecurity",
+    "market": "NASDAQ",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FMX",
+    "company_name": "Fomento Economico Mexicano - Femsa",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "F",
+    "company_name": "Ford Motor Company",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FMCC",
+    "company_name": "Freddie Mac (Federal Home Loan)",
+    "market": "OTC",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FCX",
+    "company_name": "Freeport Mcmoran Copper & Gold Inc.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GRMN",
+    "company_name": "Garmin Ltd.",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GE",
+    "company_name": "General Electric Co.",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GM",
+    "company_name": "General Motors Co",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GPRK",
+    "company_name": "Geopark Ltd.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GGB",
+    "company_name": "Gerdau S.A.",
+    "market": "NYSE",
+    "ratio": "1:4",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GILD",
+    "company_name": "Gilead Sciences, Inc.",
+    "market": "NASDAQ",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "URA",
+    "company_name": "Global X Uranium ETF",
+    "market": "NYSE ARCA",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GLOB",
+    "company_name": "Globant S.A.",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GFI",
+    "company_name": "Gold Fields Ltd.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GT",
+    "company_name": "Goodyear Tire & Rubber co./the",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PAC",
+    "company_name": "Grupo Aeroportuario del Pacifico, S.A.B. de C.V.",
+    "market": "NYSE",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ASR",
+    "company_name": "Grupo Aeroportuario Del Sureste , S.A.B. de C.V.",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TV",
+    "company_name": "Grupo Televisa S.A.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GSK",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HAL",
+    "company_name": "Halliburton Co.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HAPV3",
+    "company_name": "Hapvida Participacoes E Investimentos S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HOG",
+    "company_name": "Harley-Davidson Inc.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HMY",
+    "company_name": "Harmony Gold Mining Company Ltd.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HDB",
+    "company_name": "Hdfc Bank Limited.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HL",
+    "company_name": "Hecla Mining Co .",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HHPD",
+    "company_name": "Hon Hai Precision Industry Co. Ltd.",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HMC",
+    "company_name": "Honda Motor Co. Ltd",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HON",
+    "company_name": "Honeywell International Inc.",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HWM",
+    "company_name": "Howmet Aerospace Inc.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HPQ",
+    "company_name": "Hp Inc",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HSBC",
+    "company_name": "Hsbc Holdings Plc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HNPIY",
+    "company_name": "Huaneng Power Intl",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HUT",
+    "company_name": "Hut 8 Mining Corp.",
+    "market": "NASDAQ GS",
+    "ratio": "1:5",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IBN",
+    "company_name": "Icici Bank Ltd.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "INFY",
+    "company_name": "Infosys Limited",
+    "market": "NASDAQ",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ING",
+    "company_name": "Ing Groep Nv",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "INTC",
+    "company_name": "Intel Corporation",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IBM",
+    "company_name": "International Business Machines",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IFF",
+    "company_name": "International Flavors & Fragrances Inc.",
+    "market": "NYSE",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IP",
+    "company_name": "International Paper Co.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ISRG",
+    "company_name": "Intuitive Surgical inc",
+    "market": "NASDAQ",
+    "ratio": "90:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "QQQ",
+    "company_name": "INVESCO",
+    "market": "NASDAQ",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IBIT",
+    "company_name": "ISHARES BITCOIN TRUST",
+    "market": "NASDAQ",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "FXI",
+    "company_name": "ISHARES CHINA LARGE-CAP ETF",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IEUR",
+    "company_name": "iShares Core MSCI Europe ETF",
+    "market": "NYSE ARCA",
+    "ratio": "11:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IJH",
+    "company_name": "iShares CORE S&P MID-CAP ETF",
+    "market": "NYSE ARCA",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ETHA",
+    "company_name": "ISHARES ETHEREUM TR ETF",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EWZ",
+    "company_name": "ISHARES MSCI BRAZIL CAP",
+    "market": "NYSE ARCA",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EEM",
+    "company_name": "ISHARES MSCI EMERGING MARKET",
+    "market": "NYSE ARCA",
+    "ratio": "5:01",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EWJ",
+    "company_name": "iShares MSCI JAPAN ETF",
+    "market": "NYSE ARCA",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IBB",
+    "company_name": "iShares Nasdaq Biotechnology ETF",
+    "market": "NASDAQ",
+    "ratio": "27:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IVW",
+    "company_name": "iShares S&P 500 Growth ETF",
+    "market": "NYSE ARCA",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IVE",
+    "company_name": "iShares S&P 500 Value ETF",
+    "market": "NYSE ARCA",
+    "ratio": "40:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SLV",
+    "company_name": "iShares SILVER TRUST",
+    "market": "NYSE ARCA",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IWM",
+    "company_name": "ISHARES TRUST RUSSELL 2000",
+    "market": "NYSE ARCA",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ITUB",
+    "company_name": "Itaú Unibanco Holding S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JPM",
+    "company_name": "J.P. Morgan & Chase Co.",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JD",
+    "company_name": "Jd.Com, Inc.",
+    "market": "NASDAQ",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JNJ",
+    "company_name": "Johnson & Johnson",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JCI",
+    "company_name": "Johnson Controls International",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "JOYY",
+    "company_name": "",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KB",
+    "company_name": "Kb Financial Group Inc.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KMB",
+    "company_name": "Kimberly-Clark Corp.",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KGC",
+    "company_name": "Kinross Gold Corp",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PHG",
+    "company_name": "Koninklijke Philips N.V.",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KEP",
+    "company_name": "Korea Electric Power Corp.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LRCX",
+    "company_name": "Lam Research Corp",
+    "market": "NASDAQ",
+    "ratio": "56:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LVS",
+    "company_name": "Las Vegas Sands Corp",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LAR",
+    "company_name": "Lithium Americas (Argentina) Corp",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LAC",
+    "company_name": "Lithium Americas Corp",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LYG",
+    "company_name": "Lloyds Banking Group Plc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ERIC",
+    "company_name": "Lm Ericsson Telephone Co.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RENT3",
+    "company_name": "Localiza Rent A Car S.A.",
+    "market": "B3",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LMT",
+    "company_name": "Lockheed Martin Corporation",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LREN3",
+    "company_name": "Lojas Renner S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MGLU3",
+    "company_name": "Magazine Luiza S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MMC",
+    "company_name": "Marsh & Mclennan Companies Inc.",
+    "market": "NYSE",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MRVL",
+    "company_name": "Marvell Technology Inc",
+    "market": "NASDAQ",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MA",
+    "company_name": "Mastercard Inc.",
+    "market": "NYSE",
+    "ratio": "33:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MCD",
+    "company_name": "Mcdonald'S Corp.",
+    "market": "NYSE",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MUX",
+    "company_name": "McEwen Mining Inc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MDT",
+    "company_name": "Medtronic Public Limited Company",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MELI",
+    "company_name": "Mercadolibre Inc.",
+    "market": "NASDAQ",
+    "ratio": "120:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MBG",
+    "company_name": "Mercedes-Benz Group AG",
+    "market": "FRANKFURT",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MRK",
+    "company_name": "Merck & Co. Inc.",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "META",
+    "company_name": "Meta Platforms Inc",
+    "market": "NASDAQ",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MU",
+    "company_name": "Micron Technology Inc",
+    "market": "NASDAQ GS",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MSFT",
+    "company_name": "Microsoft Corp.",
+    "market": "NASDAQ",
+    "ratio": "30:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MSTR",
+    "company_name": "Microstrategy Inc Cl A New",
+    "market": "NASDAQ GS",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MUFG",
+    "company_name": "Mitsubishi Ufj Financial Group",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MFG",
+    "company_name": "Mizuho Financial Group",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MBT",
+    "company_name": "Mobile Telesystems",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MRNA",
+    "company_name": "Moderna Inc",
+    "market": "NASDAQ",
+    "ratio": "19:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MDLZ",
+    "company_name": "Mondelez",
+    "market": "NASDAQ",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MSI",
+    "company_name": "Motorola Solutions, Inc.",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NGG",
+    "company_name": "National Grid Plc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NTCO",
+    "company_name": "Natura & Co Holding S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NTCO3",
+    "company_name": "Natura & Co Holding S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NEC1",
+    "company_name": "Nec Corporation",
+    "market": "FRANKFURT",
+    "ratio": "1:3",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NTES",
+    "company_name": "Netease, Inc",
+    "market": "NASDAQ",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NFLX",
+    "company_name": "Netflix, Inc.",
+    "market": "NASDAQ",
+    "ratio": "48:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NEM",
+    "company_name": "Newmont Corporation",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NXE",
+    "company_name": "Nexgen Energy LTD",
+    "market": "NYSE",
+    "ratio": "01:01",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NKE",
+    "company_name": "Nike Inc.",
+    "market": "NYSE",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NIO",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NSAN",
+    "company_name": "Nissan Motor Co., Ltd",
+    "market": "OTC US",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NOKA",
+    "company_name": "Nokia Corporation",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NMR",
+    "company_name": "Nomura Holdings, Inc",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NG",
+    "company_name": "Novagold Resources INC.",
+    "market": "NYSE",
+    "ratio": "1:4",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NVS",
+    "company_name": "Novartis Ag",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NLM",
+    "company_name": "Novolipetsk Steel PJSC",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NU",
+    "company_name": "Nu Holdings Ltd.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NUE",
+    "company_name": "Nucor Corp",
+    "market": "NYSE",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NVDA",
+    "company_name": "Nvidia Corporation",
+    "market": "NASDAQ",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "OXY",
+    "company_name": "Occidental Petroleum Corp.",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ORCL",
+    "company_name": "Oracle Corporation",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ORAN",
+    "company_name": "Orange S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ORLY",
+    "company_name": "O'reilly Automotive Inc",
+    "market": "NASDAQ",
+    "ratio": "222:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PCAR",
+    "company_name": "Paccar Inc.",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PAGS",
+    "company_name": "Pagseguro Digital Ltd",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PLTR",
+    "company_name": "Palantir Technologies Inc",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PANW",
+    "company_name": "Palo Alto Networks Inc",
+    "market": "NASDAQ GS",
+    "ratio": "50:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PAAS",
+    "company_name": "Pan American Silver Corp.",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PCRF",
+    "company_name": "Panasonic Corporation",
+    "market": "OTC US",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PYPL",
+    "company_name": "Paypal Holdings, Inc.",
+    "market": "NASDAQ",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PDD",
+    "company_name": "",
+    "market": "NASDAQ GS",
+    "ratio": "25:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PSO",
+    "company_name": "Pearson Plc",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PEP",
+    "company_name": "Pepsico Inc",
+    "market": "NASDAQ",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PRIO3",
+    "company_name": "Petro Rio S.A.",
+    "market": "B3",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PETR3",
+    "company_name": "Petrobras - Petróleo Brasileiro S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PBR",
+    "company_name": "Petrobras (ADR)",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PTR",
+    "company_name": "Petrochina Co Ltd",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PFE",
+    "company_name": "Pfizer Inc.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PM",
+    "company_name": "Philip Morris International",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PSX",
+    "company_name": "Phillips 66",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PINS",
+    "company_name": "Pinterest",
+    "market": "NYSE",
+    "ratio": "7:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PBI",
+    "company_name": "Pitney Bowes Inc",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "OGZD",
+    "company_name": "Pjsc Gazprom",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "LKOD",
+    "company_name": "Pjsc Lukoil",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ATAD",
+    "company_name": "Pjsc Tatneft",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PKS",
+    "company_name": "Posco Holdings Inc.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PG",
+    "company_name": "Procter & Gamble",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SH",
+    "company_name": "PROSHARES SHORT S&P500",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PSQ",
+    "company_name": "PROSHARES SHORT QQQ",
+    "market": "NYSE ARCA",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "QCOM",
+    "company_name": "Qualcomm Inc.",
+    "market": "NASDAQ",
+    "ratio": "11:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RTX",
+    "company_name": "Raytheon Technologies Corp",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RGTI",
+    "company_name": "RIGETTI COMPUTING INC",
+    "market": "NASDAQ CM",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RIO",
+    "company_name": "Rio Tinto Plc",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RIOT",
+    "company_name": "Riot Platforms",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RBLX",
+    "company_name": "Roblox Corp.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ROKU",
+    "company_name": "Roku",
+    "market": "NASDAQ",
+    "ratio": "13:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ROST",
+    "company_name": "Ross Stores, Inc.",
+    "market": "NASDAQ",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SHEL",
+    "company_name": "Royal Dutch Shell Plc",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SPGI",
+    "company_name": "S&P Global Inc",
+    "market": "NYSE",
+    "ratio": "45:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "CRM",
+    "company_name": "Salesforce Inc.",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SMSN",
+    "company_name": "Samsung Electronics Co. Ltd.",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "14:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SAP",
+    "company_name": "Sap Se",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SATL",
+    "company_name": "Satellogic Inc.",
+    "market": "NASDAQ GS",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SLB",
+    "company_name": "Schlumberger Ltd",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SE",
+    "company_name": "Sea Ltd.",
+    "market": "NYSE",
+    "ratio": "32:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "NOW",
+    "company_name": "SERVICENOW INC",
+    "market": "NYSE",
+    "ratio": "172:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SHPW",
+    "company_name": "Shapeways Holdings Inc",
+    "market": "NYSE",
+    "ratio": "1:2",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SHOP",
+    "company_name": "Shopify Inc.",
+    "market": "NYSE",
+    "ratio": "107:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SIEGY",
+    "company_name": "Siemens Ag Adr",
+    "market": "OTC",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SI",
+    "company_name": "Silvergate Bancorp",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SWKS",
+    "company_name": "Skyworks Solutions",
+    "market": "NASDAQ",
+    "ratio": "21:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SNAP",
+    "company_name": "Snap Inc.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SNA",
+    "company_name": "Snap-On Inc",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SNOW",
+    "company_name": "Snowflake Inc.",
+    "market": "NYSE",
+    "ratio": "30:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SONY",
+    "company_name": "Sony Group Corporation",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SCCO",
+    "company_name": "Southern Copper Corp",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DIA",
+    "company_name": "SPDR DOW JONES INDUSTRIAL",
+    "market": "NYSE ARCA",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SPY",
+    "company_name": "SPDR S&P 500",
+    "market": "NYSE ARCA",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SPOT",
+    "company_name": "Spotify Technology S.A.",
+    "market": "NYSE",
+    "ratio": "28:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XYZ",
+    "company_name": "Square Inc.",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SBUX",
+    "company_name": "Starbucks Corporation",
+    "market": "NASDAQ",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "STLA",
+    "company_name": "Stellantis",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "STNE",
+    "company_name": "StoneCo Ltd",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SDA",
+    "company_name": "SunCar Technology Group Inc",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SUZB3",
+    "company_name": "Suzano S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SUZ",
+    "company_name": "Suzano Papel E Celulose S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SYY",
+    "company_name": "Sysco Corp.",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TSM",
+    "company_name": "Taiwan Semiconductor Manufacturing",
+    "market": "NYSE",
+    "ratio": "9:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TGT",
+    "company_name": "Target Corporation",
+    "market": "NYSE",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TTM",
+    "company_name": "Tata Motors Ltd",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "RCTB4",
+    "company_name": "Telebras PN",
+    "market": "BOVESPA",
+    "ratio": "1:1000",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TIIAY",
+    "company_name": "Telecom Italia S.P.A. Ordinary Shares",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VIV",
+    "company_name": "Telefônica Brasil S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VIVT3",
+    "company_name": "Telefônica Brasil S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TEFO",
+    "company_name": "Telefonica S.A.",
+    "market": "NYSE",
+    "ratio": "8:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TIMS3",
+    "company_name": "TIM S.A.",
+    "market": "B3",
+    "ratio": "01:01",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TEM",
+    "company_name": "TEMPUS AI INC",
+    "market": "NASDAQ GS",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TEN",
+    "company_name": "Tenaris",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TXR",
+    "company_name": "Ternium S.A.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TSLA",
+    "company_name": "Tesla, Inc.",
+    "market": "NASDAQ",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TXN",
+    "company_name": "Texas Instruments Inc",
+    "market": "NASDAQ",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BK",
+    "company_name": "The Bank Of New York Mellon Corp.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "BA",
+    "company_name": "The Boeing Company",
+    "market": "NYSE",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "KO",
+    "company_name": "The Coca Cola Company",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLC",
+    "company_name": "The Communication Services Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "19:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLY",
+    "company_name": "The Consumer Discretionary Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "43:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLP",
+    "company_name": "The Consumer Staples Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "16:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "GS",
+    "company_name": "The Goldman Sachs Group, Inc",
+    "market": "NYSE",
+    "ratio": "13:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLV",
+    "company_name": "The Health Care Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "29:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HSY",
+    "company_name": "The Hershey Company",
+    "market": "NYSE",
+    "ratio": "21:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "HD",
+    "company_name": "The Home Depot Inc.",
+    "market": "NYSE",
+    "ratio": "32:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLI",
+    "company_name": "The Industrial Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "28:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLB",
+    "company_name": "The Materials Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "MOS",
+    "company_name": "The Mosaic Co",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLRE",
+    "company_name": "The Real Estate Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "9:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLK",
+    "company_name": "The Technology Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "46:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TRVV",
+    "company_name": "The Travelers Cos. Inc.",
+    "market": "NYSE",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "DISN",
+    "company_name": "The Walt Disney Co.",
+    "market": "NYSE",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TMO",
+    "company_name": "Thermo Fisher Scientific Inc.",
+    "market": "NYSE",
+    "ratio": "22:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TIMB",
+    "company_name": "Tim Participações S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TJX",
+    "company_name": "",
+    "market": "NYSE",
+    "ratio": "22:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TMUS",
+    "company_name": "T-mobile",
+    "market": "NASDAQ",
+    "ratio": "33:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TTE",
+    "company_name": "TotalEnergies SE",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TM",
+    "company_name": "Toyota Motor Corporation",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TCOM",
+    "company_name": "TRIP.COM Group Ltd.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TRIP",
+    "company_name": "Tripadvisor, Inc.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TWLO",
+    "company_name": "Twilio Inc",
+    "market": "NYSE",
+    "ratio": "36:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TWTR",
+    "company_name": "Twitter, Inc.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "USB",
+    "company_name": "U.S. Bancorp",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UBER",
+    "company_name": "Uber Technologies Inc.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "PATH",
+    "company_name": "UIPATH INC",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UGP",
+    "company_name": "Ultrapar Participações S.A.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UL",
+    "company_name": "Unilever PLC - Sponsored",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UNP",
+    "company_name": "Union Pacific Corp.",
+    "market": "NYSE",
+    "ratio": "20:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UAL",
+    "company_name": "United Airlines Holdings Inc.",
+    "market": "NASDAQ GS",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UNH",
+    "company_name": "UnitedHealth Group Inc.",
+    "market": "NYSE",
+    "ratio": "33:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "UPST",
+    "company_name": "Upstart Hldgs Inc",
+    "market": "NASDAQ GS",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "URBN",
+    "company_name": "Urban Outfitters INC.",
+    "market": "NASDAQ",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XLU",
+    "company_name": "Utilities Select Sector SPDR Fund",
+    "market": "NYSE ARCA",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VALE",
+    "company_name": "Vale S.A.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VALE3",
+    "company_name": "Vale S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VIG",
+    "company_name": "VANGUARD DIVIDEND APPRECIATION",
+    "market": "NYSE ARCA",
+    "ratio": "39:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VEA",
+    "company_name": "Vanguard FTSE Developed Markets ETF",
+    "market": "NYSE ARCA",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SMH",
+    "company_name": "VAN ECK SEMICONDUCTOR ETF",
+    "market": "NASDAQ",
+    "ratio": "50:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VRSN",
+    "company_name": "Verisign, Inc.",
+    "market": "-",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VZ",
+    "company_name": "Verizon Communications Inc.",
+    "market": "NYSE",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VRTX",
+    "company_name": "VERTEX PHARMACEUTICALS INC",
+    "market": "NYSE",
+    "ratio": "101:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SPCE",
+    "company_name": "Virgin Galactic",
+    "market": "NYSE",
+    "ratio": "1:2",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "V",
+    "company_name": "Visa Inc",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VIST",
+    "company_name": "Vista Energy S.A.B. de C.V.",
+    "market": "NYSE",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VST",
+    "company_name": "VISTRA CORPORATION",
+    "market": "NYSE",
+    "ratio": "26:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "VOD",
+    "company_name": "Vodafone Group Plc",
+    "market": "NASDAQ",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "WBA",
+    "company_name": "Walgreens Boots Alliance Inc.",
+    "market": "NASDAQ",
+    "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "WMT",
+    "company_name": "Walmart Inc.",
+    "market": "NYSE",
+    "ratio": "18:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "WEGE3",
+    "company_name": "Weg S.A.",
+    "market": "B3",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "WBO",
+    "company_name": "Weibo Corporation",
+    "market": "NASDAQ",
+    "ratio": "6:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "WFC",
+    "company_name": "Wells Fargo & Co.",
+    "market": "NYSE",
+    "ratio": "5:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XROX",
+    "company_name": "Xerox Holding Corporation",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XP",
+    "company_name": "",
+    "market": "NASDAQ",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "XPEV",
+    "company_name": "XPENG INC",
+    "market": "New York",
+    "ratio": "4:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "AUY",
+    "company_name": "Yamana Gold Inc.",
+    "market": "NYSE",
+    "ratio": "1:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "YZCA",
+    "company_name": "Yanzhou Coal Mining Co. Ltd.",
+    "market": "OTC US",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "YELP",
+    "company_name": "Yelp Inc.",
+    "market": "NYSE",
+    "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "ZM",
+    "company_name": "Zoom Video Communications Inc.",
+    "market": "NASDAQ",
+    "ratio": "47:1",
+    "source": "BYMA_PDF"
+  }
+]
