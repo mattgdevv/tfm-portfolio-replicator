@@ -8,6 +8,17 @@ import holidays
 
 Market = Literal["AR", "US"]
 
+# Mapping de días de la semana en español
+WEEKDAY_NAMES = {
+    0: "lunes",
+    1: "martes", 
+    2: "miércoles",
+    3: "jueves",
+    4: "viernes",
+    5: "sábado",
+    6: "domingo"
+}
+
 
 def _get_holidays_for_market(market: Market):
     if market == "AR":
@@ -45,4 +56,32 @@ def get_last_business_day_by_market(
         current -= timedelta(days=1)
 
     return current
+
+
+def get_market_status_message(market: Market = "AR") -> Optional[str]:
+    """
+    Genera un mensaje informativo cuando el mercado está cerrado
+    
+    Returns:
+        Mensaje explicativo si mercado cerrado, None si abierto
+    """
+    now = datetime.now()
+    
+    if is_business_day_by_market(now, market):
+        return None  # Mercado abierto
+    
+    # Mercado cerrado - generar mensaje explicativo
+    day_name = WEEKDAY_NAMES[now.weekday()]
+    
+    # Verificar si es feriado
+    holidays_obj = _get_holidays_for_market(market)
+    today = now.date()
+    
+    if today in holidays_obj:
+        # Es feriado
+        holiday_name = holidays_obj.get(today)
+        return f"🏦 Mercados cerrados ({day_name} - {holiday_name}) - Usando precios internacionales y CCL para estimar precios de CEDEARs"
+    else:
+        # Es fin de semana
+        return f"🏦 Mercados cerrados ({day_name}) - Usando precios internacionales y CCL para estimar precios de CEDEARs"
 

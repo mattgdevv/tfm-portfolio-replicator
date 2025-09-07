@@ -15,6 +15,7 @@ import logging
 # from .dollar_rate import dollar_service
 # from .byma_historical import byma_historical_service
 from ..processors.cedeares import CEDEARProcessor
+from ..utils.business_days import get_market_status_message
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -216,6 +217,12 @@ class VariationAnalyzer:
         """Obtiene precios REALES del CEDEAR desde BYMA (hoy y ayer)"""
         
         try:
+            # Verificar si mercado está cerrado primero
+            market_message = get_market_status_message("AR")
+            if market_message:
+                logger.debug(f"🏦 Mercado cerrado - no hay precios BYMA para {symbol}")
+                return None, None
+            
             # Obtener datos actuales de CEDEARs desde BYMA
             cedeares_data = await self.byma_service._get_cedeares_data()
             

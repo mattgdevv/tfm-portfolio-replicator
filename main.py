@@ -32,6 +32,7 @@ from app.config import settings
 # from app.services.unified_analysis import unified_analysis
 from app.core.config import Config
 from app.core.services import build_services, Services
+from app.utils.business_days import get_market_status_message
 
 class PortfolioReplicator:
     def __init__(self, services: Services):
@@ -311,6 +312,11 @@ class PortfolioReplicator:
         except Exception as e:
             print(f"⚠️  No se pudo obtener CCL: {e}")
             dollar_rate = 1000.0
+        
+        # Mostrar mensaje de mercado cerrado si aplica
+        market_message = get_market_status_message("AR")
+        if market_message:
+            print(f"\n{market_message}")
         
         # Mostrar posiciones en formato tabla
         print("\n📊 PORTFOLIO (ARS)")

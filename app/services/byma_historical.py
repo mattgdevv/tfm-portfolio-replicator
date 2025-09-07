@@ -7,15 +7,11 @@ import requests
 import json
 import asyncio
 from datetime import datetime, timedelta
-try:
-    import holidays
-    AR_HOLIDAYS = holidays.country_holidays('AR')
-except Exception:
-    holidays = None
-    AR_HOLIDAYS = None
 from typing import Dict, List, Optional, Any
 import logging
 import urllib3
+
+from ..utils.business_days import get_last_business_day_by_market, is_business_day_by_market, get_market_status_message
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -44,26 +40,11 @@ class BYMAHistoricalService:
     @staticmethod
     def get_last_business_day(reference: Optional[datetime] = None) -> datetime:
         """Devuelve el último día hábil (evita fines de semana y feriados AR si disponible)."""
-        ref = reference or datetime.now()
-        cur = ref
-        # Retroceder si es fin de semana o feriado
-        def is_business_day(d: datetime) -> bool:
-            if d.weekday() >= 5:  # 5 sáb, 6 dom
-                return False
-            if AR_HOLIDAYS is not None:
-                # Comparar por fecha (YYYY-MM-DD)
-                try:
-                    date_only = d.date()
-                    if date_only in AR_HOLIDAYS:
-                        return False
-                except Exception:
-                    pass
-            return True
-
-        while not is_business_day(cur):
-            cur -= timedelta(days=1)
-        # Si hoy es hábil pero aún no hay cierre, el caller decide si usar ayer.
-        return cur
+        return get_last_business_day_by_market("AR", reference)
+    
+    def _is_market_closed(self) -> bool:
+        """Verifica si mercados argentinos están cerrados (fines de semana o feriados)"""
+        return not is_business_day_by_market(datetime.now(), "AR")
     
     async def get_cedear_price_eod(self, symbol: str, date: Optional[str] = None) -> Optional[float]:
         """
@@ -200,6 +181,12 @@ class BYMAHistoricalService:
     
     async def _get_cedeares_data(self) -> Optional[List[Dict]]:
         """Obtiene datos de CEDEARs desde BYMA API"""
+        
+        # 🏦 Check market status FIRST - evita requests innecesarios cuando mercado cerrado
+        market_message = get_market_status_message("AR")
+        if market_message:
+            logger.info(market_message)
+            return None  # ✅ Trigger fallback limpio, sin errores
         
         cache_key = "cedeares_data"
         cached = self._get_from_cache(cache_key)
