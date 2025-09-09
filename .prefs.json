@@ -1,3 +1,6 @@
 {
-  "PREFERRED_CCL_SOURCE": "dolarapi_ccl"
+  "PREFERRED_CCL_SOURCE": "dolarapi_ccl",
+  "arbitrage_threshold": 0.002,
+  "request_timeout": 30,
+  "cache_ttl_seconds": 180
 }

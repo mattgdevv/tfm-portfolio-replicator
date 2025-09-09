@@ -18,8 +18,9 @@ PriceSource = Literal["finnhub"]
 class InternationalPriceService:
     """Servicio para obtener precios de acciones internacionales usando Finnhub"""
     
-    def __init__(self):
-        self.timeout = 10
+    def __init__(self, config=None):
+        # Configuración mediante config opcional (backward compatible)
+        self.timeout = config.request_timeout if config else 10
         # Leer API key desde Settings (.env)
         try:
             from app.config import settings
@@ -183,6 +184,3 @@ class InternationalPriceService:
     def get_available_sources(self) -> Dict[str, bool]:
         """Retorna el estado de todas las fuentes"""
         return self.sources_status.copy()
-
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# international_price_service = InternationalPriceService()  # DEPRECATED - use build_services()

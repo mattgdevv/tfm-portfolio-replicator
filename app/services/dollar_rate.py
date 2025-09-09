@@ -19,8 +19,16 @@ DollarSource = Literal["dolarapi_ccl", "ccl_al30", "dolarapi_mep"]
 class DollarRateService:
     """Servicio para obtener cotizaciones del dólar con fallback automático"""
     
-    def __init__(self):
-        self.timeout = 10
+    def __init__(self, config=None):
+        # Configuración mediante config opcional (backward compatible)
+        if config:
+            self.timeout = getattr(config, 'request_timeout', 10)
+            self._cache_ttl_seconds = getattr(config, 'cache_ttl_seconds', 180)
+        else:
+            # Valores por defecto para mantener compatibilidad
+            self.timeout = 10
+            self._cache_ttl_seconds = 180
+            
         self.sources_status = {
             "dolarapi_ccl": True,
             "ccl_al30": False,  # Requiere autenticación IOL
@@ -31,7 +39,6 @@ class DollarRateService:
         self.iol_session = None  # Sesión de IOL para CCL AL30
         # Cache en memoria (TTL corto)
         self._cache: Dict[str, Dict[str, Any]] = {}
-        self._cache_ttl_seconds: int = 180  # 3 minutos
         
     def set_iol_session(self, session):
         """Establece la sesión de IOL para poder usar CCL AL30"""
@@ -80,7 +87,7 @@ class DollarRateService:
         for source in sources:
             cached = self._get_from_cache(f"ccl:{source}")
             if cached:
-                logger.info(f"♻️  CCL cache hit: {source} -> ${cached['rate']}")
+                logger.debug(f"♻️  CCL cache hit: {source} -> ${cached['rate']}")  # Cambio a debug para reducir ruido
                 cached["source"] = source
                 cached["preferred_source"] = preferred_source
                 cached["fallback_used"] = source != preferred_source
@@ -135,6 +142,30 @@ class DollarRateService:
                 
         # Si llegamos aquí, todas las fuentes fallaron
         logger.error(f"❌ Todas las fuentes CCL fallaron. Fuentes intentadas: {attempted_sources}")
+        
+        # ÚLTIMO RECURSO: Intentar cache expirado como fallback
+        for source in sources:
+            cached_expired = self._get_from_cache_expired_ok(f"ccl:{source}")
+            if cached_expired:
+                age_seconds = (datetime.now() - cached_expired.get("_ts", datetime.now())).total_seconds()
+                age_minutes = int(age_seconds / 60)
+                
+                logger.warning(f"⚠️ Usando CCL en cache expirado de {source} (edad: {age_minutes} min)")
+                print(f"⚠️ Usando CCL en cache expirado: ${cached_expired['rate']:.2f} (edad: {age_minutes} min)")
+                
+                # Limpiar metadatos internos y agregar info de fallback
+                result = {k: v for k, v in cached_expired.items() if k != "_ts"}
+                result.update({
+                    "source": source,
+                    "preferred_source": preferred_source,
+                    "fallback_used": True,
+                    "cache_fallback": True,
+                    "attempted_sources": attempted_sources,
+                    "timestamp": datetime.now().isoformat()
+                })
+                return result
+        
+        # Si no hay ni cache expirado, entonces sí fallar
         print(f"❌ ERROR: No se pudo obtener cotización CCL")
         print(f"   💡 Fuentes intentadas: {', '.join(attempted_sources)}")
         if "ccl_al30" in attempted_sources and not self.iol_session:
@@ -160,6 +191,17 @@ class DollarRateService:
         to_store = dict(value)
         to_store["_ts"] = datetime.now()
         self._cache[key] = to_store
+    
+    def _get_from_cache_expired_ok(self, key: str) -> Optional[Dict[str, Any]]:
+        """
+        Obtiene entrada del cache aunque esté expirada.
+        Usado como último fallback cuando todas las fuentes fallan.
+        """
+        entry = self._cache.get(key)
+        if not entry:
+            return None
+        # No verificar TTL - devolver aunque esté expirado
+        return entry
 
     
     async def _get_dolarapi_ccl(self) -> Optional[Dict[str, Any]]:
@@ -285,55 +327,3 @@ class DollarRateService:
             logger.error(f"❌ Error obteniendo MEP: {str(e)}")
             return None
     
-    async def check_source_health(self, source: DollarSource) -> Dict[str, Any]:
-        """
-        Verifica el estado de una fuente específica con test real
-        """
-        try:
-            logger.info(f"🏥 Verificando salud de fuente: {source}")
-            
-            if source == "dolarapi_ccl":
-                result = await self._get_dolarapi_ccl()
-            elif source == "ccl_al30":
-                result = await self._get_ccl_al30()
-            elif source == "dolarapi_mep":
-                result = await self.get_mep_rate()
-            else:
-                return {"status": False, "error": "Fuente no reconocida"}
-            
-            if result:
-                self.sources_status[source] = True
-                self.last_health_check[source] = datetime.now()
-                return {
-                    "status": True,
-                    "rate": result["rate"],
-                    "last_check": datetime.now().isoformat()
-                }
-            else:
-                self.sources_status[source] = False
-                return {"status": False, "error": "No se pudo obtener cotización"}
-                
-        except Exception as e:
-            self.sources_status[source] = False
-            return {"status": False, "error": str(e)}
-    
-    async def check_all_sources_health(self) -> Dict[str, Dict[str, Any]]:
-        """Verifica el estado de todas las fuentes"""
-        logger.info("🏥 Iniciando health check de todas las fuentes...")
-        
-        results = {}
-        for source in self.sources_status.keys():
-            results[source] = await self.check_source_health(source)
-        
-        # Mostrar resumen
-        available_sources = [s for s, r in results.items() if r["status"]]
-        logger.info(f"✅ Health check completado. Fuentes disponibles: {available_sources}")
-        
-        return results
-    
-    def get_available_sources(self) -> Dict[str, bool]:
-        """Retorna el estado de todas las fuentes"""
-        return self.sources_status.copy()
-
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# dollar_service = DollarRateService()  # DEPRECATED - use build_services()

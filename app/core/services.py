@@ -10,9 +10,16 @@ from .config import Config
 from ..services.arbitrage_detector import ArbitrageDetector
 from ..services.dollar_rate import DollarRateService
 from ..services.international_prices import InternationalPriceService
-from ..services.byma_historical import BYMAHistoricalService
+from ..integrations.byma_integration import BYMAIntegration
 from ..services.unified_analysis import UnifiedAnalysisService
 from ..services.variation_analyzer import VariationAnalyzer
+from ..services.price_fetcher import PriceFetcher
+from ..services.file_service import FileService
+from ..services.utility_service import UtilityService
+from ..services.config_service import ConfigService
+from ..services.analysis_service import AnalysisService
+from ..services.portfolio_display_service import PortfolioDisplayService
+from ..services.file_processing_service import FileProcessingService
 from ..processors.cedeares import CEDEARProcessor
 from ..processors.file_processor import PortfolioProcessor
 
@@ -25,11 +32,18 @@ class Services:
     arbitrage_detector: ArbitrageDetector
     dollar_service: DollarRateService
     international_service: InternationalPriceService
-    byma_service: BYMAHistoricalService
+    byma_integration: BYMAIntegration
     unified_analysis: UnifiedAnalysisService
     variation_analyzer: VariationAnalyzer
+    price_fetcher: PriceFetcher
     portfolio_processor: PortfolioProcessor
     cedear_processor: CEDEARProcessor
+    file_service: FileService
+    utility_service: UtilityService
+    config_service: ConfigService
+    analysis_service: AnalysisService
+    portfolio_display_service: PortfolioDisplayService
+    file_processing_service: FileProcessingService
     config: Config
 
 
@@ -52,33 +66,44 @@ def build_services(config: Optional[Config] = None) -> Services:
     
     # Servicios base (sin dependencias)
     cedear_processor = CEDEARProcessor()
-    international_service = InternationalPriceService()
-    dollar_service = DollarRateService()
-    byma_service = BYMAHistoricalService()
-    
+    international_service = InternationalPriceService(config=config)
+    dollar_service = DollarRateService(config=config)
+    byma_integration = BYMAIntegration()
+
+    price_fetcher = PriceFetcher(
+        cedear_processor=cedear_processor,
+        iol_session=None,  # Se configura después cuando sea necesario
+        byma_integration=byma_integration,
+        dollar_service=dollar_service
+    )
+
     # Servicios con dependencias
     arbitrage_detector = ArbitrageDetector(
         international_service=international_service,
         dollar_service_dep=dollar_service,
-        byma_service=byma_service,
+        byma_integration=byma_integration,
         cedear_processor=cedear_processor,
-        iol_session=None  # Se configura después cuando sea necesario
+        price_fetcher=price_fetcher,
+        iol_session=None,  # Se configura después cuando sea necesario
+        config=config
     )
     
     unified_analysis = UnifiedAnalysisService(
         arbitrage_detector=arbitrage_detector,
         cedear_processor=cedear_processor,
-        international_service=international_service
+        international_service=international_service,
+        config=config
     )
     
     variation_analyzer = VariationAnalyzer(
         cedear_processor=cedear_processor,
         international_service=international_service,
         dollar_service=dollar_service,
-        byma_service=byma_service,
+        byma_integration=byma_integration,
+        price_fetcher=price_fetcher,
         iol_session=None  # Se configura después cuando sea necesario
     )
-    
+
     portfolio_processor = PortfolioProcessor(
         cedear_processor=cedear_processor,
         dollar_service=dollar_service,
@@ -89,19 +114,51 @@ def build_services(config: Optional[Config] = None) -> Services:
         debug=False     # Configurable en futuro
     )
     
-    logger.info(f"✅ Servicios construidos para mercado: {config.market}")
+    # Crear servicios auxiliares
+    file_service = FileService()
+    utility_service = UtilityService(cedear_processor)
+    file_processing_service = FileProcessingService(portfolio_processor)
     
-    return Services(
+    # Crear servicios que necesitan el container completo (se pasa después)
+    services_container = Services(
         arbitrage_detector=arbitrage_detector,
         dollar_service=dollar_service,
         international_service=international_service,
-        byma_service=byma_service,
+        byma_integration=byma_integration,
         unified_analysis=unified_analysis,
         variation_analyzer=variation_analyzer,
+        price_fetcher=price_fetcher,
         portfolio_processor=portfolio_processor,
         cedear_processor=cedear_processor,
+        file_service=file_service,
+        utility_service=utility_service,
+        config_service=None,  # Se crea después
+        analysis_service=None,  # Se crea después
+        portfolio_display_service=None,  # Se crea después
+        file_processing_service=file_processing_service,
         config=config
     )
+    
+    # Crear servicios que necesitan acceso al container completo
+    config_service = ConfigService(services_container)
+    
+    # Para analysis_service y portfolio_display_service necesitamos importar IOL integration
+    from ..integrations.iol import IOLIntegration
+    iol_integration = IOLIntegration(
+        dollar_service=dollar_service,
+        cedear_processor=cedear_processor
+    )
+    analysis_service = AnalysisService(services_container, cedear_processor, iol_integration)
+    portfolio_display_service = PortfolioDisplayService(services_container, iol_integration, cedear_processor)
+    
+    # Actualizar el container con los servicios completos
+    services_container.config_service = config_service
+    services_container.analysis_service = analysis_service
+    services_container.portfolio_display_service = portfolio_display_service
+    
+    logger.info(f"✅ Servicios construidos para mercado: {config.market}")
+    
+    return services_container
 
 
 def build_test_services(mock_config: Optional[Config] = None) -> Services:
@@ -118,8 +175,7 @@ def build_test_services(mock_config: Optional[Config] = None) -> Services:
         mock_config = Config(
             market="test",
             arbitrage_threshold=0.01,  # 1% para tests
-            cache_ttl_seconds=60,
-            mock_iol=True
+            cache_ttl_seconds=60
         )
     
     logger.info("🧪 Construyendo servicios para testing...")
