@@ -1,5 +1,5 @@
 """
-Servicio para obtener datos históricos de BYMA
+Integración para obtener datos históricos de BYMA
 Incluye CCL histórico y precios de CEDEARs
 """
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Suppress SSL warnings for BYMA API
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-class BYMAHistoricalService:
+class BYMAIntegration:
     """Servicio para obtener datos históricos de BYMA"""
     
     def __init__(self):
@@ -45,47 +45,6 @@ class BYMAHistoricalService:
     def _is_market_closed(self) -> bool:
         """Verifica si mercados argentinos están cerrados (fines de semana o feriados)"""
         return not is_business_day_by_market(datetime.now(), "AR")
-    
-    async def get_cedear_price_eod(self, symbol: str, date: Optional[str] = None) -> Optional[float]:
-        """
-        Obtiene precio de cierre (EOD) de un CEDEAR desde BYMA
-        
-        Args:
-            symbol: Símbolo del CEDEAR (ej: "TSLA")
-            date: Fecha en formato YYYY-MM-DD (opcional, por defecto ayer)
-            
-        Returns:
-            Precio de cierre en ARS o None si no se encuentra
-        """
-        
-        try:
-            # Obtener datos actuales de CEDEARs
-            cedeares_data = await self._get_cedeares_data()
-            
-            if not cedeares_data:
-                logger.error("❌ No se pudieron obtener datos de CEDEARs desde BYMA")
-                return None
-            
-            # Buscar el CEDEAR específico
-            for cedear in cedeares_data:
-                if cedear.get('symbol') == symbol:
-                    # Para datos EOD, usamos el precio actual como proxy
-                    # TODO: Implementar endpoint específico para datos históricos cuando esté disponible
-                    price = cedear.get('trade') or cedear.get('settlementPrice')
-                    
-                    if price and price > 0:
-                        logger.debug(f"📈 BYMA EOD {symbol}: ${price:.2f} ARS")
-                        return float(price)
-                    else:
-                        logger.warning(f"⚠️  Precio no válido para {symbol}: {price}")
-                        return None
-            
-            logger.warning(f"⚠️  CEDEAR {symbol} no encontrado en datos BYMA")
-            return None
-            
-        except Exception as e:
-            logger.error(f"❌ Error obteniendo precio EOD BYMA para {symbol}: {str(e)}")
-            return None
     
     async def get_ccl_rate_historical(self, date: Optional[str] = None) -> Optional[float]:
         """
@@ -181,12 +140,20 @@ class BYMAHistoricalService:
     
     async def _get_cedeares_data(self) -> Optional[List[Dict]]:
         """Obtiene datos de CEDEARs desde BYMA API"""
-        
+
         # 🏦 Check market status FIRST - evita requests innecesarios cuando mercado cerrado
         market_message = get_market_status_message("AR")
         if market_message:
             logger.info(market_message)
             return None  # ✅ Trigger fallback limpio, sin errores
+
+        # 🔍 Check BYMA health en días hábiles - detectar caídas de servicio
+        if is_business_day_by_market(datetime.now(), "AR"):
+            health_check = await self.check_byma_health()
+            if not health_check["status"]:
+                fallback_message = f"⚠️ BYMA no responde en día hábil ({health_check['response_time']}s) - {health_check['error']} - Usando precios internacionales y CCL para estimar precios de CEDEARs"
+                logger.warning(fallback_message)
+                return None  # ✅ Trigger fallback limpio con mensaje informativo
         
         cache_key = "cedeares_data"
         cached = self._get_from_cache(cache_key)
@@ -233,51 +200,6 @@ class BYMAHistoricalService:
             logger.error(f"❌ Error inesperado BYMA CEDEARs: {str(e)}")
             return None
     
-    async def _get_indices_data(self) -> Optional[List[Dict]]:
-        """Obtiene datos de índices desde BYMA API"""
-        
-        cache_key = "indices_data"
-        cached = self._get_from_cache(cache_key)
-        if cached:
-            return cached
-        
-        try:
-            # Intentar diferentes endpoints para índices
-            possible_urls = [
-                f"{self.base_url}/indices",
-                f"{self.base_url}/index",
-                f"{self.base_url}/indicators"
-            ]
-            
-            for url in possible_urls:
-                try:
-                    logger.debug(f"🔍 Probando endpoint índices: {url}")
-                    
-                    # Para índices, puede que no necesite payload
-                    response = self.session.get(
-                        url,
-                        headers=self.headers,
-                        timeout=self.timeout,
-                        verify=False
-                    )
-                    
-                    if response.status_code == 200:
-                        data = response.json()
-                        if isinstance(data, list) and len(data) > 0:
-                            logger.debug(f"✅ Obtenidos {len(data)} índices desde BYMA")
-                            self._set_cache(cache_key, data)
-                            return data
-                        
-                except requests.exceptions.RequestException:
-                    continue
-            
-            logger.warning("⚠️  No se encontraron endpoints válidos para índices BYMA")
-            return None
-            
-        except Exception as e:
-            logger.error(f"❌ Error inesperado BYMA índices: {str(e)}")
-            return None
-    
     def _get_from_cache(self, key: str) -> Optional[Any]:
         """Obtiene datos del cache si no han expirado"""
         if key in self._cache:
@@ -290,69 +212,122 @@ class BYMAHistoricalService:
     def _set_cache(self, key: str, data: Any):
         """Guarda datos en el cache con timestamp"""
         self._cache[key] = (data, datetime.now().timestamp())
-    
-    async def get_multiple_cedear_prices_eod(self, symbols: List[str]) -> Dict[str, Optional[float]]:
+
+    async def check_byma_health(self) -> Dict[str, Any]:
         """
-        Obtiene precios EOD para múltiples CEDEARs en paralelo
-        
-        Args:
-            symbols: Lista de símbolos de CEDEARs
-            
+        Verifica el estado de salud de BYMA API
+
         Returns:
-            Diccionario {symbol: price} o None si hay error
+            Dict con información de salud:
+            - status: bool (True si operativo)
+            - response_time: float (tiempo de respuesta en segundos)
+            - error: str (mensaje de error si falla)
+            - business_day: bool (si es día hábil)
         """
-        
-        logger.debug(f"🔍 Obteniendo precios EOD BYMA para {len(symbols)} símbolos: {symbols}")
-        
-        # Optimización: obtener todos los CEDEARs de una vez
-        cedeares_data = await self._get_cedeares_data()
-        
-        if not cedeares_data:
-            return {symbol: None for symbol in symbols}
-        
-        # Crear diccionario de búsqueda rápida
-        cedear_dict = {cedear.get('symbol'): cedear for cedear in cedeares_data}
-        
-        results = {}
-        
-        for symbol in symbols:
-            if symbol in cedear_dict:
-                cedear = cedear_dict[symbol]
-                price = cedear.get('trade') or cedear.get('settlementPrice')
-                
-                if price and price > 0:
-                    results[symbol] = float(price)
-                    logger.debug(f"📈 BYMA EOD {symbol}: ${price:.2f} ARS")
-                else:
-                    results[symbol] = None
-                    logger.warning(f"⚠️  Precio no válido para {symbol}: {price}")
-            else:
-                results[symbol] = None
-                logger.warning(f"⚠️  CEDEAR {symbol} no encontrado en BYMA")
-        
-        found_count = sum(1 for price in results.values() if price is not None)
-        logger.info(f"✅ BYMA EOD: {found_count}/{len(symbols)} precios obtenidos")
-        
-        return results
-    
-    def check_service_health(self) -> bool:
-        """Verifica si el servicio BYMA está disponible"""
+        import time
+        start_time = time.time()
+
+        result = {
+            "status": False,
+            "response_time": 0.0,
+            "error": "",
+            "business_day": is_business_day_by_market(datetime.now(), "AR")
+        }
+
         try:
+            # Usar la misma configuración que la request real
             url = f"{self.base_url}/cedears"
-            payload = {"excludeZeroPxAndQty": True, "T1": True, "T0": False}
-            
+            payload = {
+                "excludeZeroPxAndQty": True,
+                "T1": True,
+                "T0": False
+            }
+
+            # Usar la sesión HTTP como la request real
             response = self.session.post(
-                url, 
-                json=payload, 
-                headers=self.headers, 
-                timeout=5,
+                url,
+                json=payload,
+                headers=self.headers,
+                timeout=self.timeout,
                 verify=False
             )
-            
-            return response.status_code == 200
-            
-        except Exception:
-            return False
 
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# byma_historical_service = BYMAHistoricalService()  # DEPRECATED - use build_services()
+            response_time = time.time() - start_time
+            result["response_time"] = round(response_time, 2)
+
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    if data and len(data) > 0:  # Verificar que hay datos
+                        result["status"] = True
+                        result["error"] = ""
+                    else:
+                        result["error"] = "API responde pero sin datos"
+                except json.JSONDecodeError:
+                    result["error"] = "Respuesta inválida (no JSON)"
+            else:
+                result["error"] = f"HTTP {response.status_code}: {response.text[:100]}"
+
+        except requests.exceptions.Timeout:
+            result["response_time"] = 10.0
+            result["error"] = "Timeout (10s)"
+        except requests.exceptions.ConnectionError:
+            result["response_time"] = time.time() - start_time
+            result["error"] = "Error de conexión"
+        except Exception as e:
+            result["response_time"] = time.time() - start_time
+            result["error"] = f"Error desconocido: {str(e)}"
+
+        return result
+
+    async def check_iol_health(self, iol_session=None) -> Dict[str, Any]:
+        """
+        Verifica el estado de salud de IOL
+
+        Args:
+            iol_session: Sesión de IOL opcional para verificar autenticación
+
+        Returns:
+            Dict con información de salud:
+            - status: bool (True si operativo)
+            - authenticated: bool (True si sesión válida)
+            - error: str (mensaje de error si falla)
+        """
+        result = {
+            "status": False,
+            "authenticated": False,
+            "error": ""
+        }
+
+        if not iol_session:
+            result["error"] = "Sin sesión IOL"
+            return result
+
+        try:
+            # Verificar si la sesión IOL existe y está configurada
+            if iol_session and hasattr(iol_session, 'headers'):
+                # Verificar si tiene headers de autorización (indicativo de autenticación)
+                if 'Authorization' in iol_session.headers:
+                    result["authenticated"] = True
+
+                    # Hacer una request de prueba simple
+                    test_url = "https://api.invertironline.com/api/v2/Usuario"
+                    response = iol_session.get(test_url, timeout=5)
+
+                    if response.status_code == 200:
+                        result["status"] = True
+                    else:
+                        result["error"] = f"HTTP {response.status_code}"
+                else:
+                    result["error"] = "Sesión sin autenticación"
+            else:
+                result["error"] = "Sesión no inicializada"
+
+        except Exception as e:
+            result["error"] = f"Error verificando IOL: {str(e)}"
+
+        if result["authenticated"]:
+            result["status"] = True
+
+        return result
+

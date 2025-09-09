@@ -61,20 +61,23 @@ class ArbitrageOpportunity:
 class ArbitrageDetector:
     """Detector de oportunidades de arbitraje entre CEDEARs y subyacentes"""
     
-    def __init__(self, 
+    def __init__(self,
                  international_service,
-                 dollar_service_dep, 
-                 byma_service,
+                 dollar_service_dep,
+                 byma_integration,
                  cedear_processor,
-                 iol_session=None):
+                 price_fetcher,
+                 iol_session=None,
+                 config=None):
         """
         Constructor con Dependency Injection estricta - TODAS las dependencias son requeridas
-        
+
         Args:
             international_service: Servicio de precios internacionales (REQUERIDO)
             dollar_service_dep: Servicio de cotización dólar (REQUERIDO)
-            byma_service: Servicio BYMA histórico (REQUERIDO)
+            byma_integration: Servicio BYMA histórico (REQUERIDO)
             cedear_processor: Procesador CEDEARs (REQUERIDO)
+            price_fetcher: Servicio unificado de obtención de precios (REQUERIDO)
             iol_session: Sesión IOL para modo completo (opcional)
         """
         # Validación estricta de dependencias
@@ -82,41 +85,74 @@ class ArbitrageDetector:
             raise ValueError("international_service es requerido - use build_services() para crear instancias")
         if dollar_service_dep is None:
             raise ValueError("dollar_service_dep es requerido - use build_services() para crear instancias")
-        if byma_service is None:
-            raise ValueError("byma_service es requerido - use build_services() para crear instancias")
+        if byma_integration is None:
+            raise ValueError("byma_integration es requerido - use build_services() para crear instancias")
         if cedear_processor is None:
             raise ValueError("cedear_processor es requerido - use build_services() para crear instancias")
-            
+        if price_fetcher is None:
+            raise ValueError("price_fetcher es requerido - use build_services() para crear instancias")
+
         self.iol_session = iol_session
         self.international_service = international_service
         self.dollar_service_instance = dollar_service_dep
-        self.byma_service = byma_service
+        self.byma_integration = byma_integration
         self.cedear_processor = cedear_processor
+        self.price_fetcher = price_fetcher
+        self.config = config  # Almacenar config para usar threshold por defecto
         
         self.mode = "full" if iol_session else "limited"
-        # cache por símbolo: {'SYMBOL': {'price_ars': float, 'price_usd': float, 'source': str, 'ts': float}}
-        self._cache: Dict[str, Dict[str, Any]] = {}
-        self._cache_ttl_seconds: int = 180
         
     def set_iol_session(self, session):
         """Establece la sesión de IOL para modo completo"""
         self.iol_session = session
         self.mode = "full" if session else "limited"
-        logger.info(f"🔄 Modo cambiado a: {self.mode}")
-    
-    async def detect_single_arbitrage(self, symbol: str, threshold_percentage: float = 0.005) -> Optional[ArbitrageOpportunity]:
+        self.price_fetcher.set_iol_session(session)  # Sincronizar con PriceFetcher
+        # Log removido para reducir ruido
+
+    def _get_cedear_conversion_info(self, symbol: str) -> tuple[str, float]:
+        """
+        Helper method para obtener información de conversión del CEDEAR.
+        Encapsula lógica repetitiva usada en múltiples métodos.
+
+        Returns:
+            tuple: (ratio_str, conversion_ratio_float)
+        """
+        cedear_info = self.cedear_processor.get_underlying_asset(symbol)
+        if not cedear_info:
+            raise ValueError(f"No se encontró información del CEDEAR {symbol}")
+
+        ratio = cedear_info.get("ratio", "1:1")
+        conversion_ratio = self.cedear_processor.parse_ratio(ratio)
+        return ratio, conversion_ratio
+
+    async def _get_ccl_rate_safe(self) -> float:
+        """
+        Helper method para obtener CCL rate de forma segura con fallback.
+        Encapsula lógica repetitiva usada en múltiples métodos.
+
+        Returns:
+            float: CCL rate o fallback 1300.0 si no disponible
+        """
+        ccl_data = await self.dollar_service_instance.get_ccl_rate()
+        return ccl_data["rate"] if ccl_data else 1300.0
+
+    async def detect_single_arbitrage(self, symbol: str, threshold_percentage: float = None) -> Optional[ArbitrageOpportunity]:
         """
         Detecta arbitraje para un símbolo específico
         
         Args:
             symbol: Símbolo del CEDEAR (ej: "TSLA")
-            threshold_percentage: Umbral mínimo para considerar arbitraje (default: 0.5%)
+            threshold_percentage: Umbral mínimo para considerar arbitraje (usa config.arbitrage_threshold si None)
             
         Returns:
             ArbitrageOpportunity si hay oportunidad, None si no
         """
         
-        logger.debug(f"🔍 Analizando arbitraje para {symbol} (modo: {self.mode})")
+        # Usar threshold de config si no se especifica
+        if threshold_percentage is None:
+            threshold_percentage = self.config.arbitrage_threshold if self.config else 0.005
+        
+        logger.debug(f"🔍 Analizando arbitraje para {symbol} (modo: {self.mode}, threshold: {threshold_percentage})")
         
         try:
             # 1. Obtener precio del activo subyacente (siempre Yahoo/Finnhub)
@@ -129,10 +165,19 @@ class ArbitrageDetector:
             logger.debug(f"📈 {symbol} subyacente: ${underlying_price_usd:.2f} USD")
             
             # 2. Obtener precio de 1 acción vía CEDEARs
-            cedear_price_ars, accion_via_cedear_usd = await self._get_cedear_price_usd(symbol)
+            cedear_price_ars, accion_via_cedear_usd = await self.price_fetcher.get_cedear_price_with_action_usd(symbol)
             if not accion_via_cedear_usd:
-                logger.error(f"❌ No se pudo obtener precio de acción vía CEDEAR para {symbol}")
-                return None
+                # FALLBACK: Intentar estimación teórica
+                logger.warning(f"⚠️  No se pudo obtener precio real de {symbol}, intentando estimación teórica...")
+                cedear_teorico_ars, accion_teorica_usd = await self.price_fetcher.get_theoretical_cedear_price(symbol, underlying_price_usd)
+                
+                if accion_teorica_usd:
+                    logger.info(f"🔮 Usando precio teórico para {symbol}: ${accion_teorica_usd:.2f} USD (CEDEAR teórico: ${cedear_teorico_ars:.0f} ARS)")
+                    cedear_price_ars = cedear_teorico_ars
+                    accion_via_cedear_usd = accion_teorica_usd
+                else:
+                    logger.error(f"❌ No se pudo estimar precio teórico para {symbol}")
+                    return None
             
             logger.debug(f"🏦 {symbol} acción vía CEDEAR: ${accion_via_cedear_usd:.2f} USD (CEDEAR: ${cedear_price_ars:.0f} ARS)")
             
@@ -145,8 +190,7 @@ class ArbitrageDetector:
             # 4. Verificar si supera el umbral
             if difference_percentage >= threshold_percentage:
                 # Obtener CCL rate usado
-                ccl_data = await self.dollar_service_instance.get_ccl_rate()
-                ccl_rate = ccl_data["rate"] if ccl_data else 1300.0  # Fallback
+                ccl_rate = await self._get_ccl_rate_safe()
                 
                 opportunity = ArbitrageOpportunity(
                     symbol=symbol,
@@ -169,176 +213,27 @@ class ArbitrageDetector:
             logger.error(f"❌ Error analizando {symbol}: {str(e)}")
             return None
     
-    async def _get_cedear_price_usd(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """
-        Obtiene el precio del CEDEAR en ARS y lo convierte a USD
-        
-        Returns:
-            tuple: (precio_ars, precio_usd)
-        """
-        
-        if self.mode == "full" and self.iol_session:
-            # Modo completo: precio en tiempo real desde IOL
-            return await self._get_iol_cedear_price(symbol)
-        else:
-            # Modo limitado: precio real desde BYMA API únicamente
-            return await self._get_byma_real_cedear_price(symbol)
     
-    async def _get_iol_cedear_price(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Obtiene precio CEDEAR desde IOL API (modo completo)"""
-        
-        try:
-            url = f"https://api.invertironline.com/api/v2/bcba/Titulos/{symbol}/Cotizacion"
-            response = self.iol_session.get(url, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            precio_cedear_ars = data.get("ultimoPrecio")
-            
-            if not precio_cedear_ars or precio_cedear_ars <= 0:
-                raise ValueError(f"Precio IOL inválido para {symbol}: {precio_cedear_ars}")
-            
-            # Obtener ratio de conversión
-            cedear_info = self.cedear_processor.get_underlying_asset(symbol)
-            if not cedear_info:
-                raise ValueError(f"No se encontró información del CEDEAR {symbol}")
-            
-            ratio = cedear_info.get("ratio", "1:1")
-            conversion_ratio = self.cedear_processor.parse_ratio(ratio)
-            
-            # Obtener CCL
-            ccl_data = await self.dollar_service_instance.get_ccl_rate()
-            ccl_rate = ccl_data["rate"] if ccl_data else 1300.0
-            
-            # Calcular precio de 1 acción vía CEDEARs
-            # Precio_Acción_vía_CEDEAR = (Precio_CEDEAR_ARS × Ratio) ÷ CCL
-            precio_accion_via_cedear_usd = (precio_cedear_ars * conversion_ratio) / ccl_rate
-            
-            logger.debug(f"💰 IOL {symbol}: (${precio_cedear_ars:.0f} × {conversion_ratio}) ÷ ${ccl_rate:.0f} = ${precio_accion_via_cedear_usd:.2f} USD")
-            return precio_cedear_ars, precio_accion_via_cedear_usd
-            
-        except Exception as e:
-            logger.error(f"❌ Error obteniendo precio IOL para {symbol}: {str(e)}")
-            return None, None
     
-    async def _get_theoretical_cedear_price(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Calcula precio teórico del CEDEAR usando datos de cierre BYMA (modo limitado)"""
-        
-        try:
-            # Obtener información del CEDEAR
-            cedear_info = self.cedear_processor.get_underlying_asset(symbol)
-            if not cedear_info:
-                return None, None
-            
-            # Obtener ratio de conversión
-            ratio = cedear_info.get("ratio", "1:1")
-            conversion_ratio = self.cedear_processor.parse_ratio(ratio)
-            
-            # Obtener precio subyacente para calcular precio teórico del CEDEAR
-            underlying_data = await self.international_service.get_stock_price(symbol)
-            if not underlying_data:
-                return None, None
-            
-            underlying_price_usd = underlying_data["price"]
-            
-            # Obtener CCL
-            ccl_data = await self.dollar_service_instance.get_ccl_rate()
-            ccl_rate = ccl_data["rate"] if ccl_data else 1300.0
-            
-            # Calcular precio teórico del CEDEAR
-            # Si 1 acción cuesta X USD, entonces 1 CEDEAR debería costar (X USD ÷ Ratio) × CCL ARS
-            precio_cedear_teorico_usd = underlying_price_usd / conversion_ratio
-            precio_cedear_teorico_ars = precio_cedear_teorico_usd * ccl_rate
-            
-            # Para comparar, necesitamos el precio de 1 acción vía CEDEARs
-            # Precio_Acción_vía_CEDEAR = (Precio_CEDEAR_ARS × Ratio) ÷ CCL
-            precio_accion_via_cedear_usd = (precio_cedear_teorico_ars * conversion_ratio) / ccl_rate
-            
-            logger.debug(f"🧮 Teórico {symbol}: CEDEAR=${precio_cedear_teorico_ars:.0f} ARS → Acción vía CEDEAR=${precio_accion_via_cedear_usd:.2f} USD")
-            return precio_cedear_teorico_ars, precio_accion_via_cedear_usd
-            
-        except Exception as e:
-            logger.error(f"❌ Error calculando precio teórico para {symbol}: {str(e)}")
-            return None, None
     
-    async def _get_byma_real_cedear_price(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Obtiene precio CEDEAR real desde BYMA API (modo limitado estandarizado)"""
-        
-        try:
-            # Verificar si mercado está cerrado primero
-            market_message = get_market_status_message("AR")
-            if market_message:
-                logger.debug(f"🏦 Mercado cerrado - no hay precios BYMA para {symbol}")
-                return None, None
-            
-            # Obtener información del CEDEAR
-            cedear_info = self.cedear_processor.get_underlying_asset(symbol)
-            if not cedear_info:
-                logger.error(f"❌ No se encontró información del CEDEAR {symbol}")
-                return None, None
-            
-            # Obtener ratio de conversión
-            ratio = cedear_info.get("ratio", "1:1")
-            conversion_ratio = self.cedear_processor.parse_ratio(ratio)
-            
-            # Obtener precio CEDEAR real desde BYMA
-            cedeares_data = await self.byma_service._get_cedeares_data()
-            if not cedeares_data:
-                logger.error(f"❌ No se pudieron obtener datos de CEDEARs desde BYMA")
-                return None, None
-            
-            # Buscar el CEDEAR específico
-            cedear_data = None
-            for cedear in cedeares_data:
-                if cedear.get('symbol') == symbol:
-                    cedear_data = cedear
-                    break
-            
-            if not cedear_data:
-                logger.warning(f"⚠️  CEDEAR {symbol} no encontrado en datos BYMA")
-                return None, None
-            
-            # Extraer precio real (preferir 'trade' sobre 'closingPrice')
-            precio_cedear_ars = cedear_data.get('trade') or cedear_data.get('closingPrice')
-            
-            if not precio_cedear_ars or precio_cedear_ars <= 0:
-                logger.warning(f"⚠️  Precio BYMA inválido para {symbol}: {precio_cedear_ars}")
-                return None, None
-            
-            # Obtener CCL
-            ccl_data = await self.dollar_service_instance.get_ccl_rate()
-            ccl_rate = ccl_data["rate"] if ccl_data else 1300.0
-            
-            # Calcular precio de 1 acción vía CEDEARs reales
-            # Precio_Acción_vía_CEDEAR = (Precio_CEDEAR_ARS × Ratio) ÷ CCL
-            precio_accion_via_cedear_usd = (precio_cedear_ars * conversion_ratio) / ccl_rate
-            
-            logger.debug(f"🏦 BYMA Real {symbol}: CEDEAR=${precio_cedear_ars:.0f} ARS → Acción vía CEDEAR=${precio_accion_via_cedear_usd:.2f} USD")
-            return precio_cedear_ars, precio_accion_via_cedear_usd
-            
-        except Exception as e:
-            logger.error(f"❌ Error obteniendo precio BYMA real para {symbol}: {str(e)}")
-            return None, None
 
-    def clear_cedear_cache(self) -> None:
-        self._cache.clear()
-
-    def set_cedear_cache_ttl(self, seconds: int) -> None:
-        self._cache_ttl_seconds = max(0, int(seconds))
-    
-    async def detect_portfolio_arbitrages(self, symbols: List[str], threshold_percentage: float = 0.005) -> List[ArbitrageOpportunity]:
+    async def detect_portfolio_arbitrages(self, symbols: List[str], threshold_percentage: float = None) -> List[ArbitrageOpportunity]:
         """
         Detecta arbitrajes para una lista de símbolos (portfolio completo)
         
         Args:
             symbols: Lista de símbolos de CEDEARs
-            threshold_percentage: Umbral mínimo para considerar arbitraje
+            threshold_percentage: Umbral mínimo para considerar arbitraje (usa config.arbitrage_threshold si None)
             
         Returns:
             Lista de oportunidades de arbitraje detectadas
         """
         
-        logger.debug(f"🔍 Analizando arbitrajes para {len(symbols)} símbolos: {symbols}")
+        # Usar threshold de config si no se especifica
+        if threshold_percentage is None:
+            threshold_percentage = self.config.arbitrage_threshold if self.config else 0.005
+        
+        logger.debug(f"🔍 Analizando arbitrajes para {len(symbols)} símbolos: {symbols}, threshold: {threshold_percentage}")
         
         # Ejecutar análisis en paralelo para eficiencia
         tasks = [
@@ -413,6 +308,3 @@ class ArbitrageDetector:
         )
         
         return alert
-
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# arbitrage_detector = ArbitrageDetector()  # DEPRECATED - use build_services()

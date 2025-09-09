@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class UnifiedAnalysisService:
     """Servicio unificado que maneja todos los análisis de precios y arbitraje"""
     
-    def __init__(self, arbitrage_detector, cedear_processor, international_service):
+    def __init__(self, arbitrage_detector, cedear_processor, international_service, config=None):
         """
         Constructor con Dependency Injection estricta
         
@@ -41,19 +41,29 @@ class UnifiedAnalysisService:
         self.arbitrage_detector = arbitrage_detector
         self.cedear_processor = cedear_processor
         self.international_service = international_service
+        self.config = config  # Almacenar config para usar threshold por defecto
     
     def set_iol_session(self, session):
         """Configura sesión IOL para análisis completo"""
         self.arbitrage_detector.set_iol_session(session)
     
-    async def analyze_portfolio(self, portfolio: Portfolio, threshold: float = 0.005) -> Dict[str, Any]:
+    async def analyze_portfolio(self, portfolio: Portfolio, threshold: float = None) -> Dict[str, Any]:
         """
         Análisis completo de portfolio - precios + arbitraje unificado
+        
+        Args:
+            portfolio: Portfolio a analizar
+            threshold: Umbral de arbitraje (usa config.arbitrage_threshold si None)
         
         Returns:
             Dict con análisis completo: precios, arbitraje, métricas
         """
-        logger.info(f"🔍 Analizando portfolio con {len(portfolio.positions)} posiciones")
+        
+        # Usar threshold de config si no se especifica
+        if threshold is None:
+            threshold = self.config.arbitrage_threshold if self.config else 0.005
+        
+        logger.info(f"🔍 Analizando portfolio con {len(portfolio.positions)} posiciones (threshold: {threshold})")
         
         # Extraer solo CEDEARs para análisis
         cedear_symbols = []
@@ -124,10 +134,24 @@ class UnifiedAnalysisService:
             if self.cedear_processor.is_cedear(position.symbol):
                 try:
                     # Para CEDEARs: usar lógica unificada de ArbitrageDetector
-                    cedear_price_ars, accion_usd = await self.arbitrage_detector._get_cedear_price_usd(position.symbol)
+                    # Usar PriceFetcher para obtener precio del CEDEAR
+                    cedear_price_ars, _ = await self.arbitrage_detector.price_fetcher.get_cedear_price(position.symbol)
+                    
+                    # Obtener información del subyacente
                     underlying_data = await self.international_service.get_stock_price(position.symbol)
                     
-                    if cedear_price_ars and accion_usd and underlying_data:
+                    # Calcular precio por acción del CEDEAR (dividir por ratio)
+                    accion_usd = None
+                    if cedear_price_ars:
+                        cedear_info = self.cedear_processor.get_underlying_asset(position.symbol)
+                        if cedear_info:
+                            ratio = cedear_info.get("ratio", "1:1")
+                            conversion_ratio = self.cedear_processor.parse_ratio(ratio)
+                            # Obtener CCL aproximado para convertir a USD
+                            ccl_rate = 1300.0  # Valor por defecto
+                            accion_usd = (cedear_price_ars / ccl_rate) * conversion_ratio
+                    
+                    if cedear_price_ars and underlying_data:
                         price_results[position.symbol] = {
                             "cedear_price_ars": cedear_price_ars,
                             "action_via_cedear_usd": accion_usd,
@@ -160,6 +184,3 @@ class UnifiedAnalysisService:
             result += f"\n✅ No se detectaron oportunidades de arbitraje superiores al {summary['threshold']:.1%}\n"
         
         return result
-
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# unified_analysis = UnifiedAnalysisService()  # DEPRECATED - use build_services()

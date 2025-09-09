@@ -59,15 +59,16 @@ class CEDEARVariationAnalysis:
 class VariationAnalyzer:
     """Analizador de variaciones de CEDEARs"""
     
-    def __init__(self, cedear_processor, international_service, dollar_service, byma_service, iol_session=None):
+    def __init__(self, cedear_processor, international_service, dollar_service, byma_integration, price_fetcher, iol_session=None):
         """
         Constructor con Dependency Injection estricta
-        
+
         Args:
             cedear_processor: Procesador de CEDEARs (REQUERIDO)
             international_service: Servicio de precios internacionales (REQUERIDO)
             dollar_service: Servicio de cotización dólar (REQUERIDO)
-            byma_service: Servicio BYMA histórico (REQUERIDO)
+            byma_integration: Servicio BYMA histórico (REQUERIDO)
+            price_fetcher: Servicio unificado de obtención de precios (REQUERIDO)
             iol_session: Sesión IOL para modo completo (opcional)
         """
         if cedear_processor is None:
@@ -76,21 +77,25 @@ class VariationAnalyzer:
             raise ValueError("international_service es requerido - use build_services() para crear instancias")
         if dollar_service is None:
             raise ValueError("dollar_service es requerido - use build_services() para crear instancias")
-        if byma_service is None:
-            raise ValueError("byma_service es requerido - use build_services() para crear instancias")
-            
+        if byma_integration is None:
+            raise ValueError("byma_integration es requerido - use build_services() para crear instancias")
+        if price_fetcher is None:
+            raise ValueError("price_fetcher es requerido - use build_services() para crear instancias")
+
         self.iol_session = iol_session
         self.cedear_processor = cedear_processor
         self.international_service = international_service
         self.dollar_service = dollar_service
-        self.byma_service = byma_service
+        self.byma_integration = byma_integration
+        self.price_fetcher = price_fetcher
         self.mode = "full" if iol_session else "limited"
         
     def set_iol_session(self, session):
         """Establece la sesión de IOL para modo completo"""
         self.iol_session = session
         self.mode = "full" if session else "limited"
-        logger.info(f"🔄 VariationAnalyzer modo cambiado a: {self.mode}")
+        self.price_fetcher.set_iol_session(session)  # Sincronizar con PriceFetcher
+        # Log removido para reducir ruido
     
     async def analyze_single_variation(self, symbol: str) -> Optional[CEDEARVariationAnalysis]:
         """
@@ -119,7 +124,7 @@ class VariationAnalyzer:
                 return None
             
             # 3. Obtener precios del CEDEAR (hoy y ayer)
-            cedear_today_ars, cedear_yesterday_ars = await self._get_cedear_prices(symbol)
+            cedear_today_ars, cedear_yesterday_ars = await self.price_fetcher.get_cedear_price(symbol, include_historical=True)
             if not cedear_today_ars or not cedear_yesterday_ars:
                 logger.error(f"❌ No se pudo obtener precios CEDEAR para {symbol}")
                 return None
@@ -170,95 +175,6 @@ class VariationAnalyzer:
             logger.error(f"❌ Error obteniendo precio histórico de {symbol}: {str(e)}")
             return None
     
-    async def _get_cedear_prices(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Obtiene precios del CEDEAR (hoy y ayer)"""
-        
-        if self.mode == "full" and self.iol_session:
-            return await self._get_iol_cedear_prices(symbol)
-        else:
-            return await self._get_byma_real_cedear_prices(symbol)
-    
-    async def _get_iol_cedear_prices(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Obtiene precios del CEDEAR desde IOL (actual + histórico)"""
-        
-        try:
-            # Precio actual desde IOL
-            url_today = f"https://api.invertironline.com/api/v2/bcba/Titulos/{symbol}/Cotizacion"
-            response = self.iol_session.get(url_today, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            precio_hoy = data.get("ultimoPrecio")
-            
-            if not precio_hoy or precio_hoy <= 0:
-                raise ValueError(f"Precio IOL inválido para {symbol}: {precio_hoy}")
-            
-            # Para precio de ayer, podríamos usar:
-            # 1. API histórica de IOL (si existe)
-            # 2. Precio de cierre anterior del mismo endpoint
-            # 3. Fallback a cálculo teórico
-            
-            # Por ahora usar el precio de cierre anterior si está disponible
-            precio_ayer = data.get("cierreAnterior") or data.get("apertura")
-            
-            if not precio_ayer:
-                # Fallback: calcular teórico para ayer
-                logger.warning(f"⚠️  No hay precio histórico IOL para {symbol}, usando teórico")
-                _, precio_ayer = await self._get_theoretical_cedear_prices(symbol)
-            
-            logger.debug(f"💰 IOL {symbol}: Hoy=${precio_hoy:.0f}, Ayer=${precio_ayer:.0f} ARS")
-            return float(precio_hoy), float(precio_ayer)
-            
-        except Exception as e:
-            logger.error(f"❌ Error obteniendo precios IOL para {symbol}: {str(e)}")
-            return None, None
-    
-    async def _get_byma_real_cedear_prices(self, symbol: str) -> tuple[Optional[float], Optional[float]]:
-        """Obtiene precios REALES del CEDEAR desde BYMA (hoy y ayer)"""
-        
-        try:
-            # Verificar si mercado está cerrado primero
-            market_message = get_market_status_message("AR")
-            if market_message:
-                logger.debug(f"🏦 Mercado cerrado - no hay precios BYMA para {symbol}")
-                return None, None
-            
-            # Obtener datos actuales de CEDEARs desde BYMA
-            cedeares_data = await self.byma_service._get_cedeares_data()
-            
-            if not cedeares_data:
-                logger.error(f"❌ No se pudieron obtener datos de CEDEARs desde BYMA")
-                return None, None
-            
-            # Buscar el CEDEAR específico
-            cedear_data = None
-            for cedear in cedeares_data:
-                if cedear.get('symbol') == symbol:
-                    cedear_data = cedear
-                    break
-            
-            if not cedear_data:
-                logger.warning(f"⚠️  CEDEAR {symbol} no encontrado en datos BYMA")
-                return None, None
-            
-            # Extraer precios reales
-            precio_hoy = cedear_data.get('trade') or cedear_data.get('closingPrice')
-            precio_ayer = cedear_data.get('previousClosingPrice')
-            
-            if not precio_hoy or precio_hoy <= 0:
-                logger.warning(f"⚠️  Precio actual inválido para {symbol}: {precio_hoy}")
-                return None, None
-                
-            if not precio_ayer or precio_ayer <= 0:
-                logger.warning(f"⚠️  Precio anterior inválido para {symbol}: {precio_ayer}")
-                return None, None
-            
-            logger.debug(f"📈 BYMA REAL {symbol}: Hoy=${precio_hoy:.0f}, Ayer=${precio_ayer:.0f} ARS")
-            return float(precio_hoy), float(precio_ayer)
-            
-        except Exception as e:
-            logger.error(f"❌ Error obteniendo precios reales BYMA para {symbol}: {str(e)}")
-            return None, None
     
     async def _get_ccl_prices(self) -> tuple[Optional[float], Optional[float]]:
         """Obtiene precios del CCL (hoy y ayer)"""
@@ -269,7 +185,7 @@ class VariationAnalyzer:
             ccl_today = ccl_data["rate"] if ccl_data else None
             
             # CCL histórico desde BYMA
-            ccl_yesterday = await self.byma_service.get_ccl_rate_historical()
+            ccl_yesterday = await self.byma_integration.get_ccl_rate_historical()
             
             if not ccl_yesterday:
                 ccl_yesterday = ccl_today  # Fallback al actual
@@ -342,25 +258,3 @@ class VariationAnalyzer:
         
         return report
     
-    def format_detailed_analysis(self, analysis: CEDEARVariationAnalysis) -> str:
-        """Formatea un análisis detallado para un CEDEAR específico"""
-        
-        report = f"\n📈 ANÁLISIS DETALLADO - {analysis.symbol}\n"
-        report += "=" * 50 + "\n"
-        
-        report += f"🕒 Precios:\n"
-        report += f"   Subyacente: ${analysis.precio_underlying_ayer_usd:.2f} → ${analysis.precio_underlying_hoy_usd:.2f} USD\n"
-        report += f"   CEDEAR:     ${analysis.precio_cedear_ayer_ars:.0f} → ${analysis.precio_cedear_hoy_ars:.0f} ARS\n"
-        report += f"   CCL:        ${analysis.ccl_ayer:.0f} → ${analysis.ccl_hoy:.0f} ARS/USD\n\n"
-        
-        report += f"📊 Variaciones:\n"
-        report += f"   CEDEAR Local:      {analysis.var_cedear:+.2%}\n"
-        report += f"   Subyacente:        {analysis.var_underlying:+.2%}\n"
-        report += f"   CCL:               {analysis.var_ccl:+.2%}\n\n"
-        
-        report += f"🔍 Factor principal: {analysis.get_strongest_factor()}\n"
-        
-        return report
-
-# ❌ ELIMINADO: instancia global - usar build_services() para DI
-# variation_analyzer = VariationAnalyzer()  # DEPRECATED - use build_services()
