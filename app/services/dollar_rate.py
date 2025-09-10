@@ -24,10 +24,12 @@ class DollarRateService:
         if config:
             self.timeout = getattr(config, 'request_timeout', 10)
             self._cache_ttl_seconds = getattr(config, 'cache_ttl_seconds', 180)
+            self.preferred_ccl_source = getattr(config, 'preferred_ccl_source', 'dolarapi_ccl')
         else:
             # Valores por defecto para mantener compatibilidad
             self.timeout = 10
             self._cache_ttl_seconds = 180
+            self.preferred_ccl_source = 'dolarapi_ccl'
             
         self.sources_status = {
             "dolarapi_ccl": True,
@@ -67,8 +69,7 @@ class DollarRateService:
         
         # Determinar fuente preferida
         if preferred_source is None:
-            from app.config import settings
-            preferred_source = settings.PREFERRED_CCL_SOURCE
+            preferred_source = self.preferred_ccl_source
             
         # Estrategia de fallback simple (sin Yahoo)
         if preferred_source == "dolarapi_ccl":

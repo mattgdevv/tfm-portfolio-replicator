@@ -50,8 +50,7 @@ class PortfolioDisplayService:
                 print(f"⚠️  No se pudo obtener CCL desde IOL: {e_iol}")
             # Fallback a DollarRateService (usa preferencia y agrega implícito como último)
             if not dollar_rate or dollar_rate <= 0:
-                from app.config import settings
-                ccl_result = await self.services.dollar_service.get_ccl_rate(settings.PREFERRED_CCL_SOURCE)
+                ccl_result = await self.services.dollar_service.get_ccl_rate()
                 dollar_rate = (ccl_result.get("rate") if isinstance(ccl_result, dict) else ccl_result) or 1000.0
         except Exception as e:
             print(f"⚠️  No se pudo obtener CCL: {e}")

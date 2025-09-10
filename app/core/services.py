@@ -133,7 +133,7 @@ def build_services(config: Optional[Config] = None) -> Services:
     )
     
     # Crear servicios que necesitan acceso al container completo
-    config_service = ConfigService(services_container)
+    config_service = ConfigService(services_container, config=config)
     
     # Para portfolio_display_service necesitamos importar IOL integration
     from ..integrations.iol import IOLIntegration

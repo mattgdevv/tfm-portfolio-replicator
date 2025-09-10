@@ -5,21 +5,20 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from app.config import settings
-
 
 class ConfigService:
     """Servicio para configuración y preferencias del sistema"""
     
-    def __init__(self, services):
+    def __init__(self, services, config=None):
         self.services = services
+        self.config = config
     
     async def configure_ccl_source(self):
         """Configura la fuente de cotización CCL"""
         print("\n💱 Configuración de fuente CCL")
         print("=" * 40)
         
-        current_source = settings.PREFERRED_CCL_SOURCE
+        current_source = self.config.preferred_ccl_source if self.config else "dolarapi_ccl"
         source_names = {
             "dolarapi_ccl": "DolarAPI CCL (contadoconliqui)",
             "ccl_al30": "CCL AL30 (AL30/AL30D desde IOL)"
@@ -46,7 +45,8 @@ class ConfigService:
             return
         
         # Actualizar configuración
-        settings.PREFERRED_CCL_SOURCE = new_source
+        if self.config:
+            self.config.preferred_ccl_source = new_source
         print(f"✅ Fuente CCL actualizada a: {source_names[new_source]}")
         
         # Probar la nueva fuente
@@ -79,8 +79,8 @@ class ConfigService:
             if prefs_file.exists():
                 data = json.load(open(prefs_file, 'r', encoding='utf-8'))
                 preferred = data.get('PREFERRED_CCL_SOURCE')
-                if preferred:
-                    settings.PREFERRED_CCL_SOURCE = preferred
+                if preferred and self.config:
+                    self.config.preferred_ccl_source = preferred
         except Exception:
             pass
 
@@ -95,7 +95,7 @@ class ConfigService:
                     existing = json.loads(prefs_path.read_text(encoding='utf-8'))
                 except Exception:
                     existing = {}
-            existing['PREFERRED_CCL_SOURCE'] = settings.PREFERRED_CCL_SOURCE
+            existing['PREFERRED_CCL_SOURCE'] = self.config.preferred_ccl_source if self.config else "dolarapi_ccl"
             prefs_path.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding='utf-8')
         except Exception:
             pass

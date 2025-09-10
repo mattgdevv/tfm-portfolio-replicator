@@ -1,9 +1,9 @@
 import pandas as pd
 import json
 import asyncio
+import os
 from typing import Dict, Any, Optional, List
 import google.generativeai as genai
-from ..config import settings
 from ..models.portfolio import Portfolio, Position, ConvertedPortfolio
 from .cedeares import CEDEARProcessor
 # ❌ ELIMINADO: imports de servicios globales - migrar a DI cuando sea necesario
@@ -31,9 +31,15 @@ class PortfolioProcessor:
         if cedear_processor is None:
             raise ValueError("cedear_processor es requerido - use build_services() para crear instancias")
             
-        # Configurar Gemini (mantener settings global por compatibilidad)
-        if settings.GEMINI_API_KEY:
-            genai.configure(api_key=settings.GEMINI_API_KEY)
+        # Configurar Gemini (leer desde config o variables de entorno)
+        gemini_api_key = None
+        if config and hasattr(config, 'gemini_api_key'):
+            gemini_api_key = config.gemini_api_key
+        else:
+            gemini_api_key = os.getenv("GEMINI_API_KEY")
+            
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
             self.model = genai.GenerativeModel('gemini-1.5-flash')
         else:
             self.model = None
@@ -42,7 +48,7 @@ class PortfolioProcessor:
         self.dollar_service = dollar_service
         self.arbitrage_detector = arbitrage_detector
         self.variation_analyzer = variation_analyzer
-        self.config = config or settings
+        self.config = config
         self.verbose = verbose
         self.debug = debug
         
@@ -421,7 +427,7 @@ class PortfolioProcessor:
             return {"rate": 1000.0, "source": "default", "fallback_used": True}
             
         try:
-            preferred_source = settings.PREFERRED_CCL_SOURCE
+            preferred_source = self.config.preferred_ccl_source if self.config else "dolarapi_ccl"
             print(f"💱 Usando fuente CCL configurada: {preferred_source}")
             return await self.dollar_service.get_ccl_rate(preferred_source)
         except Exception as e:

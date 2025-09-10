@@ -21,11 +21,10 @@ class InternationalPriceService:
     def __init__(self, config=None):
         # Configuración mediante config opcional (backward compatible)
         self.timeout = config.request_timeout if config else 10
-        # Leer API key desde Settings (.env)
-        try:
-            from app.config import settings
-            self.finnhub_api_key = settings.FINNHUB_API_KEY
-        except Exception:
+        # Leer API key desde Config o fallback a .env
+        if config and hasattr(config, 'finnhub_api_key'):
+            self.finnhub_api_key = config.finnhub_api_key
+        else:
             self.finnhub_api_key = os.getenv("FINNHUB_API_KEY")
         self.finnhub_base_url = "https://finnhub.io/api/v1"
         

@@ -2,7 +2,6 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from ..models.portfolio import Portfolio, Position
-from ..config import settings
 # ❌ ELIMINADO: import de instancia global - usar DI
 # from ..processors.cedeares import CEDEARProcessor
 
@@ -13,7 +12,7 @@ class IOLAuth:
         self.bearer_token = None
         self.refresh_token = None
         self.token_expiry = None
-        self.base_url = settings.IOL_BASE_URL
+        self.base_url = "https://api.invertironline.com"
 
     def get_bearer_token(self) -> str:
         """Get a valid bearer token, refreshing if necessary."""

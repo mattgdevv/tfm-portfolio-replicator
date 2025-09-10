@@ -26,6 +26,7 @@ class Config:
     
     # Fuentes CCL (orden de prioridad)
     ccl_sources: List[str] = field(default_factory=lambda: ["dolarapi", "iol_al30"])
+    preferred_ccl_source: str = "dolarapi_ccl"  # Compatible con app/config.py
     
     # Umbrales y configuraciones
     arbitrage_threshold: float = 0.005  # 0.5%

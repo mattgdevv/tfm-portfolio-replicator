@@ -1,0 +1,22 @@
+{
+  "// CONFIGURACIÓN PRINCIPAL - Portfolio Replicator TFM": "",
+  "// Copia este archivo a .prefs.json y modifica según necesites": "",
+  "// NOTA: Variables de entorno (.env) tienen prioridad sobre estos valores": "",
+  
+  "// ===== CONFIGURACIÓN DE ARBITRAJE =====": "",
+  "arbitrage_threshold": 0.002,
+  "// 0.002 = 0.2% (muy sensible, detecta oportunidades pequeñas)": "",
+  "// 0.005 = 0.5% (equilibrado)": "",
+  "// 0.01 = 1.0% (conservador, solo oportunidades grandes)": "",
+  
+  "// ===== CONFIGURACIÓN DE RED =====": "",
+  "request_timeout": 30,
+  "// Timeout en segundos para requests a APIs": "",
+  
+  "cache_ttl_seconds": 180,
+  "// Tiempo de vida del cache en segundos (3 minutos)": "",
+  
+  "// ===== CONFIGURACIÓN AVANZADA =====": "",
+  "PREFERRED_CCL_SOURCE": "dolarapi_ccl"
+  "// Fuente preferida para cotización CCL": ""
+}
