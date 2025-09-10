@@ -15,9 +15,7 @@ from ..services.unified_analysis import UnifiedAnalysisService
 from ..services.variation_analyzer import VariationAnalyzer
 from ..services.price_fetcher import PriceFetcher
 from ..services.file_service import FileService
-from ..services.utility_service import UtilityService
 from ..services.config_service import ConfigService
-from ..services.analysis_service import AnalysisService
 from ..services.portfolio_display_service import PortfolioDisplayService
 from ..services.file_processing_service import FileProcessingService
 from ..processors.cedeares import CEDEARProcessor
@@ -39,9 +37,7 @@ class Services:
     portfolio_processor: PortfolioProcessor
     cedear_processor: CEDEARProcessor
     file_service: FileService
-    utility_service: UtilityService
     config_service: ConfigService
-    analysis_service: AnalysisService
     portfolio_display_service: PortfolioDisplayService
     file_processing_service: FileProcessingService
     config: Config
@@ -116,7 +112,6 @@ def build_services(config: Optional[Config] = None) -> Services:
     
     # Crear servicios auxiliares
     file_service = FileService()
-    utility_service = UtilityService(cedear_processor)
     file_processing_service = FileProcessingService(portfolio_processor)
     
     # Crear servicios que necesitan el container completo (se pasa después)
@@ -131,9 +126,7 @@ def build_services(config: Optional[Config] = None) -> Services:
         portfolio_processor=portfolio_processor,
         cedear_processor=cedear_processor,
         file_service=file_service,
-        utility_service=utility_service,
         config_service=None,  # Se crea después
-        analysis_service=None,  # Se crea después
         portfolio_display_service=None,  # Se crea después
         file_processing_service=file_processing_service,
         config=config
@@ -142,18 +135,16 @@ def build_services(config: Optional[Config] = None) -> Services:
     # Crear servicios que necesitan acceso al container completo
     config_service = ConfigService(services_container)
     
-    # Para analysis_service y portfolio_display_service necesitamos importar IOL integration
+    # Para portfolio_display_service necesitamos importar IOL integration
     from ..integrations.iol import IOLIntegration
     iol_integration = IOLIntegration(
         dollar_service=dollar_service,
         cedear_processor=cedear_processor
     )
-    analysis_service = AnalysisService(services_container, cedear_processor, iol_integration)
     portfolio_display_service = PortfolioDisplayService(services_container, iol_integration, cedear_processor)
     
     # Actualizar el container con los servicios completos
     services_container.config_service = config_service
-    services_container.analysis_service = analysis_service
     services_container.portfolio_display_service = portfolio_display_service
     
     logger.info(f"✅ Servicios construidos para mercado: {config.market}")

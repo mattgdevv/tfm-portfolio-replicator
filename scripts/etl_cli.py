@@ -209,7 +209,11 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
                     } for p in portfolio.positions
                 ]
             },
-            "analysis_data": analysis_result
+            "analysis_data": {
+                "arbitrage_opportunities": [opp.to_dict() for opp in analysis_result.get("arbitrage_opportunities", [])],
+                "price_data": analysis_result.get("price_data", {}),
+                "summary": analysis_result.get("summary", {})
+            }
         }
         
         # 5. Guardar archivos si se solicita

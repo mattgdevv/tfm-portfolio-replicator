@@ -127,3 +127,48 @@ class CEDEARProcessor:
         """Obtiene información completa de un CEDEAR"""
         normalized_symbol = symbol.upper().strip()
         return self.cedeares_map.get(normalized_symbol)
+    
+    def show_cedeares_list(self):
+        """Muestra la lista de CEDEARs disponibles"""
+        print("\n🏦 CEDEARs disponibles:")
+        cedeares = self.get_all_cedeares()
+        
+        # Mostrar primeros 10 como ejemplo
+        for i, cedear in enumerate(cedeares[:10], 1):
+            # Manejar diferentes estructuras de datos
+            code = cedear.get('code') or cedear.get('symbol', 'N/A')
+            company = cedear.get('company') or cedear.get('name', 'N/A')
+            ratio = cedear.get('ratio', 'N/A')
+            print(f"  {i}. {code} - {company} (Ratio: {ratio})")
+        
+        if len(cedeares) > 10:
+            print(f"  ... y {len(cedeares) - 10} más")
+        
+        print(f"\n📊 Total de CEDEARs: {len(cedeares)}")
+
+    def update_byma_cedeares(self):
+        """Descarga y parsea el PDF de BYMA para obtener ratios de CEDEARs."""
+        print("\n🔄 Descargando y procesando PDF de CEDEARs desde BYMA...")
+        try:
+            result = subprocess.run([
+                "python", "scripts/download_byma_pdf.py"
+            ], capture_output=True, text=True, cwd=".")
+            
+            if result.returncode == 0:
+                print("✅ PDF procesado exitosamente")
+                # Recargar datos en el processor
+                self.reload_data()
+                if "CEDEARs" in result.stdout:
+                    # Extraer número de CEDEARs del output
+                    lines = result.stdout.strip().split('\n')
+                    for line in lines:
+                        if "Total de CEDEARs:" in line:
+                            print(f"✅ {line}")
+                            break
+                else:
+                    print("✅ Archivo byma_cedeares_pdf.json actualizado")
+            else:
+                print(f"❌ Error procesando PDF: {result.stderr}")
+                
+        except Exception as e:
+            print(f"❌ Error ejecutando download_byma_pdf.py: {e}")

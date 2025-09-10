@@ -100,7 +100,7 @@ class PortfolioReplicator:
             elif choice == "2":
                 await self.handle_excel_portfolio()
             elif choice == "3":
-                self.services.utility_service.show_cedeares_list()
+                self.services.cedear_processor.show_cedeares_list()
             elif choice == "4":
                 await self.services.config_service.configure_ccl_source()
                 # Guardar preferencia local
@@ -109,11 +109,11 @@ class PortfolioReplicator:
                 print("¡Hasta luego!")
                 break
             elif choice == "6":
-                self.services.utility_service.update_byma_cedeares()
+                self.services.cedear_processor.update_byma_cedeares()
             elif choice == "7":
-                await self.services.analysis_service.test_arbitrage_analysis()
+                await self._test_arbitrage_analysis()
             elif choice == "8":
-                await self.services.analysis_service.refresh_ccl_cache()
+                await self._refresh_ccl_cache()
             elif choice == "9":
                 await self.handle_health_diagnostics()
             else:
@@ -268,11 +268,11 @@ class PortfolioReplicator:
 
     # ✅ MÉTODOS ELIMINADOS - AHORA USAN SERVICIOS:
     # - save_results() → services.file_service.save_results()
-    # - show_cedeares_list() → services.utility_service.show_cedeares_list()
-    # - update_byma_cedeares() → services.utility_service.update_byma_cedeares()
+    # - show_cedeares_list() → services.cedear_processor.show_cedeares_list()
+    # - update_byma_cedeares() → services.cedear_processor.update_byma_cedeares()
     # - configure_ccl_source() → services.config_service.configure_ccl_source()
-    # - test_variation_analysis() → services.analysis_service.test_variation_analysis()
-    # - refresh_ccl_cache() → services.analysis_service.refresh_ccl_cache()
+    # - test_arbitrage_analysis() → self._test_arbitrage_analysis()
+    # - refresh_ccl_cache() → self._refresh_ccl_cache()
     # - _load_local_preferences() → services.config_service.load_local_preferences()
     # - _save_local_preferences() → services.config_service.save_local_preferences()
     # - _read_prefs() → services.config_service.read_prefs()
@@ -334,6 +334,80 @@ class PortfolioReplicator:
         print("   • Si ambos fallan → Sistema usa precios internacionales + CCL")
 
         input("\nPresiona Enter para continuar...")
+
+    async def _test_arbitrage_analysis(self):
+        """Análisis de arbitraje para CEDEARs específicos"""
+        print("\n📊 Análisis de Arbitraje de CEDEARs")
+        print("=" * 50)
+        print("Esta función analiza oportunidades de arbitraje para CEDEARs específicos")
+        print("que tu eliges, usando el mismo sistema que el análisis de portfolio.")
+        print()
+        
+        # Solicitar símbolos
+        symbols_input = input("🔍 Introduce símbolos de CEDEARs (separados por comas): ").strip()
+        
+        if not symbols_input:
+            print("❌ No se introdujeron símbolos")
+            return
+        
+        symbols = [s.strip().upper() for s in symbols_input.split(',') if s.strip()]
+        if not symbols:
+            print("❌ No se encontraron símbolos válidos")
+            return
+            
+        print(f"\n🔍 Analizando {len(symbols)} símbolos: {symbols}")
+        
+        # Crear portfolio temporal
+        temp_positions = []
+        for symbol in symbols:
+            if self.services.cedear_processor.is_cedear(symbol):
+                from app.models.portfolio import Position
+                position = Position(
+                    symbol=symbol,
+                    quantity=1,
+                    price=None,
+                    currency="ARS",
+                    total_value=None
+                )
+                temp_positions.append(position)
+            else:
+                print(f"⚠️  {symbol} no es un CEDEAR conocido, saltando...")
+        
+        if not temp_positions:
+            print("❌ No se encontraron CEDEARs válidos")
+            return
+            
+        from app.models.portfolio import Portfolio
+        temp_portfolio = Portfolio(positions=temp_positions, source="Manual")
+        
+        # Análisis usando sistema unificado
+        analysis_result = await self.services.unified_analysis.analyze_portfolio(
+            temp_portfolio, 
+            threshold=self.services.config.arbitrage_threshold
+        )
+        
+        # Mostrar resultados
+        summary_text = self.services.unified_analysis.format_analysis_summary(analysis_result)
+        print(summary_text)
+
+    async def _refresh_ccl_cache(self):
+        """Invalida el cache de CCL y fuerza un refetch"""
+        print("\n🔄 Refrescando CCL...")
+        try:
+            # Limpiar cache conocido
+            for key in ["ccl:dolarapi_ccl", "ccl:ccl_al30"]:
+                self.services.dollar_service._cache.pop(key, None)
+            
+            # Obtener nuevo valor
+            from app.config import settings
+            result = await self.services.dollar_service.get_ccl_rate(settings.PREFERRED_CCL_SOURCE)
+            
+            if result:
+                print(f"✅ CCL actualizado: ${result['rate']:.2f} (fuente: {result.get('source_name', result.get('source'))})")
+            else:
+                print("❌ No se pudo refrescar CCL")
+        except Exception as e:
+            print(f"❌ Error refrescando CCL: {e}")
 
 async def main():
     """Función principal con Dependency Injection estricta"""
