@@ -1,0 +1,5 @@
+Symbol,Quantity,Price,Broker
+AAPL,10,150.0,generic
+MSFT,5,300.0,generic
+GOOGL,8,120.0,generic
+TSLA,25,250.0,generic

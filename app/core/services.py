@@ -18,6 +18,7 @@ from ..services.file_service import FileService
 from ..services.config_service import ConfigService
 from ..services.portfolio_display_service import PortfolioDisplayService
 from ..services.file_processing_service import FileProcessingService
+from ..services.database_service import DatabaseService
 from ..processors.cedeares import CEDEARProcessor
 from ..processors.file_processor import PortfolioProcessor
 
@@ -40,6 +41,7 @@ class Services:
     config_service: ConfigService
     portfolio_display_service: PortfolioDisplayService
     file_processing_service: FileProcessingService
+    database_service: DatabaseService
     config: Config
 
 
@@ -113,6 +115,7 @@ def build_services(config: Optional[Config] = None) -> Services:
     # Crear servicios auxiliares
     file_service = FileService()
     file_processing_service = FileProcessingService(portfolio_processor)
+    database_service = DatabaseService()  # Base de datos para resultados ETL
     
     # Crear servicios que necesitan el container completo (se pasa después)
     services_container = Services(
@@ -129,6 +132,7 @@ def build_services(config: Optional[Config] = None) -> Services:
         config_service=None,  # Se crea después
         portfolio_display_service=None,  # Se crea después
         file_processing_service=file_processing_service,
+        database_service=database_service,
         config=config
     )
     

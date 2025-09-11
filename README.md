@@ -52,9 +52,11 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 - **Real-time Arbitrage Detection** - Multi-source price comparison with configurable thresholds
 - **Intelligent Fallback Estimation** - Automatic theoretical pricing when markets are closed or unavailable
 - **Multi-broker Support** - IOL API, Excel/CSV (Bull Market, Cocos Capital)
+- **SQLite Database Integration** - Persistent storage for portfolios, positions, arbitrage opportunities, and pipeline metrics
 - **Robust Data Pipeline** - Automatic fallbacks, caching, and error handling
 - **Configurable ETL** - CLI with flexible parameters and output formats
 - **24/7 Analysis** - Works on weekends using international prices + CCL estimation
+- **Historical Data Storage** - Track arbitrage opportunities and portfolio changes over time
 
 ## ⚙️ Configuration
 
@@ -121,7 +123,7 @@ python scripts/etl_cli.py \
   --output results/ \
   --verbose
 
-# Solo análisis sin guardar archivos
+# Solo análisis sin guardar archivos JSON (BD siempre se guarda)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --no-save
 ```
 
@@ -133,7 +135,7 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --n
 git clone https://github.com/mattgdevv/tfm-portfolio-replicator.git && cd tfm-portfolio-replicator
 python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
 
-# 2. Probar con datos ejemplo (incluidos)
+# 2. Probar con datos ejemplo (incluidos) - guarda JSON + SQLite
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
 # Resultado esperado: Detección de 4 oportunidades de arbitraje ✅
@@ -203,6 +205,41 @@ python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullma
 }
 ```
 
+## 💾 Database Storage
+
+### 📊 SQLite Database Schema
+El sistema guarda todos los datos en una base de datos SQLite (`output/portfolio_data.db`) con 4 tablas principales:
+
+#### `portfolios` - Información del portfolio
+- `id`, `timestamp`, `source`, `broker`, `total_positions`
+- `total_value_ars`, `total_value_usd`, `ccl_rate`, `execution_time_ms`
+
+#### `positions` - Posiciones individuales
+- `portfolio_id`, `symbol`, `quantity`, `conversion_ratio`
+- `price_ars`, `price_usd`, `is_cedear`, `underlying_symbol`
+
+#### `arbitrage_opportunities` - Oportunidades detectadas
+- `portfolio_id`, `symbol`, `cedear_price_ars`, `underlying_price_usd`
+- `arbitrage_percentage`, `recommendation`, `ccl_rate`, `confidence_score`
+
+#### `pipeline_metrics` - Métricas del ETL
+- `timestamp`, `execution_time_ms`, `records_processed`
+- `opportunities_found`, `sources_status`, `data_quality_score`
+
+### 🔍 Query Examples
+```sql
+-- Ver últimos portfolios procesados
+SELECT id, broker, total_positions, timestamp 
+FROM portfolios 
+ORDER BY timestamp DESC LIMIT 5;
+
+-- Mejores oportunidades de arbitraje
+SELECT symbol, arbitrage_percentage, recommendation 
+FROM arbitrage_opportunities 
+WHERE arbitrage_percentage > 0.005 
+ORDER BY arbitrage_percentage DESC;
+```
+
 ## 🏗️ Arquitectura del Sistema
 
 ### 📦 Estructura del Proyecto
@@ -210,7 +247,12 @@ python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullma
 📁 proyecto_2/
 ├── 📁 app/                    # Core biblioteca reutilizable
 │   ├── 📁 core/              # DI Container & Config  
-│   ├── 📁 services/          # Lógica de negocio (15 servicios)
+│   ├── 📁 services/          # Lógica de negocio (16 servicios)
+│   │   ├── arbitrage_detector.py    # Detección de oportunidades
+│   │   ├── database_service.py      # 💾 Persistencia SQLite  
+│   │   ├── price_fetcher.py         # Obtención de precios
+│   │   ├── dollar_rate.py           # Cotización CCL
+│   │   └── ...                      # 12 servicios adicionales
 │   ├── 📁 integrations/      # APIs externas (IOL, BYMA)
 │   ├── 📁 processors/        # Procesamiento de datos
 │   ├── 📁 models/            # Modelos de datos
@@ -228,7 +270,11 @@ python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullma
 │   └── update_byma_cedeares.py
 │
 ├── 📁 docs/                 # Documentación técnica
-├── 📁 output/               # Resultados de análisis
+├── 📁 output/               # Resultados de análisis y base de datos
+│   ├── portfolio_YYYYMMDD_HHMMSS.json  # Portfolio procesado
+│   ├── analysis_YYYYMMDD_HHMMSS.json   # Análisis de arbitraje  
+│   ├── portfolio_data.db               # 💾 Base de datos SQLite
+│   └── status.json                     # Estado última ejecución
 ├── 📁 backups/              # Versiones anteriores
 ├── main.py                  # 🖥️ Aplicación interactiva
 ├── data.csv                 # 📊 Portfolio de ejemplo
@@ -238,7 +284,7 @@ python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullma
 ### 🔄 Pipeline de Datos
 ```
 📊 Input Portfolio → 🔍 Detección Formato → 🏦 Procesamiento CEDEARs → 
-💰 Obtención Precios → 📈 Análisis Arbitraje → 📋 Output Estructurado
+💰 Obtención Precios → 📈 Análisis Arbitraje → � Guardado BD → �📋 Output JSON
 ```
 
 ### 🧩 Dependency Injection
@@ -397,15 +443,24 @@ Este proyecto es el **Trabajo Final de Máster (TFM)** para el perfil **Data Eng
 - **Pipeline ETL robusto** con arquitectura de microservicios
 - **Gestión avanzada de datos** multi-fuente con fallbacks inteligentes  
 - **Procesamiento en tiempo real** y batch con Python asyncio
+- **Base de datos SQLite** para persistencia y análisis histórico
 - **Dependency Injection** para modularidad y testing
 - **Estimación inteligente** cuando datos en tiempo real no disponibles
 
+### 💾 Gestión de Datos
+- **Persistencia dual**: JSON (compatibilidad) + SQLite (análisis)
+- **Datos históricos**: Track de portfolios y oportunidades en el tiempo
+- **Integridad referencial**: Foreign keys entre portfolios, posiciones y arbitrajes
+- **Métricas de calidad**: Seguimiento de performance del pipeline ETL
+- **Queries analíticos**: Fácil acceso para reportes y modelos ML
+
 ### 📊 Métricas del Sistema
-- **15 servicios especializados** con inyección de dependencias
+- **16 servicios especializados** con inyección de dependencias (incluye DatabaseService)
 - **4 fuentes de datos** con fallbacks automáticos
 - **2 modos de ejecución** (interactivo + automático)
 - **Soporte 24/7** incluso con mercados cerrados
 - **Gestión de errores** multi-nivel con degradación elegante
+- **4 tablas SQLite** para análisis y reporting completo
 
 ---
 

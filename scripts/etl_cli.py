@@ -12,6 +12,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 # Agregar directorio padre al path para importar app
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -155,7 +159,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         broker_mapping = {
             "cocos": "Cocos Capital",
             "bullmarket": "Bull Market", 
-            "generic": "CLI"
+            "generic": "Generic"
         }
         broker_name = broker_mapping[args.broker]
         
@@ -188,6 +192,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
             "input": {
                 "source": args.source,
                 "file": args.file,
+                "broker": broker_name,
                 "threshold": args.threshold
             },
             "summary": {
@@ -219,7 +224,18 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         # 5. Guardar archivos si se solicita
         if not args.no_save:
             output_dir = Path(args.output)
+            
+            # ✅ MANTENER: Archivos JSON (compatibilidad)
             write_results(results, output_dir)
+            
+            # ➕ AGREGAR: Base de datos (criterio TFM)
+            try:
+                services.database_service.save_all(results)
+                log_event("INFO", "database_saved", db_path=str(services.database_service.db_path))
+            except Exception as e:
+                log_event("ERROR", "database_save_failed", error=str(e))
+                print(f"⚠️  Error guardando en BD: {e}")
+            
             log_event("INFO", "results_saved", output_dir=str(output_dir))
         
         # 6. Mostrar resumen
