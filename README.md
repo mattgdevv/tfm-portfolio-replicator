@@ -46,6 +46,9 @@ python main.py
 
 # 5b. Modo ETL AUTOMÁTICO (para CI/CD) - USA .prefs.json existente  
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+
+# 5c. Diagnóstico de servicios únicamente
+python scripts/etl_cli.py --health-check
 ```
 
 > **💡 Configuración**: El sistema usa `.prefs.json` (incluido) para configuración principal. Variables de entorno en `.env` son opcionales y sobrescriben `.prefs.json`.
@@ -143,6 +146,26 @@ python scripts/etl_cli.py \
 
 # Solo análisis sin guardar archivos JSON (BD siempre se guarda)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --no-save
+
+# Modo verbose (output técnico completo para debugging)
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose
+
+# Health check de servicios
+python scripts/etl_cli.py --health-check
+
+# Health check con logs técnicos detallados
+python scripts/etl_cli.py --health-check --verbose
+```
+
+#### 🖥️ **Control de Output**
+```bash
+# Modo NORMAL (por defecto) - Output limpio y profesional
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+# Salida: Solo información esencial y resultados para el usuario
+
+# Modo VERBOSE - Output técnico completo
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose  
+# Salida: DEBUG logs, detalles HTTP, cache hits, rate limiting, etc.
 ```
 
 #### 🕒 **Ejecución Periódica (Scheduling)**
@@ -229,6 +252,27 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --s
 sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), total_positions FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
 ```
 
+### 🏥 **Caso 5: Diagnóstico y Health Check**
+```bash
+# Verificación rápida de todos los servicios
+python scripts/etl_cli.py --health-check
+
+# Diagnóstico detallado con logs técnicos
+python scripts/etl_cli.py --health-check --verbose
+
+# En scripts automatizados - verificar antes de ETL
+if python scripts/etl_cli.py --health-check; then
+    echo "✅ Servicios operativos, ejecutando ETL..."
+    python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+else
+    echo "❌ Error en servicios, cancelando ETL"
+    exit 1
+fi
+
+# Health check desde aplicación interactiva
+python main.py  # → Opción 9: Diagnóstico de servicios
+```
+
 ## 🗂️ Data Sources
 
 | Source | Type | Support |
@@ -244,10 +288,36 @@ sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), total
 ## 📊 Output Examples
 
 ### Console Output
+
+#### Modo Normal (Profesional)
 ```
 📊 Configuración ETL:
-   • Threshold: 0.015 (1.5%)
-   • Timeout: 45s
+   • Threshold: 0.2% (0.002)
+   • Timeout: 30s
+   • Cache TTL: 180s
+
+📊 Procesando 6 CEDEARs: UNH, SNOW, HMY, FXI, AMGN, BA
+🚨 OPORTUNIDAD DETECTADA: UNH - 0.2%
+
+============================================================
+📊 ETL COMPLETADO - 1 oportunidades encontradas
+============================================================
+🚨 UNH: 0.2% - Comprar CEDEAR, vender subyacente
+
+⏱️  Duración: 35098ms
+============================================================
+```
+
+#### Modo Verbose (Debugging)
+```
+DEBUG:asyncio:Using selector: KqueueSelector
+{"ts": "2025-09-11T21:04:39.289652+00:00", "level": "INFO", "msg": "etl_started", "source": "excel"}
+INFO:app.core.services:🏗️  Construyendo servicios con dependency injection...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): finnhub.io:443
+DEBUG:urllib3.connectionpool:https://finnhub.io:443 "GET /api/v1/quote?symbol=UNH HTTP/1.1" 200 None
+DEBUG:app.services.international_prices:✅ Precio de UNH obtenido desde finnhub: $353.61
+INFO:app.services.arbitrage_detector:🚨 OPORTUNIDAD DETECTADA: UNH - 0.2%
+```
    • Cache TTL: 180s
    ↳ Sobrescrito por CLI: threshold=0.015, timeout=45s
 
@@ -378,8 +448,9 @@ Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos AP
 --cache-ttl INT              # Cache TTL in seconds  
 --output DIR                 # Output directory
 --no-save                    # Don't save files
---verbose                    # Detailed logging
+--verbose                    # Modo verbose: logs técnicos completos para debugging
 --schedule {2min,30min,1hour,hourly,daily}  # Periodic execution
+--health-check               # Solo diagnóstico de servicios (sin ETL)
 ```
 
 ### Schedule Options
@@ -427,11 +498,20 @@ MSFT,5,300.0,bullmarket
 
 ### 🔍 Verificar Sistema
 ```bash
+# Health check completo de todos los servicios
+python scripts/etl_cli.py --health-check
+
+# Health check con logs técnicos detallados
+python scripts/etl_cli.py --health-check --verbose
+
 # Test completo del menú interactivo
 python main.py
 # Seleccionar opción 9: "Diagnóstico de servicios"
 
-# Test pipeline ETL con datos ejemplo
+# Test pipeline ETL con datos ejemplo (modo normal)
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+
+# Test pipeline ETL con output técnico completo (debugging)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose
 
 # Test conexión IOL (requiere credenciales)
@@ -485,7 +565,10 @@ python main.py → opción 2 → data.csv
 # 3. Pipeline ETL completo
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
-# 4. Verificación servicios
+# 4. Health check rápido de servicios
+python scripts/etl_cli.py --health-check
+
+# 5. Verificación servicios interactiva
 python main.py → opción 9
 ```
 

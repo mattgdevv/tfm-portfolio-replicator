@@ -30,15 +30,33 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
+# Variable global para controlar verbosidad
+_verbose_mode = False
+
+def set_verbose_mode(verbose: bool):
+    """Configura el modo verbose globalmente"""
+    global _verbose_mode
+    _verbose_mode = verbose
+
 def log_event(level: str, msg: str, **kwargs):
-    """Log estructurado en formato JSON Lines para monitoreo/debugging"""
-    event = {
-        "ts": datetime.now(timezone.utc).isoformat(),
-        "level": level,
-        "msg": msg,
-        **kwargs
-    }
-    print(json.dumps(event, ensure_ascii=False))
+    """Log estructurado en formato JSON Lines para monitoreo/debugging (solo en verbose)"""
+    if _verbose_mode:
+        event = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "level": level,
+            "msg": msg,
+            **kwargs
+        }
+        print(json.dumps(event, ensure_ascii=False))
+
+def print_progress(message: str):
+    """Print para mostrar progreso (siempre visible)"""
+    print(message)
+
+def print_verbose(message: str):
+    """Print solo en modo verbose"""
+    if _verbose_mode:
+        print(message)
 
 def parse_schedule_interval(schedule_str: str) -> int:
     """Convierte string de schedule a segundos"""
@@ -61,12 +79,13 @@ def run_scheduled_etl(args):
         interval_seconds = parse_schedule_interval(args.schedule)
         interval_minutes = interval_seconds // 60
         
-        print(f"🕒 MODO PERIÓDICO ACTIVADO")
-        print(f"📅 Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
-        print(f"📁 Archivo: {args.file}")
-        print(f"🏦 Broker: {args.broker}")
-        print(f"⏹️  Presiona Ctrl+C para detener")
-        print("=" * 50)
+        print_progress(f"🕒 MODO PERIÓDICO ACTIVADO")
+        print_progress(f"📅 Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
+        if _verbose_mode:
+            print(f"📁 Archivo: {args.file}")
+            print(f"🏦 Broker: {args.broker}")
+        print_progress(f"⏹️  Presiona Ctrl+C para detener")
+        print_progress("=" * 50)
         
         log_event("INFO", "scheduler_started", 
                  schedule=args.schedule, 
@@ -78,7 +97,7 @@ def run_scheduled_etl(args):
             execution_count += 1
             start_time = datetime.now()
             
-            print(f"\n🚀 Ejecución #{execution_count} - {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            print_progress(f"\n🚀 Ejecución #{execution_count} - {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
             
             try:
                 # Ejecutar ETL
@@ -86,7 +105,7 @@ def run_scheduled_etl(args):
                 
                 if result["exit_code"] == 0:
                     opportunities = len(result.get("opportunities", []))
-                    print(f"✅ Completado - {opportunities} oportunidades encontradas")
+                    print_progress(f"✅ Completado - {opportunities} oportunidades encontradas")
                 else:
                     print(f"❌ Error en ejecución: {result.get('error', 'Unknown')}")
                 
@@ -104,14 +123,15 @@ def run_scheduled_etl(args):
             # Mostrar próxima ejecución
             next_run = datetime.now().timestamp() + interval_seconds
             next_run_str = datetime.fromtimestamp(next_run).strftime('%H:%M:%S')
-            print(f"⏰ Próxima ejecución: {next_run_str}")
+            print_progress(f"⏰ Próxima ejecución: {next_run_str}")
             
             # Esperar hasta la próxima ejecución
-            print(f"😴 Esperando {interval_minutes} minutos...")
+            if _verbose_mode:
+                print_verbose(f"😴 Esperando {interval_minutes} minutos...")
             time.sleep(interval_seconds)
             
     except KeyboardInterrupt:
-        print(f"\n⏹️  Scheduler detenido después de {execution_count} ejecuciones")
+        print_progress(f"\n⏹️  Scheduler detenido después de {execution_count} ejecuciones")
         log_event("INFO", "scheduler_stopped", total_executions=execution_count)
     except ValueError as e:
         print(f"❌ Error en configuración de schedule: {e}")
@@ -163,12 +183,20 @@ Ejemplos de uso:
   
   # Solo análisis sin guardar archivos
   python etl_cli.py --source excel --file data.csv --no-save
+  
+  # Diagnóstico de servicios únicamente
+  python etl_cli.py --health-check
         """
     )
     
-    parser.add_argument("--source", choices=["excel"], required=True,
+    # Argumentos principales
+    parser.add_argument("--health-check", action="store_true",
+                       help="Ejecutar solo diagnóstico de servicios (sin procesamiento ETL)")
+    
+    # Argumentos ETL (requeridos solo si no es health-check)
+    parser.add_argument("--source", choices=["excel"],
                        help="Fuente de datos del portfolio")
-    parser.add_argument("--file", required=True,
+    parser.add_argument("--file",
                        help="Archivo Excel/CSV del portfolio")
     parser.add_argument("--broker", choices=["cocos", "bullmarket", "generic"], default="generic",
                        help="Broker del archivo (default: generic - mejor especificar para más precisión)")
@@ -188,6 +216,20 @@ Ejemplos de uso:
                        help="Ejecutar periódicamente: '2min', '30min', '1hour', 'daily' o 'hourly'")
     
     return parser.parse_args()
+
+
+def validate_args(args):
+    """Valida argumentos según el modo de ejecución"""
+    if not args.health_check:
+        # Para ETL normal, source y file son requeridos
+        if not args.source:
+            print("❌ ERROR: --source es requerido para procesamiento ETL")
+            print("💡 Use --health-check para diagnóstico únicamente")
+            sys.exit(2)
+        if not args.file:
+            print("❌ ERROR: --file es requerido para procesamiento ETL")
+            print("💡 Use --health-check para diagnóstico únicamente")
+            sys.exit(2)
 
 async def run_etl_analysis(args) -> Dict[str, Any]:
     """
@@ -225,14 +267,17 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         services = build_services(config)
         
         # 3. Mostrar configuración efectiva
-        print(f"📊 Configuración ETL:")
-        print(f"   • Threshold: {config.arbitrage_threshold} ({config.arbitrage_threshold*100:.1f}%)")
-        print(f"   • Timeout: {config.request_timeout}s")
-        print(f"   • Cache TTL: {config.cache_ttl_seconds}s")
-        if config_overrides:
-            print(f"   ↳ Sobrescrito por CLI: {', '.join(config_overrides)}")
+        if _verbose_mode:
+            print(f"📊 Configuración ETL:")
+            print(f"   • Threshold: {config.arbitrage_threshold} ({config.arbitrage_threshold*100:.1f}%)")
+            print(f"   • Timeout: {config.request_timeout}s")
+            print(f"   • Cache TTL: {config.cache_ttl_seconds}s")
+            if config_overrides:
+                print(f"   ↳ Sobrescrito por CLI: {', '.join(config_overrides)}")
+            else:
+                print(f"   ↳ Usando configuración por defecto")
         else:
-            print(f"   ↳ Usando configuración por defecto")
+            print_progress("📊 Iniciando análisis ETL...")
         
         # 2. Procesar archivo
         log_event("INFO", "processing_file", file=args.file)
@@ -325,9 +370,12 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
             log_event("INFO", "results_saved", output_dir=str(output_dir))
         
         # 6. Mostrar resumen
-        print("\n" + "="*60)
-        print(f"📊 ETL COMPLETADO - {len(opportunities)} oportunidades encontradas")
-        print("="*60)
+        if _verbose_mode:
+            print("\n" + "="*60)
+            print(f"📊 ETL COMPLETADO - {len(opportunities)} oportunidades encontradas")
+            print("="*60)
+        else:
+            print(f"\n📊 {len(opportunities)} oportunidades de arbitraje encontradas")
         
         for opp in opportunities:
             print(f"🚨 {opp.symbol}: {opp.difference_percentage:.1%} - {opp.recommendation}")
@@ -335,10 +383,13 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         if not opportunities:
             print("✅ No se detectaron oportunidades de arbitraje")
         
-        print(f"\n⏱️  Duración: {duration_ms}ms")
-        if not args.no_save:
+        if _verbose_mode:
+            print(f"\n⏱️  Duración: {duration_ms}ms")
+            if not args.no_save:
+                print(f"💾 Resultados guardados en: {args.output}/")
+            print("="*60)
+        elif not args.no_save:
             print(f"💾 Resultados guardados en: {args.output}/")
-        print("="*60)
         
         log_event("INFO", "etl_success", duration_ms=duration_ms, exit_code=0)
         return {"exit_code": 0, "results": results}
@@ -353,17 +404,89 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         log_event("ERROR", "etl_failed", error=str(e), duration_ms=duration_ms)
         return {"exit_code": 3, "error": str(e)}
 
+
+async def run_health_check() -> Dict[str, Any]:
+    """
+    Ejecuta solo diagnóstico de servicios usando DI estricta
+    
+    Returns:
+        Dict con resultados del health check y exit code
+    """
+    start_time = datetime.now()
+    
+    try:
+        log_event("INFO", "health_check_started")
+        
+        # 1. Inicializar servicios
+        from app.core.config import Config
+        from app.core.services import build_services
+        from app.workflows.commands.monitoring_commands import MonitoringCommands
+        
+        config = Config.from_env()
+        services = build_services(config)
+        
+        # 2. Ejecutar health check
+        monitoring = MonitoringCommands(services, None)
+        await monitoring.run_health_diagnostics()
+        
+        duration_ms = int((datetime.now() - start_time).total_seconds() * 1000)
+        
+        log_event("INFO", "health_check_success", duration_ms=duration_ms, exit_code=0)
+        
+        return {
+            "success": True,
+            "duration_ms": duration_ms,
+            "exit_code": 0
+        }
+        
+    except Exception as e:
+        duration_ms = int((datetime.now() - start_time).total_seconds() * 1000)
+        
+        log_event("ERROR", "health_check_error", error=str(e), duration_ms=duration_ms, exit_code=1)
+        
+        return {
+            "success": False,
+            "error": str(e),
+            "duration_ms": duration_ms,
+            "exit_code": 1
+        }
+
+
 def main():
     """Función principal con exit codes determinísticos"""
     args = parse_args()
     
-    # Configurar verbosidad
+    # Validar argumentos según modo
+    validate_args(args)
+    
+    # Configurar verbosidad globalmente
+    set_verbose_mode(args.verbose)
+    
+    # Configurar logging según verbosidad
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
+        from app.utils.logging_config import setup_debug_logging
+        setup_debug_logging()
+    else:
+        from app.utils.logging_config import setup_quiet_logging
+        setup_quiet_logging()
     
     try:
+        # Si es health check, ejecutar solo diagnóstico
+        if args.health_check:
+            result = asyncio.run(run_health_check())
+            
+            exit_code = result["exit_code"]
+            
+            if exit_code != 0:
+                print(f"\n❌ ERROR en health check: {result.get('error', 'Unknown error')}")
+                print("💡 Use --verbose para más detalles")
+            
+            log_event("INFO", "cli_exit", exit_code=exit_code)
+            sys.exit(exit_code)
+        
         # Si hay schedule, ejecutar periódicamente
-        if args.schedule:
+        elif args.schedule:
             run_scheduled_etl(args)
         else:
             # Ejecutar una sola vez (comportamiento original)

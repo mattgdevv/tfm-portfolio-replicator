@@ -16,13 +16,13 @@ class Config:
     # Mercado
     market: str = "argentina"
     
-    # APIs y credenciales
-    finnhub_api_key: str = field(default_factory=lambda: os.getenv("FINNHUB_API_KEY", ""))
-    gemini_api_key: str = field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
+    # APIs y credenciales (se cargan dinámicamente)
+    finnhub_api_key: str = ""
+    gemini_api_key: str = ""
     
-    # IOL
-    iol_username: str = field(default_factory=lambda: os.getenv("IOL_USERNAME", ""))
-    iol_password: str = field(default_factory=lambda: os.getenv("IOL_PASSWORD", ""))
+    # IOL (se cargan dinámicamente)
+    iol_username: str = ""
+    iol_password: str = ""
     
     # Fuentes CCL (orden de prioridad)
     ccl_sources: List[str] = field(default_factory=lambda: ["dolarapi", "iol_al30"])
@@ -43,6 +43,13 @@ class Config:
     @classmethod
     def from_env(cls) -> "Config":
         """Crea configuración desde variables de entorno y archivos .prefs.json"""
+        # 0. Cargar archivo .env si existe
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+        except ImportError:
+            pass  # dotenv no instalado, continuar
+        
         config = cls()
         
         # 1. Cargar desde .prefs.json si existe
@@ -65,6 +72,14 @@ class Config:
                 print(f"⚠️  Error leyendo .prefs.json: {e}")
         
         # 2. Variables de entorno tienen prioridad (sobrescriben .prefs.json)
+        
+        # Cargar API keys desde variables de entorno
+        config.finnhub_api_key = os.getenv("FINNHUB_API_KEY", "")
+        config.gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+        config.iol_username = os.getenv("IOL_USERNAME", "")
+        config.iol_password = os.getenv("IOL_PASSWORD", "")
+        
+        # Cargar otros valores de configuración
         if os.getenv("ARBITRAGE_THRESHOLD"):
             config.arbitrage_threshold = float(os.getenv("ARBITRAGE_THRESHOLD"))
         if os.getenv("REQUEST_TIMEOUT"):

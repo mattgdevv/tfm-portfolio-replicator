@@ -351,3 +351,83 @@ class DatabaseService:
                 "top_opportunities": top_opportunities,
                 "total_opportunities": len(top_opportunities)
             }
+
+    # ===============================================
+    # MÉTODOS PARA HEALTH CHECKS
+    # ===============================================
+
+    async def count_tables(self) -> int:
+        """Cuenta el número de tablas en la base de datos"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='table'")
+                return cursor.fetchone()[0]
+        except Exception:
+            return 0
+
+    async def count_total_records(self) -> int:
+        """Cuenta el total de registros en todas las tablas principales"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                
+                # Contar registros en tablas principales
+                tables = ['portfolios', 'positions', 'arbitrage_opportunities', 'pipeline_metrics']
+                total = 0
+                
+                for table in tables:
+                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                    total += cursor.fetchone()[0]
+                
+                return total
+        except Exception:
+            return 0
+
+    async def get_last_execution_time(self) -> Optional[str]:
+        """Obtiene la fecha de la última ejecución del ETL"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT timestamp 
+                    FROM portfolios 
+                    ORDER BY timestamp DESC 
+                    LIMIT 1
+                """)
+                result = cursor.fetchone()
+                
+                if result:
+                    # Formatear timestamp para mejor legibilidad
+                    from datetime import datetime
+                    try:
+                        dt = datetime.fromisoformat(result[0].replace('Z', '+00:00'))
+                        # Calcular hace cuánto tiempo fue
+                        now = datetime.now(dt.tzinfo)
+                        diff = now - dt
+                        
+                        if diff.total_seconds() < 3600:  # menos de 1 hora
+                            minutes_ago = int(diff.total_seconds() / 60)
+                            return f"Hace {minutes_ago} minutos ({dt.strftime('%H:%M:%S')})"
+                        elif diff.days == 0:  # hoy
+                            return f"Hoy a las {dt.strftime('%H:%M:%S')}"
+                        elif diff.days == 1:  # ayer
+                            return f"Ayer a las {dt.strftime('%H:%M:%S')}"
+                        else:  # más días
+                            return f"{diff.days} días atrás ({dt.strftime('%Y-%m-%d %H:%M')})"
+                    except:
+                        return result[0]
+                
+                return None
+        except Exception:
+            return None
+
+    async def _count_table_records(self, table_name: str) -> int:
+        """Cuenta registros en una tabla específica"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+                return cursor.fetchone()[0]
+        except Exception:
+            return 0
