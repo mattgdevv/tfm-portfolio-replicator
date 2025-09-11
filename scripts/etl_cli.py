@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
 ETL CLI para Portfolio Replicator con DI estricta
-Ejecuta análisis parametrizados desde línea de comandos con output estructurado
+Ejecuta análisis parame    parser.add_argument("--verbose", action="store_true",
+                        help="Activar logging detallado")
+    parser.add_argument("--schedule", type=str, default=None,
+                        help="Ejecutar periódicamente: '30min', '1hour', 'daily' o 'hourly'")
+    
+    return parser.parse_args()ados desde línea de comandos con output estructurado
 """
 
 import argparse
@@ -9,6 +14,7 @@ import asyncio
 import json
 import logging
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any
@@ -33,6 +39,84 @@ def log_event(level: str, msg: str, **kwargs):
         **kwargs
     }
     print(json.dumps(event, ensure_ascii=False))
+
+def parse_schedule_interval(schedule_str: str) -> int:
+    """Convierte string de schedule a segundos"""
+    schedule_map = {
+        "2min": 2 * 60,      # 2 minutos (para pruebas)
+        "30min": 30 * 60,    # 30 minutos
+        "1hour": 60 * 60,    # 1 hora 
+        "hourly": 60 * 60,   # 1 hora (alias)
+        "daily": 24 * 60 * 60  # 1 día
+    }
+    
+    if schedule_str not in schedule_map:
+        raise ValueError(f"Schedule inválido: {schedule_str}. Opciones: {list(schedule_map.keys())}")
+    
+    return schedule_map[schedule_str]
+
+def run_scheduled_etl(args):
+    """Ejecuta ETL de forma periódica según el schedule especificado"""
+    try:
+        interval_seconds = parse_schedule_interval(args.schedule)
+        interval_minutes = interval_seconds // 60
+        
+        print(f"🕒 MODO PERIÓDICO ACTIVADO")
+        print(f"📅 Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
+        print(f"📁 Archivo: {args.file}")
+        print(f"🏦 Broker: {args.broker}")
+        print(f"⏹️  Presiona Ctrl+C para detener")
+        print("=" * 50)
+        
+        log_event("INFO", "scheduler_started", 
+                 schedule=args.schedule, 
+                 interval_seconds=interval_seconds)
+        
+        execution_count = 0
+        
+        while True:
+            execution_count += 1
+            start_time = datetime.now()
+            
+            print(f"\n🚀 Ejecución #{execution_count} - {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            
+            try:
+                # Ejecutar ETL
+                result = asyncio.run(run_etl_analysis(args))
+                
+                if result["exit_code"] == 0:
+                    opportunities = len(result.get("opportunities", []))
+                    print(f"✅ Completado - {opportunities} oportunidades encontradas")
+                else:
+                    print(f"❌ Error en ejecución: {result.get('error', 'Unknown')}")
+                
+                log_event("INFO", "scheduled_execution_completed",
+                         execution_count=execution_count,
+                         exit_code=result["exit_code"],
+                         opportunities_found=len(result.get("opportunities", [])))
+                
+            except Exception as e:
+                print(f"💥 Error en ejecución #{execution_count}: {e}")
+                log_event("ERROR", "scheduled_execution_failed",
+                         execution_count=execution_count,
+                         error=str(e))
+            
+            # Mostrar próxima ejecución
+            next_run = datetime.now().timestamp() + interval_seconds
+            next_run_str = datetime.fromtimestamp(next_run).strftime('%H:%M:%S')
+            print(f"⏰ Próxima ejecución: {next_run_str}")
+            
+            # Esperar hasta la próxima ejecución
+            print(f"😴 Esperando {interval_minutes} minutos...")
+            time.sleep(interval_seconds)
+            
+    except KeyboardInterrupt:
+        print(f"\n⏹️  Scheduler detenido después de {execution_count} ejecuciones")
+        log_event("INFO", "scheduler_stopped", total_executions=execution_count)
+    except ValueError as e:
+        print(f"❌ Error en configuración de schedule: {e}")
+        log_event("ERROR", "scheduler_config_error", error=str(e))
+        sys.exit(1)
 
 def write_results(results: Dict[str, Any], output_dir: Path):
     """Escribe resultados estructurados en archivos JSON"""
@@ -100,6 +184,8 @@ Ejemplos de uso:
                        help="No guardar archivos, solo mostrar resultados")
     parser.add_argument("--verbose", action="store_true",
                        help="Mostrar logs detallados")
+    parser.add_argument("--schedule", type=str, default=None,
+                       help="Ejecutar periódicamente: '2min', '30min', '1hour', 'daily' o 'hourly'")
     
     return parser.parse_args()
 
@@ -276,17 +362,21 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     try:
-        # Ejecutar análisis
-        result = asyncio.run(run_etl_analysis(args))
-        
-        exit_code = result["exit_code"]
-        
-        if exit_code != 0:
-            print(f"\n❌ ERROR: {result.get('error', 'Unknown error')}")
-            print("💡 Use --verbose para más detalles")
-        
-        log_event("INFO", "cli_exit", exit_code=exit_code)
-        sys.exit(exit_code)
+        # Si hay schedule, ejecutar periódicamente
+        if args.schedule:
+            run_scheduled_etl(args)
+        else:
+            # Ejecutar una sola vez (comportamiento original)
+            result = asyncio.run(run_etl_analysis(args))
+            
+            exit_code = result["exit_code"]
+            
+            if exit_code != 0:
+                print(f"\n❌ ERROR: {result.get('error', 'Unknown error')}")
+                print("💡 Use --verbose para más detalles")
+            
+            log_event("INFO", "cli_exit", exit_code=exit_code)
+            sys.exit(exit_code)
         
     except KeyboardInterrupt:
         log_event("INFO", "cli_interrupted")

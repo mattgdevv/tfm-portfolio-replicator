@@ -4,8 +4,25 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
 [![Async](https://img.shields.io/badge/Async-asyncio-green.svg)](https://docs.python.org/3/library/asyncio.html)
-[![Architecture](https://img.shields.io/badge/Architecture-DI-orange.svg)](https://en.wikipedia.org/wiki/Dependency_injection)
-[![TFM](https://img.shields.io/badge/TFM-Data%20Engineer-purple.svg)](#)
+[![Architecture](https://img.shields.io/badge/Architecture-DI-orange.svg)](https://en.wikipedia.org/wiki/Dependenc### 📋 Casos de Uso Testing
+```bash
+# 1. Portfolio real IOL (requiere credenciales)
+python main.py → opción 1
+
+# 2. Portfolio archivo ejemplo
+python main.py → opción 2 → data.csv
+
+# 3. Pipeline ETL completo
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+
+# 4. Testing periodicidad (ejecución cada 2 minutos)
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
+# Dejar correr unos minutos, luego Ctrl+C para detener
+# Verificar múltiples registros en BD: sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), id FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
+
+# 5. Verificación servicios
+python main.py → opción 9
+```![TFM](https://img.shields.io/badge/TFM-Data%20Engineer-purple.svg)](#)
 
 ## ⚡ Quick Start
 
@@ -55,6 +72,7 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 - **SQLite Database Integration** - Persistent storage for portfolios, positions, arbitrage opportunities, and pipeline metrics
 - **Robust Data Pipeline** - Automatic fallbacks, caching, and error handling
 - **Configurable ETL** - CLI with flexible parameters and output formats
+- **⏰ Periodic Execution** - Built-in scheduler for automated ETL runs (2min/30min/hourly/daily)
 - **24/7 Analysis** - Works on weekends using international prices + CCL estimation
 - **Historical Data Storage** - Track arbitrage opportunities and portfolio changes over time
 
@@ -127,6 +145,34 @@ python scripts/etl_cli.py \
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --no-save
 ```
 
+#### 🕒 **Ejecución Periódica (Scheduling)**
+```bash
+# Ejecutar cada 30 minutos (recomendado para producción)
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 30min
+
+# Ejecutar cada hora
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 1hour
+
+# Ejecutar diariamente 
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule daily
+
+# Para testing: ejecutar cada 2 minutos (solo para pruebas)
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
+```
+
+**Opciones de scheduling disponibles:**
+- `2min` - Cada 2 minutos (solo para testing/demos)
+- `30min` - Cada 30 minutos (recomendado para desarrollo)
+- `1hour` / `hourly` - Cada hora (recomendado para producción)
+- `daily` - Una vez por día
+
+**Características del scheduler:**
+- ✅ **Ejecución automática** - Se ejecuta indefinidamente hasta Ctrl+C
+- ✅ **Logging completo** - Timestamps y contadores de ejecución
+- ✅ **Persistencia en BD** - Cada ejecución genera nuevo registro en SQLite
+- ✅ **Gestión de errores** - Continúa ejecutándose aunque falle una iteración
+- ✅ **Evidencia verificable** - Registros en BD y archivos con timestamps únicos
+
 ## 📊 Ejemplos de Uso
 
 ### 🚀 **Caso 1: Usuario nuevo - Quick Start**
@@ -166,6 +212,21 @@ GOOGL,8,120.0,bullmarket
 ```
 ```bash
 python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullmarket --threshold 0.01
+```
+
+### 🕒 **Caso 4: ETL Periódico Automático**
+```bash
+# Testing/Demo: Ejecutar cada 2 minutos para ver múltiples ejecuciones rápido
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
+
+# Producción: Monitoreo continuo cada 30 minutos
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 30min
+
+# Análisis diario automático
+python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule daily
+
+# Verificar ejecuciones en BD
+sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), total_positions FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
 ```
 
 ## 🗂️ Data Sources
@@ -318,7 +379,14 @@ Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos AP
 --output DIR                 # Output directory
 --no-save                    # Don't save files
 --verbose                    # Detailed logging
+--schedule {2min,30min,1hour,hourly,daily}  # Periodic execution
 ```
+
+### Schedule Options
+- `2min` - Every 2 minutes (testing/demo only)
+- `30min` - Every 30 minutes (recommended for development)
+- `1hour` / `hourly` - Every hour (recommended for production)
+- `daily` - Once per day (daily analysis)
 
 ### Configuration Priority
 1. **CLI parameters** (highest)
