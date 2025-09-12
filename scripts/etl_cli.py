@@ -38,7 +38,7 @@ def set_verbose_mode(verbose: bool):
     _verbose_mode = verbose
 
 def log_event(level: str, msg: str, **kwargs):
-    """Log estructurado en formato JSON Lines para monitoreo/debugging (solo en verbose)"""
+    """Log estructurado en formato JSON Lines para monitoreo del sistema (solo en verbose)"""
     if _verbose_mode:
         event = {
             "ts": datetime.now(timezone.utc).isoformat(),

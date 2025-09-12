@@ -37,10 +37,16 @@ class CEDEARProcessor:
             bool: True si la descarga fue exitosa, False si falló
         """
         try:
+            # Ejecutar con PYTHONPATH para que encuentre el módulo app
+            import os
             script_path = Path(__file__).parent.parent.parent / "scripts/download_byma_pdf.py"
+            current_dir = str(Path(__file__).parent.parent.parent)
+            env = os.environ.copy()
+            env['PYTHONPATH'] = current_dir
+            
             result = subprocess.run([
                 "python", str(script_path)
-            ], capture_output=True, text=True, cwd=str(Path.cwd()))
+            ], capture_output=True, text=True, cwd=current_dir, env=env)
             
             if result.returncode == 0:
                 print("✅ Datos de CEDEARs descargados exitosamente")
@@ -146,9 +152,15 @@ class CEDEARProcessor:
         """Descarga y parsea el PDF de BYMA para obtener ratios de CEDEARs."""
         print("\n🔄 Descargando y procesando PDF de CEDEARs desde BYMA...")
         try:
+            # Ejecutar con PYTHONPATH para que encuentre el módulo app
+            import os
+            current_dir = os.getcwd()
+            env = os.environ.copy()
+            env['PYTHONPATH'] = current_dir
+            
             result = subprocess.run([
                 "python", "scripts/download_byma_pdf.py"
-            ], capture_output=True, text=True, cwd=".")
+            ], capture_output=True, text=True, cwd=".", env=env)
             
             if result.returncode == 0:
                 print("✅ PDF procesado exitosamente")

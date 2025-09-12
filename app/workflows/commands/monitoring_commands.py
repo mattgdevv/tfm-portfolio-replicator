@@ -136,7 +136,7 @@ class MonitoringCommands:
         print()
 
         # 5. Verificación Performance y Cache
-        print("⚡ Verificando Performance...")
+        print("Verificando Performance...")
         try:
             perf_health = await self._check_performance_health()
             cache_icon = "✅" if perf_health["cache_working"] else "❌"
@@ -144,7 +144,7 @@ class MonitoringCommands:
             print(f"   {cache_icon} Sistema de Cache: {'Operativo' if perf_health['cache_working'] else 'Error'}")
             print(f"   📊 Cache hits: {perf_health['cache_stats']['hits']}")
             print(f"   📊 Cache misses: {perf_health['cache_stats']['misses']}")
-            print(f"   ⚡ Promedio respuesta: {perf_health['avg_response_time']}ms")
+            print(f"   Promedio respuesta: {perf_health['avg_response_time']}ms")
 
         except Exception as e:
             print(f"   ❌ Error verificando Performance: {str(e)}")
@@ -166,7 +166,7 @@ class MonitoringCommands:
             print(f"   ❌ Error verificando sistema: {str(e)}")
 
         print()
-        print("💡 ACLARACIONES:")
+        print("ACLARACIONES:")
         print("   • Si BYMA falla en día hábil → Sistema usa estimaciones automáticamente")
         print("   • Si IOL falla → Sistema hace fallback a BYMA automáticamente")
         print("   • Si ambos fallan → Sistema usa precios internacionales + CCL")
@@ -175,7 +175,7 @@ class MonitoringCommands:
         print("   • Cache mejora performance, se regenera automáticamente")
 
         # Recomendaciones automáticas
-        print("\n🔧 RECOMENDACIONES:")
+        print("\nRECOMENDACIONES:")
         recommendations = await self._generate_recommendations()
         for rec in recommendations:
             print(f"   • {rec}")

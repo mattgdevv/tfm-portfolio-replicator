@@ -1,6 +1,6 @@
 # Portfolio Replicator TFM
 
-**Sistema ETL de detección de arbitraje multi-fuente para CEDEARs vs activos subyacentes con estimación inteligente**
+**Sistema ETL de detección de arbitraje multi-fuente para CEDEARs vs activos subyacentes**
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
 [![Async](https://img.shields.io/badge/Async-asyncio-green.svg)](https://docs.python.org/3/library/asyncio.html)
@@ -74,10 +74,10 @@ python scripts/etl_cli.py --health-check
 ## 🎯 Features
 
 - **Real-time Arbitrage Detection** - Multi-source price comparison with configurable thresholds
-- **Intelligent Fallback Estimation** - Automatic theoretical pricing when markets are closed or unavailable
+- **Fallback automático** - Pricing teórico cuando mercados cerrados o no disponibles
 - **Multi-broker Support** - IOL API, Excel/CSV (Bull Market, Cocos Capital)
 - **SQLite Database Integration** - Persistent storage for portfolios, positions, arbitrage opportunities, and pipeline metrics
-- **Robust Data Pipeline** - Automatic fallbacks, caching, and error handling
+- **Pipeline de datos** - Fallbacks automáticos, caching, y manejo de errores
 - **Configurable ETL** - CLI with flexible parameters and output formats
 - **⏰ Periodic Execution** - Built-in scheduler for automated ETL runs (2min/30min/hourly/daily)
 - **24/7 Analysis** - Works on weekends using international prices + CCL estimation
@@ -153,7 +153,7 @@ python scripts/etl_cli.py \
 # Solo análisis sin guardar archivos JSON (BD siempre se guarda)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --no-save
 
-# Modo verbose (output técnico completo para debugging)
+# Modo verbose (output técnico detallado para desarrollo)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose
 
 # Health check de servicios
@@ -165,13 +165,13 @@ python scripts/etl_cli.py --health-check --verbose
 
 #### 🖥️ **Control de Output**
 ```bash
-# Modo NORMAL (por defecto) - Output limpio y profesional
+# Modo NORMAL (por defecto) - Output limpio para producción
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
-# Salida: Solo información esencial y resultados para el usuario
+# Salida: Solo información esencial y resultados
 
-# Modo VERBOSE - Output técnico completo
+# Modo VERBOSE - Output técnico detallado para desarrollo
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose  
-# Salida: DEBUG logs, detalles HTTP, cache hits, rate limiting, etc.
+# Salida: Logs detallados, información de APIs, estado de cache, etc.
 ```
 
 #### 🕒 **Ejecución Periódica (Scheduling)**
@@ -304,7 +304,7 @@ python main.py  # → Opción 9: Diagnóstico de servicios
 
 ### Console Output
 
-#### Modo Normal (Profesional)
+#### Modo Normal (Producción)
 ```
 📊 Configuración ETL:
    • Threshold: 0.2% (0.002)
@@ -323,7 +323,7 @@ python main.py  # → Opción 9: Diagnóstico de servicios
 ============================================================
 ```
 
-#### Modo Verbose (Debugging)
+#### Modo Verbose (Desarrollo)
 ```
 DEBUG:asyncio:Using selector: KqueueSelector
 {"ts": "2025-09-11T21:04:39.289652+00:00", "level": "INFO", "msg": "etl_started", "source": "excel"}
@@ -443,7 +443,7 @@ ORDER BY arbitrage_percentage DESC;
 - **Soporte 24/7** - precios teóricos automáticos cuando mercados cerrados
 - **Logging estructurado** - reporte detallado de errores
 
-### 🧠 Estimación Inteligente
+### Estimación Automática
 Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos API):
 1. **Precios internacionales** desde Finnhub (tiempo real)
 2. **Tasa CCL** desde DolarAPI (disponible 24/7)
@@ -462,7 +462,7 @@ Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos AP
 --cache-ttl INT              # Cache TTL in seconds  
 --output DIR                 # Output directory
 --no-save                    # Don't save files
---verbose                    # Modo verbose: logs técnicos completos para debugging
+--verbose                    # Modo verbose: logs técnicos detallados para desarrollo
 --schedule {2min,30min,1hour,hourly,daily}  # Periodic execution
 --health-check               # Solo diagnóstico de servicios (sin ETL)
 ```
@@ -508,7 +508,7 @@ AAPL,10,150.0,bullmarket
 MSFT,5,300.0,bullmarket
 ```
 
-## 🧪 Verificación y Debugging
+## 🧪 Verificación y Testing
 
 ### 🔍 Verificar Sistema
 ```bash
@@ -525,7 +525,7 @@ python main.py
 # Test pipeline ETL con datos ejemplo (modo normal)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
-# Test pipeline ETL con output técnico completo (debugging)
+# Test pipeline ETL con output técnico detallado (desarrollo)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --verbose
 
 # Test conexión IOL (requiere credenciales)
@@ -534,7 +534,7 @@ python main.py
 # O usando CLI: python scripts/etl_cli.py --source iol
 ```
 
-### 🐛 Debugging Common Issues
+### 🐛 Common Issues y Soluciones
 ```bash
 # Error IOL authentication
 # ✅ Verificar credenciales en .env
@@ -610,12 +610,12 @@ python main.py → opción 9
 ### 🎓 Contexto Académico
 Este proyecto es el **Trabajo Final de Máster (TFM)** para el perfil **Data Engineer**, implementando:
 
-- **Pipeline ETL robusto** con arquitectura de microservicios
-- **Gestión avanzada de datos** multi-fuente con fallbacks inteligentes  
+- **Pipeline ETL** con arquitectura de microservicios
+- **Gestión de datos** multi-fuente con fallbacks automáticos  
 - **Procesamiento en tiempo real** y batch con Python asyncio
 - **Base de datos SQLite** para persistencia y análisis histórico
-- **Dependency Injection** para modularidad y verificación
-- **Estimación inteligente** cuando datos en tiempo real no disponibles
+- **Dependency Injection** para modularidad y testing
+- **Fallbacks** cuando datos en tiempo real no disponibles
 
 ### 💾 Gestión de Datos
 - **Persistencia dual**: JSON (compatibilidad) + SQLite (análisis)

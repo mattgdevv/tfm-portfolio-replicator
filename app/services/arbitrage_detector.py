@@ -252,7 +252,7 @@ class ArbitrageDetector:
             elif result is not None:
                 opportunities.append(result)
         
-        logger.info(f"🎯 Oportunidades detectadas: {len(opportunities)}/{len(symbols)}")
+        logger.info(f"Oportunidades detectadas: {len(opportunities)}/{len(symbols)}")
         return opportunities
     
     def format_alert(self, opportunity: ArbitrageOpportunity) -> str:

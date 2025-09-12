@@ -12,12 +12,11 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Yahoo Finance eliminado - CCL implícito deshabilitado
-
+# Fuentes de dólar disponibles para el sistema ETL
 DollarSource = Literal["dolarapi_ccl", "ccl_al30", "dolarapi_mep"]
 
 class DollarRateService:
-    """Servicio para obtener cotizaciones del dólar con fallback automático"""
+    """Servicio para obtener cotizaciones del dólar con múltiples fuentes"""
     
     def __init__(self, config=None):
         # Configuración mediante config opcional (backward compatible)
@@ -58,7 +57,7 @@ class DollarRateService:
         Estrategia de fallback robusta:
         1. DolarAPI (primario - más confiable y rápido)
         2. IOL AL30/AL30D (secundario - requiere autenticación pero muy preciso)  
-        3. Yahoo CCL Implícito (terciario - calculado, pero robusto)
+        3. Yahoo CCL Implícito (terciario - calculado y confiable)
         
         Args:
             preferred_source: Fuente preferida. Si None, usa configuración global.
@@ -168,9 +167,9 @@ class DollarRateService:
         
         # Si no hay ni cache expirado, entonces sí fallar
         print(f"❌ ERROR: No se pudo obtener cotización CCL")
-        print(f"   💡 Fuentes intentadas: {', '.join(attempted_sources)}")
+        print(f"   • Fuentes intentadas: {', '.join(attempted_sources)}")
         if "ccl_al30" in attempted_sources and not self.iol_session:
-            print(f"   💡 Consejo: Autentique con IOL para habilitar fallback AL30")
+            print(f"   • Consejo: Autentique con IOL para habilitar fallback AL30")
         return None
 
     def _get_from_cache(self, key: str) -> Optional[Dict[str, Any]]:

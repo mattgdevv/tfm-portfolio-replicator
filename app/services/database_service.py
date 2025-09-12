@@ -212,7 +212,7 @@ class DatabaseService:
                 ))
             
             conn.commit()
-            logger.info(f"🎯 Arbitraje guardado en BD: {len(opportunities)} oportunidades")
+            logger.info(f"Arbitraje guardado en BD: {len(opportunities)} oportunidades")
     
     def save_pipeline_metrics(self, results: Dict[str, Any]):
         """

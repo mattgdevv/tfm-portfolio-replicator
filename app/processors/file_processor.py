@@ -88,7 +88,7 @@ class PortfolioProcessor:
         if not found_positions:
             raise Exception(f"❌ No se encontraron CEDEARs con cantidades válidas en el archivo")
         
-        print(f"🎯 Encontrados {len(found_positions)} CEDEARs con cantidades")
+        print(f"Encontrados {len(found_positions)} CEDEARs con cantidades")
 
         print("🔄 Procesando CEDEARs encontrados...")
         
@@ -258,12 +258,9 @@ class PortfolioProcessor:
         
         return opportunities
     
-    async def analyze_portfolio_variations(self, portfolio: Portfolio, iol_session=None) -> list:
-        """
-        Función eliminada - análisis de variaciones no se usa en el core del TFM
-        """
-        print("⚠️  Análisis de variaciones eliminado - funcionalidad no core del ETL")
-        return []
+    # ===============================================
+    # FUNCIONES AUXILIARES
+    # ===============================================
     
 
     def _clean_symbol(self, symbol: str) -> str:
@@ -421,7 +418,7 @@ class PortfolioProcessor:
             
         print(f"✅ Bull Market: symbol → '{mapping['symbol']}'")
         print(f"✅ Bull Market: quantity → '{mapping['quantity']}'")
-        print("💡 Bull Market: solo symbol+quantity (precios via API)")
+        print("Nota: Bull Market: solo symbol+quantity (precios via API)")
             
         return mapping
     
@@ -458,7 +455,7 @@ class PortfolioProcessor:
                                         'quantity': quantity
                                     })
                                     if self.debug:
-                                        print(f"🎯 {ticker} encontrado en ({row_idx+1}, {col_idx+1}) con cantidad {quantity}")
+                                        print(f"{ticker} encontrado en ({row_idx+1}, {col_idx+1}) con cantidad {quantity}")
                 except Exception as e:
                     if self.debug:
                         print(f"⚠️  Error en celda ({row_idx+1}, {col_idx+1}): {e}")
@@ -533,7 +530,7 @@ class PortfolioProcessor:
             if self._row_contains_cedear(dataframe.iloc[row_idx], known_cedeares, broker):
                 cedear_rows.append(row_idx)
                 if self.debug:
-                    print(f"🎯 CEDEAR en fila {row_idx + 1}")
+                    print(f"CEDEAR en fila {row_idx + 1}")
         
         if not cedear_rows:
             raise Exception(f"❌ No se detectaron CEDEARs conocidos en el archivo {broker}")

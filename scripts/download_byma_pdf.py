@@ -8,12 +8,18 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, List, Optional
-import urllib3
 from datetime import datetime
 from bs4 import BeautifulSoup
+import sys
+import os
 
-# Suprimir warnings SSL
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+# Agregar el directorio padre al path para importar módulos de app
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.utils.ssl_config import disable_ssl_warnings
+
+# Configurar SSL warnings centralizadamente  
+disable_ssl_warnings()
 
 class BYMAPDFProcessor:
     def __init__(self):

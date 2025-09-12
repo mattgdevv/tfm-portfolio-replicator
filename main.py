@@ -14,21 +14,19 @@ import asyncio
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
-import urllib3
+from app.utils.ssl_config import disable_ssl_warnings
 
 # Cargar variables de entorno desde .env
 load_dotenv()
+
+# Configurar SSL warnings centralizadamente
+disable_ssl_warnings()
 
 # Configurar logging silencioso ANTES de importar otros módulos
 from app.utils.logging_config import setup_quiet_logging
 setup_quiet_logging()
 
 # Imports del sistema de flujos interactivos
-from app.workflows import InteractiveFlows
-from app.integrations.iol import IOLIntegration
-from app.core.config import Config
-from app.core.services import build_services, Services
-from app.utils.business_days import get_market_status_message
 from app.workflows import InteractiveFlows
 from app.integrations.iol import IOLIntegration
 from app.core.config import Config
@@ -59,7 +57,7 @@ class PortfolioReplicatorInteractive:
         if services is None:
             raise ValueError("services es requerido - usar build_services()")
         
-        print("🏗️  [Interactive App] Inicializando con dependency injection...")
+        print("Inicializando con dependency injection...")
         self.services = services
         
         # Configurar integraciones
@@ -76,10 +74,10 @@ class PortfolioReplicatorInteractive:
         )
         
         # Configuraciones adicionales
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        disable_ssl_warnings()
         self._load_configurations()
         
-        print("✅ [Interactive App] Inicialización completada")
+        print("Inicialización completada")
     
     def _load_configurations(self):
         """Carga configuraciones y preferencias locales"""
@@ -92,23 +90,23 @@ class PortfolioReplicatorInteractive:
             ttl = prefs.get('CEDEAR_CACHE_TTL_SECONDS')
             if ttl is not None:
                 self.services.arbitrage_detector.set_cedear_cache_ttl(int(ttl))
-                print(f"📊 [Config] Cache TTL aplicado: {ttl}s")
+                print(f"[Config] Cache TTL aplicado: {ttl}s")
         except Exception:
             pass  # Configuración opcional
     
     async def run(self):
         """Ejecuta el menú principal de la aplicación interactiva"""
-        print("🚀 Portfolio Replicator - Aplicación Interactiva")
+        print("Portfolio Replicator - Aplicación Interactiva")
         print("=" * 55)
-        print("📊 Análisis de arbitraje de CEDEARs con flujos interactivos")
-        print("💡 Para pipelines automáticos usar: python scripts/etl_cli.py")
+        print("Análisis de arbitraje de CEDEARs con flujos interactivos")
+        print("Nota: Para pipelines automáticos usar: python scripts/etl_cli.py")
         print()
         
         while True:
-            print("\n🎯 ¿Qué flujo interactivo deseas ejecutar?")
+            print("\n¿Qué flujo interactivo deseas ejecutar?")
             print("1. 📥 IOL → Análisis → Guardado (interactivo)")
             print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
-            print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("3. Actualizar ratios de CEDEARs (PDF BYMA)")
             print("4. 🏥 Diagnóstico de servicios")
             print("5. 🚪 Salir")
 
@@ -126,7 +124,7 @@ class PortfolioReplicatorInteractive:
                 print("\n👋 ¡Hasta luego!")
                 break
             else:
-                print("❌ Opción inválida. Elige entre 1-5.")
+                print("Error: Opción inválida. Elige entre 1-5.")
 
 
 async def main():
@@ -151,7 +149,7 @@ async def main():
     except KeyboardInterrupt:
         print("\n\n⏹️  Aplicación interrumpida por el usuario")
     except Exception as e:
-        print(f"\n❌ Error crítico en aplicación: {e}")
+        print(f"\nError crítico en aplicación: {e}")
         import traceback
         traceback.print_exc()
     finally:

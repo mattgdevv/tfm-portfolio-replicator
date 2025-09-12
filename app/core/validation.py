@@ -127,10 +127,10 @@ def validate_project_strict_di(project_root: Path,
     
     if not violations_found:
         print(f"✅ VALIDACIÓN DI EXITOSA: {total_files} archivos verificados")
-        print("🎯 Arquitectura DI estricta confirmada")
+        print("Arquitectura DI estricta confirmada")
     else:
         print(f"\n⚠️  RESUMEN: Violaciones encontradas en {total_files} archivos")
-        print("💡 Corrija los imports para usar build_services() exclusivamente")
+        print("Corrija los imports para usar build_services() exclusivamente")
     
     return not violations_found
 
@@ -172,7 +172,7 @@ def check_runtime_di_strict():
         raise RuntimeError(
             f"❌ SERVICIOS GLOBALES DETECTADOS:\n" + 
             "\n".join(f"  - {v}" for v in violations) +
-            "\n💡 Todos los servicios deben obtenerse vía build_services()"
+            "\nTodos los servicios deben obtenerse vía build_services()"
         )
     
     logger.info("✅ Verificación runtime DI: OK")

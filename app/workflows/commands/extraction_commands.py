@@ -33,7 +33,7 @@ class ExtractionCommands:
             Portfolio: Portfolio extraído desde IOL
         """
         print("\n📊 Obteniendo portfolio desde IOL...")
-        print("💡 Presiona ESPACIO + Enter para volver al menú principal")
+        print("Nota: Presiona ESPACIO + Enter para volver al menú principal")
         
         try:
             # Loop principal para credenciales

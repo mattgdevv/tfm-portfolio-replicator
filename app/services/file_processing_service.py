@@ -119,7 +119,7 @@ class FileProcessingService:
     def _get_file_manual(self) -> Optional[str]:
         """Obtiene la ruta del archivo en modo manual"""
         print("\n📝 Cambiando a modo manual...")
-        print("💡 Puedes arrastrar el archivo desde Finder/Explorer a esta terminal")
+        print("Nota: Puedes arrastrar el archivo desde Finder/Explorer a esta terminal")
         print("   O escribir la ruta completa del archivo")
         
         file_path = input("📎 Archivo (arrastra o escribe ruta): ").strip()

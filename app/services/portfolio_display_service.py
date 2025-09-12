@@ -105,7 +105,7 @@ class PortfolioDisplayService:
             else:
                 # No es CEDEAR o no tiene underlying_symbol
                 if pos.total_value is not None:
-                    # 🔧 FIX 2025-01-XX: Manejo correcto de monedas en FCIs
+                    # FIX 2025-01-XX: Manejo correcto de monedas en FCIs
                     # Problema: FCIs en USD mostraban valores incorrectos porque se asumía
                     # que IOL devolvía todos los valores en ARS, causando error de ~2000x
                     #

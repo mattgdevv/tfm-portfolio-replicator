@@ -9,15 +9,15 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 import logging
-import urllib3
+from app.utils.ssl_config import disable_ssl_warnings
 
 from ..utils.business_days import get_last_business_day_by_market, is_business_day_by_market, get_market_status_message
 
 # Configurar logging
 logger = logging.getLogger(__name__)
 
-# Suppress SSL warnings for BYMA API
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+# Configurar SSL warnings centralizadamente
+disable_ssl_warnings()
 
 class BYMAIntegration:
     """Servicio para obtener datos históricos de BYMA"""

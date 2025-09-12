@@ -60,7 +60,7 @@ def build_services(config: Optional[Config] = None) -> Services:
     
     config.validate()
     
-    logger.info("🏗️  Construyendo servicios con dependency injection...")
+    logger.info("Construyendo servicios con dependency injection...")
     
     # Servicios base (sin dependencias)
     cedear_processor = CEDEARProcessor()
