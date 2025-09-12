@@ -41,7 +41,6 @@ output/*.sqlite
 
 # Cache
 .cache/
-.pytest_cache/
 
 # Jupyter Notebooks
 .ipynb_checkpoints

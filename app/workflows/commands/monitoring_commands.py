@@ -52,7 +52,7 @@ class MonitoringCommands:
         # Verificar si hay sesión IOL activa
         iol_session = getattr(self.iol_integration, 'session', None)
 
-        # 1. Test BYMA
+        # 1. Verificar BYMA
         print("🏛️  Verificando BYMA...")
         try:
             byma_health = await self.services.byma_integration.check_byma_health()
@@ -71,7 +71,7 @@ class MonitoringCommands:
 
         print()
 
-        # 2. Test IOL
+        # 2. Verificar IOL
         print("🏦 Verificando IOL...")
         try:
             iol_health = await self.services.byma_integration.check_iol_health(iol_session)
@@ -93,7 +93,7 @@ class MonitoringCommands:
 
         print()
 
-        # 3. Test Database SQLite
+        # 3. Verificar Database SQLite
         print("💾 Verificando Base de Datos...")
         try:
             db_health = await self._check_database_health()
@@ -113,29 +113,29 @@ class MonitoringCommands:
 
         print()
 
-        # 4. Test APIs Externas
+        # 4. Verificar APIs Externas
         print("🌐 Verificando APIs Externas...")
         try:
-            # Test DolarAPI
+            # Verificar DolarAPI
             ccl_health = await self._check_ccl_api_health()
             ccl_icon = "✅" if ccl_health["status"] else "❌"
             print(f"   {ccl_icon} DolarAPI: {'Operativo' if ccl_health['status'] else 'No disponible'}")
             if ccl_health["status"]:
                 print(f"   💵 CCL actual: ${ccl_health['ccl_rate']}")
 
-            # Test Finnhub
+            # Verificar Finnhub
             finnhub_health = await self._check_finnhub_health()
             finnhub_icon = "✅" if finnhub_health["status"] else "❌"
             print(f"   {finnhub_icon} Finnhub: {'Operativo' if finnhub_health['status'] else 'No disponible'}")
             if finnhub_health["status"]:
-                print(f"   📊 Test symbol: {finnhub_health['test_symbol']} = ${finnhub_health['test_price']}")
+                print(f"   📊 Símbolo ejemplo: {finnhub_health['test_symbol']} = ${finnhub_health['test_price']}")
 
         except Exception as e:
             print(f"   ❌ Error verificando APIs externas: {str(e)}")
 
         print()
 
-        # 5. Test Performance y Cache
+        # 5. Verificación Performance y Cache
         print("⚡ Verificando Performance...")
         try:
             perf_health = await self._check_performance_health()
@@ -151,7 +151,7 @@ class MonitoringCommands:
 
         print()
 
-        # 6. Test Sistema y Recursos
+        # 6. Verificación Sistema y Recursos
         print("🖥️  Verificando Sistema...")
         try:
             system_health = await self._check_system_health()
@@ -268,8 +268,8 @@ class MonitoringCommands:
     async def _check_finnhub_health(self):
         """Verifica el estado de la API de Finnhub"""
         try:
-            # Test con un símbolo conocido usando el servicio correcto
-            # Usar símbolo estándar de prueba (siempre disponible)
+            # Verificación con un símbolo conocido usando el servicio correcto
+            # Usar símbolo estándar de ejemplo (siempre disponible)
             test_symbol = getattr(self.services.config, 'test_symbol', 'AAPL')
             price_data = await self.services.international_service.get_stock_price(test_symbol)
             
@@ -355,7 +355,7 @@ class MonitoringCommands:
                 "misses": getattr(self.services.dollar_service, '_cache_misses', 0)
             }
 
-            # Test de performance simple
+            # Medición de performance simple
             import time
             start_time = time.time()
 

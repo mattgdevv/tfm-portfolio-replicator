@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 """
 ETL CLI para Portfolio Replicator con DI estricta
-Ejecuta análisis parame    parser.add_argument("--verbose", action="store_true",
-                        help="Activar logging detallado")
-    parser.add_argument("--schedule", type=str, default=None,
-                        help="Ejecutar periódicamente: '30min', '1hour', 'daily' o 'hourly'")
-    
-    return parser.parse_args()ados desde línea de comandos con output estructurado
+Ejecuta análisis parametrizado desde línea de comandos con output estructurado
 """
 
 import argparse
@@ -25,6 +20,10 @@ load_dotenv()
 
 # Agregar directorio padre al path para importar app
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Imports de servicios (movidos del nivel de función para evitar redundancia)
+from app.core.config import Config
+from app.core.services import build_services
 
 # Configurar logging estructurado (JSON Lines)
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -252,9 +251,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
     start_time = datetime.now()
     
     try:
-        # Importar y construir servicios con DI estricta
-        from app.core.config import Config
-        from app.core.services import build_services
+        # Construir servicios con DI estricta
         from app.models.portfolio import Portfolio
         
         log_event("INFO", "etl_started", 
@@ -334,7 +331,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         # 4. Análisis de arbitraje
         log_event("INFO", "analyzing_arbitrage", threshold=config.arbitrage_threshold)
         
-        analysis_result = await services.unified_analysis.analyze_portfolio(
+        analysis_result = await services.arbitrage_detector.analyze_portfolio(
             portfolio, threshold=config.arbitrage_threshold
         )
         
@@ -449,8 +446,6 @@ async def run_health_check() -> Dict[str, Any]:
         log_event("INFO", "health_check_started")
         
         # 1. Inicializar servicios
-        from app.core.config import Config
-        from app.core.services import build_services
         from app.workflows.commands.monitoring_commands import MonitoringCommands
         
         config = Config.from_env()

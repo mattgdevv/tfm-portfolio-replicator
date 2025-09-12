@@ -14,6 +14,7 @@ import logging
 # from .byma_historical import byma_historical_service
 from ..processors.cedeares import CEDEARProcessor
 from ..utils.business_days import get_market_status_message
+from ..models.portfolio import Portfolio
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -308,3 +309,72 @@ class ArbitrageDetector:
         )
         
         return alert
+
+    async def analyze_portfolio(self, portfolio: 'Portfolio', threshold: float = None) -> Dict[str, Any]:
+        """
+        Análisis completo de portfolio - reemplaza UnifiedAnalysisService
+
+        Args:
+            portfolio: Portfolio a analizar
+            threshold: Umbral de arbitraje (usa config.arbitrage_threshold si None)
+
+        Returns:
+            Dict con análisis completo: precios, arbitraje, métricas
+        """
+
+        # Usar threshold de config si no se especifica
+        if threshold is None:
+            threshold = self.config.arbitrage_threshold if self.config else 0.005
+
+        logger.info(f"🔍 Analizando portfolio con {len(portfolio.positions)} posiciones (threshold: {threshold})")
+
+        # Extraer solo CEDEARs para análisis
+        cedear_symbols = []
+        for pos in portfolio.positions:
+            if self.cedear_processor.is_cedear(pos.symbol):
+                cedear_symbols.append(pos.symbol)
+
+        if not cedear_symbols:
+            logger.warning("⚠️  No se encontraron CEDEARs en el portfolio")
+            return {"arbitrage_opportunities": [], "price_data": {}, "summary": "No CEDEARs found"}
+
+        logger.info(f"📊 Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
+
+        # Análisis de arbitraje usando el método existente
+        opportunities = await self.detect_portfolio_arbitrages(cedear_symbols, threshold)
+
+        # Obtener datos de precios para métricas
+        price_data = {}
+        sources_used = set()
+
+        for symbol in cedear_symbols:
+            try:
+                underlying_data = await self.international_service.get_stock_price(symbol)
+                if underlying_data:
+                    price_data[symbol] = {
+                        "underlying_price_usd": underlying_data["price"],
+                        "source": underlying_data.get("source", "unknown"),
+                        "fallback_used": underlying_data.get("fallback_used", False)
+                    }
+                    sources_used.add(underlying_data.get("source", "unknown"))
+            except Exception as e:
+                logger.debug(f"❌ Error obteniendo precios para {symbol}: {e}")
+                continue
+
+        # Generar resumen
+        mode = "COMPLETO (IOL)" if self.iol_session else "LIMITADO"
+        sources_summary = ", ".join(sources_used) if sources_used else "ninguna"
+
+        summary = {
+            "mode": mode,
+            "total_cedeares": len(cedear_symbols),
+            "opportunities_found": len(opportunities),
+            "sources_used": sources_summary,
+            "threshold": threshold
+        }
+
+        return {
+            "arbitrage_opportunities": opportunities,
+            "price_data": price_data,
+            "summary": summary
+        }

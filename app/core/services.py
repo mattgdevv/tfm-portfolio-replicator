@@ -12,7 +12,6 @@ from ..services.dollar_rate import DollarRateService
 from ..services.international_prices import InternationalPriceService
 from ..integrations.byma_integration import BYMAIntegration
 from ..integrations.iol import IOLIntegration
-from ..services.unified_analysis import UnifiedAnalysisService
 from ..services.variation_analyzer import VariationAnalyzer
 from ..services.price_fetcher import PriceFetcher
 from ..services.file_service import FileService
@@ -34,7 +33,6 @@ class Services:
     international_service: InternationalPriceService
     byma_integration: BYMAIntegration
     iol_integration: IOLIntegration
-    unified_analysis: UnifiedAnalysisService
     variation_analyzer: VariationAnalyzer
     price_fetcher: PriceFetcher
     portfolio_processor: PortfolioProcessor
@@ -89,13 +87,6 @@ def build_services(config: Optional[Config] = None) -> Services:
         config=config
     )
     
-    unified_analysis = UnifiedAnalysisService(
-        arbitrage_detector=arbitrage_detector,
-        cedear_processor=cedear_processor,
-        international_service=international_service,
-        config=config
-    )
-    
     variation_analyzer = VariationAnalyzer(
         cedear_processor=cedear_processor,
         international_service=international_service,
@@ -127,7 +118,6 @@ def build_services(config: Optional[Config] = None) -> Services:
         international_service=international_service,
         byma_integration=byma_integration,
         iol_integration=None,  # Se crea después
-        unified_analysis=unified_analysis,
         variation_analyzer=variation_analyzer,
         price_fetcher=price_fetcher,
         portfolio_processor=portfolio_processor,

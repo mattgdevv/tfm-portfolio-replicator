@@ -5,6 +5,5 @@
   "cache_ttl_seconds": 300,
   "retry_attempts": 3,
   "verbose_logging": false,
-  "test_symbol": "AAPL",
   "max_portfolio_size": 100
 }

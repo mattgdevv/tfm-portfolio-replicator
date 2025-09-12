@@ -311,9 +311,9 @@ class BYMAIntegration:
                     result["authenticated"] = True
 
                     # Hacer una request de prueba simple (timeout más corto para health check)
-                    test_url = "https://api.invertironline.com/api/v2/Usuario"
+                    health_check_url = "https://api.invertironline.com/api/v2/Usuario"
                     health_timeout = min(self.timeout, 5)  # Usar config pero máximo 5s para health check
-                    response = iol_session.get(test_url, timeout=health_timeout)
+                    response = iol_session.get(health_check_url, timeout=health_timeout)
 
                     if response.status_code == 200:
                         result["status"] = True

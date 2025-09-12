@@ -50,11 +50,11 @@ class ConfigService:
         print(f"✅ Fuente CCL actualizada a: {source_names[new_source]}")
         
         # Probar la nueva fuente
-        test = input("\n🧪 ¿Probar la nueva fuente? (s/n): ").strip().lower()
-        if test == 's':
-            await self._test_ccl_source(new_source)
+        probar = input("\n🧪 ¿Probar la nueva fuente? (s/n): ").strip().lower()
+        if probar == 's':
+            await self._probar_ccl_source(new_source)
     
-    async def _test_ccl_source(self, source: str):
+    async def _probar_ccl_source(self, source: str):
         """Prueba una fuente CCL específica"""
         print(f"\n🧪 Probando fuente: {source}")
         

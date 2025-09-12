@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 FORBIDDEN_GLOBAL_IMPORTS = {
     "app.services.dollar_rate.dollar_service",
     "app.services.arbitrage_detector.arbitrage_detector", 
-    "app.services.unified_analysis.unified_analysis",
     "app.services.international_prices.international_price_service",
     "app.services.byma_historical.byma_historical_service",
     "app.services.variation_analyzer.variation_analyzer",
@@ -31,7 +30,7 @@ class GlobalServiceImportVisitor(ast.NodeVisitor):
         self.forbidden_constructors = {
             "CEDEARProcessor", "PortfolioProcessor", "VariationAnalyzer", 
             "ArbitrageDetector", "DollarRateService", "InternationalPriceService",
-            "BYMAHistoricalService", "UnifiedAnalysisService"
+            "BYMAHistoricalService"
         }
     
     def visit_ImportFrom(self, node: ast.ImportFrom):
@@ -94,7 +93,7 @@ def validate_project_strict_di(project_root: Path,
     
     Args:
         project_root: Directorio raíz del proyecto
-        excluded_patterns: Patrones de archivos a excluir (ej: {"*_backup.py", "tests/*"})
+        excluded_patterns: Patrones de archivos a excluir (ej: {"*_backup.py"})
     
     Returns:
         True si no hay violaciones, False si las hay
@@ -102,7 +101,6 @@ def validate_project_strict_di(project_root: Path,
     if excluded_patterns is None:
         excluded_patterns = {
             "*_backup.py",   # Archivos legacy (ya eliminados)
-            "tests/*",       # Tests pueden usar mocks/constructores directos
             "scripts/scheduler.py",  # Script legacy específico (por ahora)
             "app/core/services.py",  # Factory DI - debe crear instancias
             "app/core/validation.py", # Este archivo - no aplica a sí mismo
@@ -144,7 +142,6 @@ def check_runtime_di_strict():
     forbidden_globals = [
         "app.services.dollar_rate.dollar_service",
         "app.services.arbitrage_detector.arbitrage_detector",
-        "app.services.unified_analysis.unified_analysis",
         "app.services.international_prices.international_price_service",
         "app.services.byma_historical.byma_historical_service",
         "app.services.variation_analyzer.variation_analyzer",

@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
 [![Async](https://img.shields.io/badge/Async-asyncio-green.svg)](https://docs.python.org/3/library/asyncio.html)
-[![Architecture](https://img.shields.io/badge/Architecture-DI-orange.svg)](https://en.wikipedia.org/wiki/Dependenc### 📋 Casos de Uso Testing
+[![Architecture](https://img.shields.io/badge/Architecture-DI-orange.svg)](https://en.wikipedia.org/wiki/Dependenc### 📋 Casos de Uso Demo
 ```bash
 # 1. Portfolio real IOL (requiere credenciales)
 python main.py → opción 1
@@ -16,12 +16,12 @@ python main.py → opción 2 → data.csv
 # 3. Pipeline ETL completo
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
-# 4. Testing periodicidad (ejecución cada 2 minutos)
+# 4. Demo de periodicidad (ejecución cada 2 minutos)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
 # Dejar correr unos minutos, luego Ctrl+C para detener
 # Verificar múltiples registros en BD: sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), id FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
 
-# 4b. Testing periodicidad con IOL (requiere credenciales)
+# 4b. Demo de periodicidad con IOL (requiere credenciales)
 python scripts/etl_cli.py --source iol --schedule 2min
 
 # 5. Verificación servicios
@@ -62,7 +62,7 @@ python scripts/etl_cli.py --health-check
 ### 🖥️ **Modo Interactivo** (`main.py`)
 - **Propósito**: Exploración manual y análisis paso a paso
 - **Interfaz**: Menú con 9 opciones
-- **Usuario objetivo**: Analistas, desarrollo, testing
+- **Usuario objetivo**: Analistas, desarrollo, demos
 - **Entrada**: Input usuario (credenciales, archivos, configuración)
 
 ### 🤖 **Modo ETL Automático** (`scripts/etl_cli.py`)
@@ -188,12 +188,12 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --s
 # Ejecutar portfolio IOL cada 30 minutos (requiere credenciales)
 python scripts/etl_cli.py --source iol --schedule 30min
 
-# Para testing: ejecutar cada 2 minutos (solo para pruebas)
+# Para demos: ejecutar cada 2 minutos (solo para pruebas)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
 ```
 
 **Opciones de scheduling disponibles:**
-- `2min` - Cada 2 minutos (solo para testing/demos)
+- `2min` - Cada 2 minutos (solo para demos)
 - `30min` - Cada 30 minutos (recomendado para desarrollo)
 - `1hour` / `hourly` - Cada hora (recomendado para producción)
 - `daily` - Una vez por día
@@ -251,7 +251,7 @@ python scripts/etl_cli.py --source excel --file mi_portfolio.csv --broker bullma
 
 ### 🕒 **Caso 4: ETL Periódico Automático**
 ```bash
-# Testing/Demo: Ejecutar cada 2 minutos para ver múltiples ejecuciones rápido
+# Demo: Ejecutar cada 2 minutos para ver múltiples ejecuciones rápido
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
 
 # Producción: Monitoreo continuo cada 30 minutos
@@ -468,7 +468,7 @@ Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos AP
 ```
 
 ### Schedule Options
-- `2min` - Every 2 minutes (testing/demo only)
+- `2min` - Every 2 minutes (demo only)
 - `30min` - Every 30 minutes (recommended for development)
 - `1hour` / `hourly` - Every hour (recommended for production)
 - `daily` - Once per day (daily analysis)
@@ -508,7 +508,7 @@ AAPL,10,150.0,bullmarket
 MSFT,5,300.0,bullmarket
 ```
 
-## 🧪 Testing y Debugging
+## 🧪 Verificación y Debugging
 
 ### 🔍 Verificar Sistema
 ```bash
@@ -549,27 +549,27 @@ python main.py
 # ✅ Sistema usa fallbacks automáticos
 ```
 
-## 🧪 Testing
+## 🔍 Verificación y Validación
 
-### ✅ Sistema de Testing DI-Compatible
+### ✅ Sistema de Validación Runtime
 ```python
-import pytest
+# Validación automática durante ejecución
 from app.core.services import build_services
 from app.core.config import Config
 
-def test_arbitrage_detector():
+def validar_arbitrage_detector():
     config = Config.from_env()
     services = build_services(config)
     detector = services.arbitrage_detector
-    # Test logic here...
+    # Lógica de validación aquí...
 
-def test_portfolio_processing():
+def validar_portfolio_processing():
     services = build_services(Config.from_env())
     processor = services.portfolio_processor
-    # Test processing logic...
+    # Lógica de procesamiento de validación...
 ```
 
-### � Casos de Uso Testing
+### 📋 Casos de Uso Validación
 ```bash
 # 1. Portfolio real IOL (requiere credenciales)
 python main.py → opción 1
@@ -584,10 +584,10 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 # 4. Health check rápido de servicios
 python scripts/etl_cli.py --health-check
 
-# 4b. Testing periodicidad con IOL (requiere credenciales)
+# 4b. Validación periodicidad con IOL (requiere credenciales)
 python scripts/etl_cli.py --source iol --schedule 2min
 
-# 5. Verificación servicios interactiva
+# 5. Validación servicios interactiva
 python main.py → opción 9
 ```
 
@@ -596,10 +596,10 @@ python main.py → opción 9
 ### ⚠️ Limitaciones Actuales
 - **IOL session expiry**: Re-autenticación requerida periódicamente
 - **BYMA PDF dependency**: Actualizaciones manuales para nuevos CEDEARs
-- **Test suite**: Migración a pytest con soporte DI en progreso
+- **Validación runtime**: Sistema de validación automática durante ejecución
 
 ### 🔮 Roadmap TFM
-- [ ] **Testing automatizado** completo con pytest
+- [ ] **Validación completa** con health checks automáticos
 - [ ] **CI/CD pipeline** con GitHub Actions  
 - [ ] **Docker containerization** para deployment
 - [ ] **Monitoring y alertas** para producción
@@ -614,7 +614,7 @@ Este proyecto es el **Trabajo Final de Máster (TFM)** para el perfil **Data Eng
 - **Gestión avanzada de datos** multi-fuente con fallbacks inteligentes  
 - **Procesamiento en tiempo real** y batch con Python asyncio
 - **Base de datos SQLite** para persistencia y análisis histórico
-- **Dependency Injection** para modularidad y testing
+- **Dependency Injection** para modularidad y verificación
 - **Estimación inteligente** cuando datos en tiempo real no disponibles
 
 ### 💾 Gestión de Datos

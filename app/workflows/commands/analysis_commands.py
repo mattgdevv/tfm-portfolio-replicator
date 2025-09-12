@@ -3,6 +3,7 @@ ETL Analysis Commands
 Comandos para análisis de datos y transformaciones (arbitraje, cache management)
 """
 
+from typing import Dict, Any
 from app.core.services import Services
 from app.models.portfolio import Portfolio, Position
 
@@ -56,18 +57,18 @@ class AnalysisCommands:
         
         # Configurar el servicio unificado
         # Configurar sesión IOL en todos los servicios que la necesitan
-        self.services.unified_analysis.set_iol_session(iol_session)
+        self.services.arbitrage_detector.set_iol_session(iol_session)
         self.services.variation_analyzer.set_iol_session(iol_session)
         self.services.price_fetcher.set_iol_session(iol_session)
         
         # Realizar análisis
-        analysis_result = await self.services.unified_analysis.analyze_portfolio(
+        analysis_result = await self.services.arbitrage_detector.analyze_portfolio(
             portfolio, 
             threshold=self.services.config.arbitrage_threshold
         )
         
         # Mostrar resultados
-        summary_text = self.services.unified_analysis.format_analysis_summary(analysis_result)
+        summary_text = self._format_analysis_summary(analysis_result)
         print(summary_text)
         
         # Mostrar alertas detalladas si hay oportunidades
@@ -130,13 +131,13 @@ class AnalysisCommands:
         temp_portfolio = Portfolio(positions=temp_positions, source="Manual")
         
         # Análisis usando sistema unificado
-        analysis_result = await self.services.unified_analysis.analyze_portfolio(
+        analysis_result = await self.services.arbitrage_detector.analyze_portfolio(
             temp_portfolio, 
             threshold=self.services.config.arbitrage_threshold
         )
         
         # Mostrar resultados
-        summary_text = self.services.unified_analysis.format_analysis_summary(analysis_result)
+        summary_text = self._format_analysis_summary(analysis_result)
         print(summary_text)
         
         return analysis_result
@@ -166,3 +167,22 @@ class AnalysisCommands:
         except Exception as e:
             print(f"❌ Error refrescando CCL: {e}")
             return False
+
+    def _format_analysis_summary(self, analysis_result: Dict[str, Any]) -> str:
+        """Formatea resumen de análisis de manera consistente"""
+        summary = analysis_result["summary"]
+        opportunities = analysis_result["arbitrage_opportunities"]
+
+        # Header
+        mode_emoji = "🔴" if "COMPLETO" in summary["mode"] else "🟡"
+        result = f"\n{mode_emoji} Modo {summary['mode']}: Usando precios desde {summary['sources_used']}\n"
+
+        # Resultados
+        if opportunities:
+            result += f"\n🚨 {len(opportunities)} oportunidades de arbitraje detectadas (>{summary['threshold']:.1%}):\n"
+            for opp in opportunities:
+                result += f"  • {opp.symbol}: {opp.difference_percentage:+.1%} - {opp.recommendation}\n"
+        else:
+            result += f"\n✅ No se detectaron oportunidades de arbitraje superiores al {summary['threshold']:.1%}\n"
+
+        return result

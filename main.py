@@ -1,33 +1,9 @@
 #!/usr/bin/env python3
 """
 Portfolio Replicator ETL Pipeline
-Pipeline ETL para análisis de arbitraje         while True:
-                  print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
-            print("4. 🏥 Diagnóstico de servicios")
-            print("5. 🚪 Salir")       print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
-            print("4. 🏥 Diagnóstico de servicios")
-            print("5. 🚪 Salir")     print("\n🎯 ¿Qué flujo interactivo deseas ejecutar?")
-            print("1. 📥 IOL → Análisis → Guardado (interactivo)")
-            print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
-            print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
-            print("4. 🏥 Diagnóstico de servicios")
-            print("5. 🚪 Salir")
+Pipeline ETL para análisis de arbitraje multi-fuente para CEDEARs vs activos subyacentes.
 
-            choice = input("\nElige opción (1-5): ").strip()
-            
-            if choice == "1":
-                await self.interactive_flows.interactive_iol_extraction_and_analysis()
-            elif choice == "2":
-                await self.interactive_flows.interactive_file_extraction_and_analysis()
-            elif choice == "3":
-                await self.interactive_flows.run_data_update_command()
-            elif choice == "4":
-                await self.interactive_flows.run_health_monitoring_command()
-            elif choice == "5":
-                print("\n👋 ¡Hasta luego!")
-                break
-            else:
-                print("❌ Opción inválida. Elige entre 1-5.")grama implementa un pipeline ETL completo que:
+Esta aplicación implementa un pipeline ETL completo que:
 - Extrae datos de múltiples fuentes (IOL, Excel/CSV, BYMA, Finnhub)
 - Transforma los datos (conversión CEDEARs, cálculo arbitraje)
 - Carga resultados estructurados (JSON, análisis, alertas)
@@ -48,6 +24,11 @@ from app.utils.logging_config import setup_quiet_logging
 setup_quiet_logging()
 
 # Imports del sistema de flujos interactivos
+from app.workflows import InteractiveFlows
+from app.integrations.iol import IOLIntegration
+from app.core.config import Config
+from app.core.services import build_services, Services
+from app.utils.business_days import get_market_status_message
 from app.workflows import InteractiveFlows
 from app.integrations.iol import IOLIntegration
 from app.core.config import Config
@@ -127,9 +108,9 @@ class PortfolioReplicatorInteractive:
             print("\n🎯 ¿Qué flujo interactivo deseas ejecutar?")
             print("1. 📥 IOL → Análisis → Guardado (interactivo)")
             print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
-            print("3. � Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
             print("4. 🏥 Diagnóstico de servicios")
-            print("5. � Salir")
+            print("5. 🚪 Salir")
 
             choice = input("\nElige opción (1-5): ").strip()
             
