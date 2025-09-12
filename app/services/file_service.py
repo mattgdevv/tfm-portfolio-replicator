@@ -12,9 +12,6 @@ from app.models.portfolio import Portfolio, ConvertedPortfolio
 class FileService:
     """Servicio para operaciones de archivos y exportación"""
     
-    def __init__(self):
-        pass
-    
     async def save_results(self, original: Portfolio, converted: ConvertedPortfolio = None):
         """Guarda los resultados en archivos"""
         try:

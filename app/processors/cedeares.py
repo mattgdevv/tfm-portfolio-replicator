@@ -10,25 +10,21 @@ class CEDEARProcessor:
     
     def _load_cedeares_data(self) -> list:
         """Carga los datos de CEDEARs desde el archivo con ratios del PDF de BYMA."""
-        # Buscar primero el archivo del PDF, luego el de COMAFI como fallback
+        # Usar el archivo del PDF como fuente principal
         data_path = Path(__file__).parent.parent.parent / "byma_cedeares_pdf.json"
         
         if not data_path.exists():
-            data_path = Path(__file__).parent.parent.parent / "byma_cedeares_with_ratios.json"
-            if not data_path.exists():
-                print("❌ No se encontraron datos de CEDEARs")
-                print("🔄 Descargando datos de CEDEARs desde BYMA por primera vez...")
-                if self._download_cedeares_data():
-                    # Intentar cargar nuevamente después de la descarga
-                    data_path = Path(__file__).parent.parent.parent / "byma_cedeares_pdf.json"
-                    if not data_path.exists():
-                        print("❌ Error: No se pudo descargar los datos de CEDEARs")
-                        return []
-                else:
-                    print("❌ Error descargando datos de CEDEARs")
+            print("❌ No se encontraron datos de CEDEARs")
+            print("🔄 Descargando datos de CEDEARs desde BYMA por primera vez...")
+            if self._download_cedeares_data():
+                # Intentar cargar nuevamente después de la descarga
+                data_path = Path(__file__).parent.parent.parent / "byma_cedeares_pdf.json"
+                if not data_path.exists():
+                    print("❌ Error: No se pudo descargar los datos de CEDEARs")
                     return []
             else:
-                print("⚠️  Usando datos de COMAFI como fallback")
+                print("❌ Error descargando datos de CEDEARs")
+                return []
         
         with open(data_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -78,7 +74,7 @@ class CEDEARProcessor:
         normalized_symbol = cedear_symbol.upper().strip()
         cedear = self.cedeares_map.get(normalized_symbol)
         if not cedear:
-            print(f"❌ Símbolo '{cedear_symbol}' NO encontrado en byma_cedeares_with_ratios.json. No se puede obtener información de subyacente.")
+            print(f"❌ Símbolo '{cedear_symbol}' NO encontrado en datos de CEDEARs. No se puede obtener información de subyacente.")
             return None
         return cedear
     

@@ -350,94 +350,11 @@ class BYMAPDFProcessor:
         
         print("\n✅ Proceso completado!")
 
-    def extract_markets_from_text(self, text: str) -> List[str]:
-        """Extrae todos los mercados únicos del texto del PDF"""
-        # Lista hardcodeada de mercados conocidos basada en el análisis del PDF
-        KNOWN_MARKETS = [
-            "NYSE",
-            "NASDAQ", 
-            "B3",
-            "FRANKFURT",
-            "NYSE ARCA",
-            "OTC",
-            "XETRA",
-            "NYSE AMERICAN",
-            "NASDAQ GS",
-            "NASDAQ GM",
-            "OTC US",
-            "LONDON STOCK EXCHANGE",
-            "BOVESPA",
-            "NASDAQ CM",
-            "New York",
-            "-"
-        ]
-        
-        markets = set()
-        
-        lines = text.split('\n')
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            
-            # Buscar mercados conocidos al final de la línea, antes del ratio
-            for market in KNOWN_MARKETS:
-                # Patrón: "... MERCADO RATIO"
-                pattern = rf'\s+{re.escape(market)}\s+\d+:\d+$'
-                if re.search(pattern, line, re.IGNORECASE):
-                    markets.add(market.upper())
-                    break
-        
-        # Ordenar alfabéticamente
-        sorted_markets = sorted(list(markets))
-        
-        print(f"📊 Mercados encontrados ({len(sorted_markets)}):")
-        for i, market in enumerate(sorted_markets, 1):
-            print(f"  {i:2d}. {market}")
-        
-        return sorted_markets
-
-    def extract_markets_only(self):
-        """Función específica para extraer solo los mercados"""
-        print("🔍 Extrayendo solo los mercados del PDF de BYMA...")
-        
-        # Descargar PDF
-        pdf_content = self.download_pdf()
-        if not pdf_content:
-            return []
-        
-        # Extraer texto
-        text = self.extract_text_from_pdf(pdf_content)
-        if not text:
-            return []
-        
-        # Guardar texto para debugging
-        with open("byma_pdf_text.txt", "w", encoding="utf-8") as f:
-            f.write(text)
-        print("📝 Texto guardado en byma_pdf_text.txt")
-        
-        # Extraer mercados
-        markets = self.extract_markets_from_text(text)
-        
-        # Guardar mercados en archivo
-        markets_file = "byma_markets.json"
-        with open(markets_file, "w", encoding="utf-8") as f:
-            json.dump(markets, f, indent=2, ensure_ascii=False)
-        
-        print(f"💾 Mercados guardados en {markets_file}")
-        return markets
-
 def main():
     import sys
     
     processor = BYMAPDFProcessor()
-    
-    if len(sys.argv) > 1 and sys.argv[1] == "--markets-only":
-        # Solo extraer mercados
-        processor.extract_markets_only()
-    else:
-        # Proceso completo de CEDEARs
-        processor.run()
+    processor.run()
 
 if __name__ == "__main__":
     main() 
