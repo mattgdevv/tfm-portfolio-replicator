@@ -159,24 +159,3 @@ def build_services(config: Optional[Config] = None) -> Services:
     logger.info(f"✅ Servicios construidos para mercado: {config.market}")
     
     return services_container
-
-
-def build_test_services(mock_config: Optional[Config] = None) -> Services:
-    """
-    Construye servicios para testing con mocks/configuración específica
-    
-    Args:
-        mock_config: Configuración específica para tests
-        
-    Returns:
-        Services: Container con servicios para testing
-    """
-    if mock_config is None:
-        mock_config = Config(
-            market="test",
-            arbitrage_threshold=0.01,  # 1% para tests
-            cache_ttl_seconds=60
-        )
-    
-    logger.info("🧪 Construyendo servicios para testing...")
-    return build_services(mock_config)

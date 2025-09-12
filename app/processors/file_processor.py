@@ -3,16 +3,9 @@ import json
 import asyncio
 import os
 from typing import Dict, Any, Optional, List
-import google.generativeai as genai
 from ..models.portfolio import Portfolio, Position, ConvertedPortfolio
 from .cedeares import CEDEARProcessor
-# ❌ ELIMINADO: imports de servicios globales - migrar a DI cuando sea necesario
-# from ..services.dollar_rate import dollar_service
-# from ..services.arbitrage_detector import arbitrage_detector, ArbitrageOpportunity
-# from ..services.variation_analyzer import variation_analyzer, CEDEARVariationAnalysis
-
 from ..services.arbitrage_detector import ArbitrageOpportunity
-from ..services.variation_analyzer import CEDEARVariationAnalysis
 
 class PortfolioProcessor:
     def __init__(self, cedear_processor, dollar_service=None, arbitrage_detector=None, variation_analyzer=None, config=None, verbose=False, debug=False):
@@ -31,19 +24,8 @@ class PortfolioProcessor:
         if cedear_processor is None:
             raise ValueError("cedear_processor es requerido - use build_services() para crear instancias")
             
-        # Configurar Gemini (leer desde config o variables de entorno)
-        gemini_api_key = None
-        if config and hasattr(config, 'gemini_api_key'):
-            gemini_api_key = config.gemini_api_key
-        else:
-            gemini_api_key = os.getenv("GEMINI_API_KEY")
-            
-        if gemini_api_key:
-            genai.configure(api_key=gemini_api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
-        else:
-            self.model = None
-            
+        # Configuración adicional si es necesaria
+        
         self.cedear_processor = cedear_processor
         self.dollar_service = dollar_service
         self.arbitrage_detector = arbitrage_detector
@@ -276,74 +258,12 @@ class PortfolioProcessor:
         
         return opportunities
     
-    async def analyze_portfolio_variations(self, portfolio: Portfolio, iol_session=None) -> List[CEDEARVariationAnalysis]:
+    async def analyze_portfolio_variations(self, portfolio: Portfolio, iol_session=None) -> list:
         """
-        Analiza las variaciones diarias de los CEDEARs en el portfolio
-        
-        Args:
-            portfolio: Portfolio convertido con CEDEARs
-            iol_session: Sesión IOL para modo completo (opcional)
-            
-        Returns:
-            Lista de análisis de variaciones
+        Función eliminada - análisis de variaciones no se usa en el core del TFM
         """
-        
-        print("\n📊 Iniciando análisis de variaciones diarias...")
-        
-        # Verificar disponibilidad de servicios
-        if not self.variation_analyzer:
-            raise ValueError("variation_analyzer no disponible - use build_services() para crear instancias completas")
-        
-        try:
-            # Configurar el analizador con la sesión IOL si está disponible
-            if iol_session:
-                self.variation_analyzer.set_iol_session(iol_session)
-                print("🔴 Modo: TIEMPO REAL (con IOL)")
-            else:
-                print("🟡 Modo: TEÓRICO/BYMA (sin IOL)")
-            
-            # Extraer símbolos de CEDEARs únicos del portfolio
-            cedear_symbols = set()
-            
-            for position in portfolio.positions:
-                if self.cedear_processor.is_cedear(position.symbol):
-                    cedear_symbols.add(position.symbol)
-            
-            cedear_list = list(cedear_symbols)
-            
-            if not cedear_list:
-                print("⚠️  No se encontraron CEDEARs en el portfolio")
-                return []
-            
-            print(f"🔍 Analizando variaciones para {len(cedear_list)} CEDEARs únicos: {cedear_list}")
-            
-            # Realizar análisis de variaciones
-            analyses = await self.variation_analyzer.analyze_portfolio_variations(cedear_list)
-            
-            if analyses:
-                print(f"\n📈 RESUMEN DE VARIACIONES:")
-                print(self.variation_analyzer.format_variation_report(analyses))
-                
-                # Identificar casos interesantes
-                significant_variations = [
-                    a for a in analyses 
-                    if abs(a.var_extra) >= 0.02  # 2% threshold
-                ]
-                
-                if significant_variations:
-                    print(f"\n🚨 {len(significant_variations)} CEDEARs con variaciones significativas:")
-                    for analysis in significant_variations:
-                        print(f"   • {analysis.symbol}: {analysis.var_extra:+.1%} ({analysis.interpret_variation()})")
-                else:
-                    print(f"\n✅ Todos los CEDEARs muestran variaciones normales")
-            else:
-                print("❌ No se pudieron completar los análisis de variaciones")
-            
-            return analyses
-            
-        except Exception as e:
-            print(f"❌ Error en análisis de variaciones: {str(e)}")
-            return []
+        print("⚠️  Análisis de variaciones eliminado - funcionalidad no core del ETL")
+        return []
     
 
     def _clean_symbol(self, symbol: str) -> str:

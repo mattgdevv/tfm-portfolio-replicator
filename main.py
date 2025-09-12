@@ -1,9 +1,33 @@
 #!/usr/bin/env python3
 """
 Portfolio Replicator ETL Pipeline
-Pipeline ETL para análisis de arbitraje de CEDEARs
+Pipeline ETL para análisis de arbitraje         while True:
+                  print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("4. 🏥 Diagnóstico de servicios")
+            print("5. 🚪 Salir")       print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("4. 🏥 Diagnóstico de servicios")
+            print("5. 🚪 Salir")     print("\n🎯 ¿Qué flujo interactivo deseas ejecutar?")
+            print("1. 📥 IOL → Análisis → Guardado (interactivo)")
+            print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
+            print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("4. 🏥 Diagnóstico de servicios")
+            print("5. 🚪 Salir")
 
-Este programa implementa un pipeline ETL completo que:
+            choice = input("\nElige opción (1-5): ").strip()
+            
+            if choice == "1":
+                await self.interactive_flows.interactive_iol_extraction_and_analysis()
+            elif choice == "2":
+                await self.interactive_flows.interactive_file_extraction_and_analysis()
+            elif choice == "3":
+                await self.interactive_flows.run_data_update_command()
+            elif choice == "4":
+                await self.interactive_flows.run_health_monitoring_command()
+            elif choice == "5":
+                print("\n👋 ¡Hasta luego!")
+                break
+            else:
+                print("❌ Opción inválida. Elige entre 1-5.")grama implementa un pipeline ETL completo que:
 - Extrae datos de múltiples fuentes (IOL, Excel/CSV, BYMA, Finnhub)
 - Transforma los datos (conversión CEDEARs, cálculo arbitraje)
 - Carga resultados estructurados (JSON, análisis, alertas)
@@ -103,37 +127,25 @@ class PortfolioReplicatorInteractive:
             print("\n🎯 ¿Qué flujo interactivo deseas ejecutar?")
             print("1. 📥 IOL → Análisis → Guardado (interactivo)")
             print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
-            print("3. 📋 Mostrar lista de CEDEARs")
-            print("4. ⚙️  Configurar fuente CCL")
-            print("5. 🚪 Salir")
-            print("6. 🔄 Actualizar datos CEDEARs")
-            print("7. 🎯 Análisis de CEDEARs específicos")
-            print("8. 🔄 Refrescar cache CCL")
-            print("9. 🏥 Diagnóstico de servicios")
+            print("3. � Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("4. 🏥 Diagnóstico de servicios")
+            print("5. � Salir")
 
-            choice = input("\nElige opción (1-9): ").strip()
+            choice = input("\nElige opción (1-5): ").strip()
             
             if choice == "1":
                 await self.interactive_flows.interactive_iol_extraction_and_analysis()
             elif choice == "2":
                 await self.interactive_flows.interactive_file_extraction_and_analysis()
             elif choice == "3":
-                await self.interactive_flows.run_cedear_monitoring_command()
+                await self.interactive_flows.run_data_update_command()
             elif choice == "4":
-                await self.interactive_flows.run_configuration_command()
+                await self.interactive_flows.run_health_monitoring_command()
             elif choice == "5":
                 print("\n👋 ¡Hasta luego!")
                 break
-            elif choice == "6":
-                await self.interactive_flows.run_data_update_command()
-            elif choice == "7":
-                await self.interactive_flows.run_arbitrage_analysis_command()
-            elif choice == "8":
-                await self.interactive_flows.run_cache_refresh_command()
-            elif choice == "9":
-                await self.interactive_flows.run_health_monitoring_command()
             else:
-                print("❌ Opción inválida. Elige entre 1-9.")
+                print("❌ Opción inválida. Elige entre 1-5.")
 
 
 async def main():

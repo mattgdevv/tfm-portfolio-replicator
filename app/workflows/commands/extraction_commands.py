@@ -33,26 +33,47 @@ class ExtractionCommands:
             Portfolio: Portfolio extraído desde IOL
         """
         print("\n📊 Obteniendo portfolio desde IOL...")
+        print("💡 Presiona ESPACIO + Enter para volver al menú principal")
         
         try:
-            # Solicitar credenciales
-            username = input("Usuario IOL: ").strip()
-            password = getpass("Contraseña IOL: ")
-            
-            if not username or not password:
-                print("❌ Usuario y contraseña son requeridos")
-                return None
-            
-            # Autenticar con IOL
-            print("🔐 Autenticando con IOL...")
+            # Loop principal para credenciales
             while True:
+                # Solicitar credenciales con validación obligatoria
+                while True:
+                    username_input = input("Usuario IOL: ")
+                    username = username_input.strip()
+                    
+                    # Si presiona espacio, cancelar
+                    if username_input == " " or (not username and username_input):
+                        print("⬅️  Volviendo al menú principal...")
+                        return None
+                    
+                    if username:
+                        break
+                    print("⚠️  Usuario requerido. Intente de nuevo.")
+                
+                while True:
+                    password_input = getpass("Contraseña IOL: ")
+                    password = password_input.strip()
+                    
+                    # Si presiona espacio, cancelar
+                    if password_input == " " or (not password and password_input):
+                        print("⬅️  Volviendo al menú principal...")
+                        return None
+                    
+                    if password:
+                        break
+                    print("⚠️  Contraseña requerida. Intente de nuevo.")
+                
+                # Autenticar con IOL
+                print("🔐 Autenticando con IOL...")
                 try:
                     await self.iol_integration.authenticate(username, password)
                     break  # Si llega aquí, la autenticación fue exitosa
                 except Exception as e:
                     if "401" in str(e) or "Unauthorized" in str(e):
-                        print("❌ Contraseña incorrecta, intente de nuevo.")
-                        password = getpass("Contraseña IOL: ")
+                        print(f"❌ Credenciales incorrectas para usuario: {username}")
+                        print("🔄 Intente de nuevo...")
                     else:
                         print(f"❌ Error de autenticación: {e}")
                         return None

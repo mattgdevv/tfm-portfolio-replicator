@@ -18,7 +18,6 @@ class Config:
     
     # APIs y credenciales (se cargan dinámicamente)
     finnhub_api_key: str = ""
-    gemini_api_key: str = ""
     
     # IOL (se cargan dinámicamente)
     iol_username: str = ""
@@ -75,7 +74,6 @@ class Config:
         
         # Cargar API keys desde variables de entorno
         config.finnhub_api_key = os.getenv("FINNHUB_API_KEY", "")
-        config.gemini_api_key = os.getenv("GEMINI_API_KEY", "")
         config.iol_username = os.getenv("IOL_USERNAME", "")
         config.iol_password = os.getenv("IOL_PASSWORD", "")
         
@@ -93,9 +91,6 @@ class Config:
         """Valida que la configuración sea válida"""
         if not self.finnhub_api_key:
             print("⚠️  FINNHUB_API_KEY no configurada - precios internacionales limitados")
-        
-        if not self.gemini_api_key:
-            print("⚠️  GEMINI_API_KEY no configurada - mapeo Excel/CSV limitado")
         
         if self.arbitrage_threshold <= 0:
             raise ValueError("arbitrage_threshold debe ser > 0")

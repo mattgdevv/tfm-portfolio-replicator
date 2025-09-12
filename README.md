@@ -8,6 +8,7 @@
 ```bash
 # 1. Portfolio real IOL (requiere credenciales)
 python main.py → opción 1
+# O usando CLI: python scripts/etl_cli.py --source iol
 
 # 2. Portfolio archivo ejemplo
 python main.py → opción 2 → data.csv
@@ -19,6 +20,9 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
 # Dejar correr unos minutos, luego Ctrl+C para detener
 # Verificar múltiples registros en BD: sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), id FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
+
+# 4b. Testing periodicidad con IOL (requiere credenciales)
+python scripts/etl_cli.py --source iol --schedule 2min
 
 # 5. Verificación servicios
 python main.py → opción 9
@@ -107,7 +111,6 @@ IOL_PASSWORD=tu_password
 
 # API Keys opcionales (funcionalidades avanzadas)
 FINNHUB_API_KEY=tu_finnhub_key
-GEMINI_API_KEY=tu_gemini_key
 
 # Override configuración (sobrescribe .prefs.json)
 ARBITRAGE_THRESHOLD=0.01
@@ -127,8 +130,11 @@ python main.py
 
 ### 🤖 Modo ETL Automático (scripts/etl_cli.py)
 ```bash
-# Configuración básica (usa defaults)
+# Configuración básica con archivo Excel (usa defaults)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
+
+# Portfolio desde IOL (requiere credenciales en .env)
+python scripts/etl_cli.py --source iol
 
 # Configuración personalizada
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --threshold 0.015 --timeout 45
@@ -179,6 +185,9 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --s
 # Ejecutar diariamente 
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule daily
 
+# Ejecutar portfolio IOL cada 30 minutos (requiere credenciales)
+python scripts/etl_cli.py --source iol --schedule 30min
+
 # Para testing: ejecutar cada 2 minutos (solo para pruebas)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule 2min
 ```
@@ -216,9 +225,12 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 cp .env.example .env
 # Editar .env con IOL_USERNAME e IOL_PASSWORD
 
-# 2. Modo interactivo
+# 2a. Modo interactivo
 python main.py
 # Opción 1: "Obtener portfolio desde IOL"
+
+# 2b. Modo ETL automático (CLI)
+python scripts/etl_cli.py --source iol
 
 # 3. Verificar conexión
 python main.py  
@@ -247,6 +259,9 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --s
 
 # Análisis diario automático
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --schedule daily
+
+# Monitoreo continuo de portfolio IOL cada hora (requiere credenciales)
+python scripts/etl_cli.py --source iol --schedule 1hour
 
 # Verificar ejecuciones en BD
 sqlite3 output/portfolio_data.db "SELECT datetime(timestamp, 'localtime'), total_positions FROM portfolios ORDER BY timestamp DESC LIMIT 5;"
@@ -439,9 +454,9 @@ Cuando datos en tiempo real no disponibles (fines de semana, feriados, fallos AP
 
 ### ETL CLI Options
 ```bash
---source {excel}              # Data source type
---file FILE                   # Portfolio file path  
---broker {cocos,bullmarket,generic}  # Broker format
+--source {excel,iol}          # Data source type (iol requires credentials)
+--file FILE                   # Portfolio file path (required for excel source)
+--broker {cocos,bullmarket,generic}  # Broker format (for excel source)
 --threshold FLOAT             # Arbitrage threshold (default: config)
 --timeout INT                 # Request timeout in seconds
 --cache-ttl INT              # Cache TTL in seconds  
@@ -516,6 +531,7 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket --v
 # Test conexión IOL (requiere credenciales)
 python main.py
 # Seleccionar opción 1: "Obtener portfolio desde IOL"
+# O usando CLI: python scripts/etl_cli.py --source iol
 ```
 
 ### 🐛 Debugging Common Issues
@@ -557,6 +573,7 @@ def test_portfolio_processing():
 ```bash
 # 1. Portfolio real IOL (requiere credenciales)
 python main.py → opción 1
+# O usando CLI: python scripts/etl_cli.py --source iol
 
 # 2. Portfolio archivo ejemplo
 python main.py → opción 2 → data.csv
@@ -566,6 +583,9 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
 # 4. Health check rápido de servicios
 python scripts/etl_cli.py --health-check
+
+# 4b. Testing periodicidad con IOL (requiere credenciales)
+python scripts/etl_cli.py --source iol --schedule 2min
 
 # 5. Verificación servicios interactiva
 python main.py → opción 9
