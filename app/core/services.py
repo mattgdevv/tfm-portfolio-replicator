@@ -11,6 +11,7 @@ from ..services.arbitrage_detector import ArbitrageDetector
 from ..services.dollar_rate import DollarRateService
 from ..services.international_prices import InternationalPriceService
 from ..integrations.byma_integration import BYMAIntegration
+from ..integrations.iol import IOLIntegration
 from ..services.unified_analysis import UnifiedAnalysisService
 from ..services.variation_analyzer import VariationAnalyzer
 from ..services.price_fetcher import PriceFetcher
@@ -32,6 +33,7 @@ class Services:
     dollar_service: DollarRateService
     international_service: InternationalPriceService
     byma_integration: BYMAIntegration
+    iol_integration: IOLIntegration
     unified_analysis: UnifiedAnalysisService
     variation_analyzer: VariationAnalyzer
     price_fetcher: PriceFetcher
@@ -123,6 +125,7 @@ def build_services(config: Optional[Config] = None) -> Services:
         dollar_service=dollar_service,
         international_service=international_service,
         byma_integration=byma_integration,
+        iol_integration=None,  # Se crea después
         unified_analysis=unified_analysis,
         variation_analyzer=variation_analyzer,
         price_fetcher=price_fetcher,
@@ -150,6 +153,7 @@ def build_services(config: Optional[Config] = None) -> Services:
     # Actualizar el container con los servicios completos
     services_container.config_service = config_service
     services_container.portfolio_display_service = portfolio_display_service
+    services_container.iol_integration = iol_integration
     
     logger.info(f"✅ Servicios construidos para mercado: {config.market}")
     

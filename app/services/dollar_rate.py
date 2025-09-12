@@ -22,13 +22,13 @@ class DollarRateService:
     def __init__(self, config=None):
         # Configuración mediante config opcional (backward compatible)
         if config:
-            self.timeout = getattr(config, 'request_timeout', 10)
-            self._cache_ttl_seconds = getattr(config, 'cache_ttl_seconds', 180)
+            self.timeout = getattr(config, 'request_timeout', 30)  # Usar 30s por defecto en lugar de 10
+            self._cache_ttl_seconds = getattr(config, 'cache_ttl_seconds', 300)  # 5 minutos por defecto
             self.preferred_ccl_source = getattr(config, 'preferred_ccl_source', 'dolarapi_ccl')
         else:
-            # Valores por defecto para mantener compatibilidad
-            self.timeout = 10
-            self._cache_ttl_seconds = 180
+            # Valores por defecto mejorados para mantener compatibilidad
+            self.timeout = 30  # Aumentado de 10 a 30 segundos
+            self._cache_ttl_seconds = 300  # Aumentado de 180 a 300 segundos (5 minutos)
             self.preferred_ccl_source = 'dolarapi_ccl'
             
         self.sources_status = {

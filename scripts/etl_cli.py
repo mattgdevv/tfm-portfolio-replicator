@@ -82,8 +82,11 @@ def run_scheduled_etl(args):
         print_progress(f"🕒 MODO PERIÓDICO ACTIVADO")
         print_progress(f"📅 Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
         if _verbose_mode:
-            print(f"📁 Archivo: {args.file}")
-            print(f"🏦 Broker: {args.broker}")
+            if args.source == "excel":
+                print(f"📁 Archivo: {args.file}")
+                print(f"🏦 Broker: {args.broker}")
+            elif args.source == "iol":
+                print(f"🔗 Fuente: IOL API")
         print_progress(f"⏹️  Presiona Ctrl+C para detener")
         print_progress("=" * 50)
         
@@ -104,7 +107,7 @@ def run_scheduled_etl(args):
                 result = asyncio.run(run_etl_analysis(args))
                 
                 if result["exit_code"] == 0:
-                    opportunities = len(result.get("opportunities", []))
+                    opportunities = len(result.get("results", {}).get("opportunities", []))
                     print_progress(f"✅ Completado - {opportunities} oportunidades encontradas")
                 else:
                     print(f"❌ Error en ejecución: {result.get('error', 'Unknown')}")
@@ -112,7 +115,7 @@ def run_scheduled_etl(args):
                 log_event("INFO", "scheduled_execution_completed",
                          execution_count=execution_count,
                          exit_code=result["exit_code"],
-                         opportunities_found=len(result.get("opportunities", [])))
+                         opportunities_found=len(result.get("results", {}).get("opportunities", [])))
                 
             except Exception as e:
                 print(f"💥 Error en ejecución #{execution_count}: {e}")
@@ -184,6 +187,12 @@ Ejemplos de uso:
   # Solo análisis sin guardar archivos
   python etl_cli.py --source excel --file data.csv --no-save
   
+  # Análisis de portfolio desde IOL API
+  python etl_cli.py --source iol
+  
+  # Análisis IOL con threshold personalizado
+  python etl_cli.py --source iol --threshold 0.01
+  
   # Diagnóstico de servicios únicamente
   python etl_cli.py --health-check
         """
@@ -194,10 +203,10 @@ Ejemplos de uso:
                        help="Ejecutar solo diagnóstico de servicios (sin procesamiento ETL)")
     
     # Argumentos ETL (requeridos solo si no es health-check)
-    parser.add_argument("--source", choices=["excel"],
+    parser.add_argument("--source", choices=["excel", "iol"],
                        help="Fuente de datos del portfolio")
     parser.add_argument("--file",
-                       help="Archivo Excel/CSV del portfolio")
+                       help="Archivo Excel/CSV del portfolio (requerido solo para --source excel)")
     parser.add_argument("--broker", choices=["cocos", "bullmarket", "generic"], default="generic",
                        help="Broker del archivo (default: generic - mejor especificar para más precisión)")
     parser.add_argument("--threshold", type=float, default=None,
@@ -221,14 +230,16 @@ Ejemplos de uso:
 def validate_args(args):
     """Valida argumentos según el modo de ejecución"""
     if not args.health_check:
-        # Para ETL normal, source y file son requeridos
+        # Para ETL normal, source es requerido
         if not args.source:
             print("❌ ERROR: --source es requerido para procesamiento ETL")
             print("💡 Use --health-check para diagnóstico únicamente")
             sys.exit(2)
-        if not args.file:
-            print("❌ ERROR: --file es requerido para procesamiento ETL")
-            print("💡 Use --health-check para diagnóstico únicamente")
+        
+        # Para source excel, file es requerido
+        if args.source == "excel" and not args.file:
+            print("❌ ERROR: --file es requerido para --source excel")
+            print("💡 Use --source iol para obtener portfolio desde IOL API")
             sys.exit(2)
 
 async def run_etl_analysis(args) -> Dict[str, Any]:
@@ -279,26 +290,46 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         else:
             print_progress("📊 Iniciando análisis ETL...")
         
-        # 2. Procesar archivo
-        log_event("INFO", "processing_file", file=args.file)
-        
-        file_path = Path(args.file)
-        if not file_path.exists():
-            raise FileNotFoundError(f"Archivo no encontrado: {args.file}")
-        
-        # Mapear nombres de broker CLI a los nombres internos
-        broker_mapping = {
-            "cocos": "Cocos Capital",
-            "bullmarket": "Bull Market", 
-            "generic": "Generic"
-        }
-        broker_name = broker_mapping[args.broker]
-        
-        portfolio = await services.portfolio_processor.process_file(str(file_path), broker_name)
+        # 2. Obtener portfolio según fuente
+        if args.source == "excel":
+            log_event("INFO", "processing_file", file=args.file)
+            
+            file_path = Path(args.file)
+            if not file_path.exists():
+                raise FileNotFoundError(f"Archivo no encontrado: {args.file}")
+            
+            # Mapear nombres de broker CLI a los nombres internos
+            broker_mapping = {
+                "cocos": "Cocos Capital",
+                "bullmarket": "Bull Market", 
+                "generic": "Generic"
+            }
+            broker_name = broker_mapping[args.broker]
+            
+            portfolio = await services.portfolio_processor.process_file(str(file_path), broker_name)
+            
+        elif args.source == "iol":
+            log_event("INFO", "fetching_iol_portfolio")
+            
+            # Verificar que las credenciales IOL estén configuradas
+            if not config.iol_username or not config.iol_password:
+                raise ValueError("Credenciales IOL no configuradas. Configure IOL_USERNAME e IOL_PASSWORD en .env")
+            
+            # Autenticar con IOL
+            await services.iol_integration.authenticate(config.iol_username, config.iol_password)
+            
+            # Obtener portfolio desde IOL API
+            portfolio = await services.iol_integration.get_portfolio()
+            broker_name = "IOL"
+            
+        else:
+            raise ValueError(f"Fuente no soportada: {args.source}")
         
         log_event("INFO", "portfolio_loaded", 
                  positions=len(portfolio.positions),
-                 cedeares=sum(1 for p in portfolio.positions if p.is_cedear))
+                 cedeares=sum(1 for p in portfolio.positions if p.is_cedear),
+                 source=args.source,
+                 broker=broker_name)
         
         # 4. Análisis de arbitraje
         log_event("INFO", "analyzing_arbitrage", threshold=config.arbitrage_threshold)

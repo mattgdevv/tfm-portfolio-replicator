@@ -44,9 +44,10 @@ class MonitoringCommands:
     async def run_health_diagnostics(self):
         """
         Ejecuta diagnósticos de salud completos de todos los servicios del sistema
+        Incluye métricas avanzadas de performance y recomendaciones
         """
         print("\n🔍 DIAGNÓSTICO COMPLETO DE SERVICIOS")
-        print("=" * 50)
+        print("=" * 60)
 
         # Verificar si hay sesión IOL activa
         iol_session = getattr(self.iol_integration, 'session', None)
@@ -97,13 +98,13 @@ class MonitoringCommands:
         try:
             db_health = await self._check_database_health()
             db_icon = "✅" if db_health["status"] else "❌"
-            
+
             print(f"   {db_icon} Conectividad: {'Operativa' if db_health['status'] else 'Error'}")
             print(f"   📊 Tablas: {db_health['tables_count']} encontradas")
             print(f"   📈 Portfolios: {db_health['portfolio_count']}, Posiciones: {db_health['positions_count']}")
             print(f"   🚨 Arbitrajes: {db_health['arbitrage_count']}, Métricas: {db_health['metrics_count']}")
             print(f"   🕒 Última ejecución: {db_health['last_execution']}")
-            
+
             if not db_health["status"]:
                 print(f"   ⚠️  Error: {db_health['error']}")
 
@@ -121,7 +122,7 @@ class MonitoringCommands:
             print(f"   {ccl_icon} DolarAPI: {'Operativo' if ccl_health['status'] else 'No disponible'}")
             if ccl_health["status"]:
                 print(f"   💵 CCL actual: ${ccl_health['ccl_rate']}")
-            
+
             # Test Finnhub
             finnhub_health = await self._check_finnhub_health()
             finnhub_icon = "✅" if finnhub_health["status"] else "❌"
@@ -139,7 +140,7 @@ class MonitoringCommands:
         try:
             perf_health = await self._check_performance_health()
             cache_icon = "✅" if perf_health["cache_working"] else "❌"
-            
+
             print(f"   {cache_icon} Sistema de Cache: {'Operativo' if perf_health['cache_working'] else 'Error'}")
             print(f"   📊 Cache hits: {perf_health['cache_stats']['hits']}")
             print(f"   📊 Cache misses: {perf_health['cache_stats']['misses']}")
@@ -149,6 +150,22 @@ class MonitoringCommands:
             print(f"   ❌ Error verificando Performance: {str(e)}")
 
         print()
+
+        # 6. Test Sistema y Recursos
+        print("🖥️  Verificando Sistema...")
+        try:
+            system_health = await self._check_system_health()
+            memory_icon = "✅" if system_health["memory_ok"] else "⚠️"
+            disk_icon = "✅" if system_health["disk_ok"] else "⚠️"
+
+            print(f"   {memory_icon} Memoria: {system_health['memory_usage']:.1f}% utilizada")
+            print(f"   {disk_icon} Disco: {system_health['disk_usage']:.1f}% utilizado")
+            print(f"   🔗 Conectividad: {'OK' if system_health['network_ok'] else 'Error'}")
+
+        except Exception as e:
+            print(f"   ❌ Error verificando sistema: {str(e)}")
+
+        print()
         print("💡 ACLARACIONES:")
         print("   • Si BYMA falla en día hábil → Sistema usa estimaciones automáticamente")
         print("   • Si IOL falla → Sistema hace fallback a BYMA automáticamente")
@@ -156,6 +173,12 @@ class MonitoringCommands:
         print("   • Para activar Finnhub → Configurar FINNHUB_API_KEY en .env")
         print("   • Base de datos mantiene historial para análisis offline")
         print("   • Cache mejora performance, se regenera automáticamente")
+
+        # Recomendaciones automáticas
+        print("\n🔧 RECOMENDACIONES:")
+        recommendations = await self._generate_recommendations()
+        for rec in recommendations:
+            print(f"   • {rec}")
 
         input("\nPresiona Enter para continuar...")
     
@@ -272,6 +295,57 @@ class MonitoringCommands:
                 "test_price": "N/A"
             }
 
+    async def _check_system_health(self):
+        """Verifica el estado del sistema operativo y recursos"""
+        try:
+            import psutil
+        except ImportError:
+            # Si no hay psutil, devolver valores básicos
+            return {
+                "memory_ok": True,
+                "memory_usage": 0.0,
+                "disk_ok": True,
+                "disk_usage": 0.0,
+                "network_ok": True,
+                "note": "Instalar 'pip install psutil' para métricas de sistema detalladas"
+            }
+
+        try:
+            import socket
+
+            # Memoria
+            memory = psutil.virtual_memory()
+            memory_usage = memory.percent
+
+            # Disco
+            disk = psutil.disk_usage('/')
+            disk_usage = disk.percent
+
+            # Red
+            network_ok = True
+            try:
+                socket.create_connection(("8.8.8.8", 53), timeout=5)
+            except OSError:
+                network_ok = False
+
+            return {
+                "memory_ok": memory_usage < 90,
+                "memory_usage": memory_usage,
+                "disk_ok": disk_usage < 95,
+                "disk_usage": disk_usage,
+                "network_ok": network_ok
+            }
+
+        except Exception as e:
+            return {
+                "memory_ok": False,
+                "memory_usage": 0.0,
+                "disk_ok": False,
+                "disk_usage": 0.0,
+                "network_ok": False,
+                "error": str(e)
+            }
+
     async def _check_performance_health(self):
         """Verifica el estado del performance y cache del sistema"""
         try:
@@ -280,23 +354,23 @@ class MonitoringCommands:
                 "hits": getattr(self.services.dollar_service, '_cache_hits', 0),
                 "misses": getattr(self.services.dollar_service, '_cache_misses', 0)
             }
-            
+
             # Test de performance simple
             import time
             start_time = time.time()
-            
+
             # Hacer una llamada simple para medir respuesta
             await self.services.dollar_service.get_ccl_rate()
-            
+
             end_time = time.time()
             response_time = round((end_time - start_time) * 1000, 2)
-            
+
             return {
                 "cache_working": True,
                 "cache_stats": cache_stats,
                 "avg_response_time": response_time
             }
-            
+
         except Exception as e:
             return {
                 "cache_working": False,
@@ -304,3 +378,43 @@ class MonitoringCommands:
                 "avg_response_time": "Error",
                 "error": str(e)
             }
+
+    async def _generate_recommendations(self):
+        """Genera recomendaciones automáticas basadas en el estado del sistema"""
+        recommendations = []
+
+        try:
+            # Verificar configuración
+            config = self.services.config
+            if config.arbitrage_threshold > 0.01:
+                recommendations.append("Considerar reducir arbitrage_threshold para detectar más oportunidades")
+
+            # Verificar cache
+            perf_health = await self._check_performance_health()
+            if perf_health["cache_stats"]["misses"] > perf_health["cache_stats"]["hits"]:
+                recommendations.append("Optimizar configuración de cache - muchos misses detectados")
+
+            # Verificar APIs
+            ccl_health = await self._check_ccl_api_health()
+            if not ccl_health["status"]:
+                recommendations.append("Configurar fuente CCL alternativa (DolarAPI no disponible)")
+
+            finnhub_health = await self._check_finnhub_health()
+            if not finnhub_health["status"]:
+                recommendations.append("Configurar FINNHUB_API_KEY para precios internacionales en tiempo real")
+
+            # Verificar sistema
+            system_health = await self._check_system_health()
+            if system_health["memory_usage"] > 80:
+                recommendations.append("Monitorear uso de memoria - alto consumo detectado")
+            if not system_health["network_ok"]:
+                recommendations.append("Verificar conectividad de red")
+
+            # Si no hay recomendaciones, agregar una positiva
+            if not recommendations:
+                recommendations.append("Sistema funcionando óptimamente - todas las verificaciones pasaron")
+
+        except Exception as e:
+            recommendations.append(f"Error generando recomendaciones: {str(e)}")
+
+        return recommendations

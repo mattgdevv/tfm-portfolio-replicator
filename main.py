@@ -140,7 +140,11 @@ async def main():
     """Función principal de la aplicación interactiva"""
     try:
         print("🌅 Inicializando Portfolio Replicator Interactivo...")
-        print(f"📅 {get_market_status_message()}")
+        market_message = get_market_status_message()
+        if market_message:
+            print(f"📅 {market_message}")
+        else:
+            print("📅 Mercados abiertos - Datos en tiempo real disponibles")
         print()
         
         # Construir servicios con DI
