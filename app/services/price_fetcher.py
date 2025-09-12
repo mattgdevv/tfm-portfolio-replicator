@@ -24,7 +24,7 @@ class PriceFetcher:
     desde diferentes fuentes (IOL, BYMA, cálculos teóricos).
     """
 
-    def __init__(self, cedear_processor: CEDEARProcessor, iol_session=None, byma_integration=None, dollar_service=None):
+    def __init__(self, cedear_processor: CEDEARProcessor, iol_session=None, byma_integration=None, dollar_service=None, config=None):
         """
         Constructor con dependencias.
 
@@ -33,11 +33,14 @@ class PriceFetcher:
             iol_session: Sesión IOL opcional para modo completo
             byma_integration: Integración BYMA para datos históricos
             dollar_service: Servicio de dólar para obtener CCL
+            config: Configuración del sistema
         """
         self.cedear_processor = cedear_processor
         self.iol_session = iol_session
         self.byma_integration = byma_integration
         self.dollar_service = dollar_service
+        self.config = config
+        self.timeout = getattr(config, 'request_timeout', 10) if config else 10
         self.mode = "full" if iol_session else "limited"
 
     def set_iol_session(self, session):
@@ -99,7 +102,7 @@ class PriceFetcher:
         try:
             # Obtener precio actual desde IOL
             url_today = f"https://api.invertironline.com/api/v2/bcba/Titulos/{symbol}/Cotizacion"
-            response = self.iol_session.get(url_today, timeout=10)
+            response = self.iol_session.get(url_today, timeout=self.timeout)
             response.raise_for_status()
 
             data = response.json()

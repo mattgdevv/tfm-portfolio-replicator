@@ -37,18 +37,18 @@ ARK INNOVATION ARKK NYSE Arca 10:1
 ARM Holdings Plc ARM NASDAQ 27:1
 ASML HOLDING NV ASML NASDAQ GS 146:1
 Astrazeneca Plc AZN NYSE 2:1
-ATLASSIAN CORPORATION TEAM NASDAQ GS 47:1
 At &T Inc. T NYSE 3:1
+ATLASSIAN CORPORATION TEAM NASDAQ GS 47:1
 Automatic Data Processing Inc. ADP NASDAQ 6:1
 Avery Dennison Corp. AVY NYSE 18:1
 Avis Budget Group Inc. CAR NASDAQ 26:1
+Baidu, Inc. BIDU NASDAQ 11:1
 Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
 Página 1CEDEARs Negociables en BYMA
 Nombre de la CompañíaCódigo 
 BYMAMercado donde 
 Cotiza Ratio (*)
-Baidu, Inc. BIDU NASDAQ 11:1
 Baker Hughes Co BKR NASDAQ 7:1
 Banco Bradesco S.A. BBD NYSE 1:1
 Banco Bradesco S.A. BBDC3 B3 1:1
@@ -88,14 +88,14 @@ Centrais Eléctricas Brasileiras S.A. - Eletrobras EBR NYSE 1:4
 Charles Schwab SCHW NYSE 13:1
 Chevron Corp. CVX NYSE 16:1
 China Life Insurance LFC NYSE 2:1
+China Petroleum & Chem SNP NYSE 3:1
+Cia Saneamento Básico de SP SBSP3 B3 1:1
 Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
 Página 2CEDEARs Negociables en BYMA
 Nombre de la CompañíaCódigo 
 BYMAMercado donde 
 Cotiza Ratio (*)
-China Petroleum & Chem SNP NYSE 3:1
-Cia Saneamento Básico de SP SBSP3 B3 1:1
 Cisco Systems Inc CSCO NASDAQ 5:1
 Citigroup Inc C NYSE 3:1
 Coca-Cola Femsa, S.A.B. De C.V. KOFM NYSE 2:1
@@ -104,8 +104,7 @@ Coinbase Global Inc COIN NASDAQ 27:1
 Colgate Palmolive Co CL NYSE 3:1
 Companhia Brasileira De Dis NPV ADR CBRD NYSE 1:1
 Companhia de Saneamento Básico do Estado de São 
-Paulo–SabespSBS NYSE
-1:2
+Paulo–SabespSBS NYSE1:2
 Companhia Paranaense de Energía - COPEL ELP NYSE 1:3
 Companhia Siderúrgica Nacional SID NYSE 1:8
 Companhia Siderúrgica Nacional S.A. CSNA3 B3 1:1
@@ -135,15 +134,15 @@ Embraer-Empresa Brasileira de Aeronáutica S.A. ERJ NYSE 1:1
 ENERGY SELECT SECTOR SPDR FUND XLE NYSE Arca 2:1
 Eni Spa E NYSE 4:1
 Equifax Inc. EFX NYSE 16:1
+Equinor Asa EQNR NYSE 6:1
+ETF SPDR GOLD TRUST GLD NYSE 50:1
+Etsy Inc. ETSY NASDAQ 16:1
 Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
 Página 3CEDEARs Negociables en BYMA
 Nombre de la CompañíaCódigo 
 BYMAMercado donde 
 Cotiza Ratio (*)
-Equinor Asa EQNR NYSE 6:1
-ETF SPDR GOLD TRUST GLD NYSE 50:1
-Etsy Inc. ETSY NASDAQ 16:1
 Exxon Mobil Corporation XOM NYSE 10:1
 Fed. Natl, Mortgage - Fannie Mae FNMA OTC 1:1
 Fedex Corp FDX NYSE 10:1
@@ -181,17 +180,17 @@ Honda Motor Co. Ltd HMC NYSE 1:1
 Honeywell International Inc. HON NYSE 8:1
 Howmet Aerospace Inc. HWM NYSE 1:1
 Hp Inc HPQ NYSE 1:1
-Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
-Página 4CEDEARs Negociables en BYMA
-Nombre de la CompañíaCódigo 
-BYMAMercado donde 
-Cotiza Ratio (*)
 Hsbc Holdings Plc HSBC NYSE 2:1
 Huaneng Power Intl HNPIY NYSE 1:1
 Hut 8 Mining Corp. HUT NASDAQ GS 1:5
 Icici Bank Ltd. IBN NYSE 1:1
 Infosys Limited INFY NASDAQ 1:1
+Bolsas y Mercados Argentinos S.A.
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
+Página 4CEDEARs Negociables en BYMA
+Nombre de la CompañíaCódigo 
+BYMAMercado donde 
+Cotiza Ratio (*)
 Ing Groep Nv ING NYSE 3:1
 Intel Corporation INTC NASDAQ 5:1
 International Business Machines IBM NYSE 15:1
@@ -201,10 +200,15 @@ Intuitive Surgical inc ISRG NASDAQ 90:1
 INVESCO QQQ TRUST QQQ NASDAQ 20:1
 ISHARES BITCOIN TRUST IBIT NASDAQ 10:1
 ISHARES CHINA LARGE-CAP ETF FXI NYSE 5:1
+iSHARES Core MSCI World UCITS IWDALONDON STOCK 
+EXCHANGE24:1
+iShares Core MSCI Emerging Markets ETF IEMG NYSE 12:1
 iShares Core MSCI Europe ETF IEUR NYSE Arca 11:1
 iShares CORE S&P MID-CAP ETF IJH NYSE Arca 12:1
 ISHARES ETHEREUM TR ETF ETHA NASDAQ 5:1
+iShares MSCI ACWI ETF ACWI NASDAQ 26:1
 ISHARES MSCI BRAZIL CAP EWZ NYSE Arca 2:1
+iShares MSCI EAFE ETF EFA NYSE 18:1
 ISHARES MSCI EMERGING MARKET EEM NYSE Arca 5:01
 iShares MSCI JAPAN ETF EWJ NYSE Arca 14:1
 iShares Nasdaq Biotechnology ETF IBB NASDAQ 27:1
@@ -227,14 +231,14 @@ Lam Research Corp LRCX NASDAQ 56:1
 Las Vegas Sands Corp LVS NYSE 2:1
 Lithium Americas (Argentina) Corp LAR NYSE  1:1
 Lithium Americas Corp LAC NYSE 1:1
+Lloyds Banking Group Plc LYG NYSE 2:1
+Lm Ericsson Telephone Co. ERIC NASDAQ 2:1
 Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
 Página 5CEDEARs Negociables en BYMA
 Nombre de la CompañíaCódigo 
 BYMAMercado donde 
 Cotiza Ratio (*)
-Lloyds Banking Group Plc LYG NYSE 2:1
-Lm Ericsson Telephone Co. ERIC NASDAQ 2:1
 Localiza Rent A Car S.A. RENT3 B3 2:1
 Lockheed Martin Corporation LMT NYSE 20:1
 Lojas Renner S.A. LREN3 B3 1:1
@@ -273,16 +277,16 @@ Nokia Corporation NOKA NYSE 1:1
 Nomura Holdings, Inc NMR NYSE 1:1
 Novagold Resources INC. NG NYSE 1:4
 Novartis Ag NVS NYSE 4:1
-Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
-Página 6CEDEARs Negociables en BYMA
-Nombre de la CompañíaCódigo 
-BYMAMercado donde 
-Cotiza Ratio (*)
 Novolipetsk Steel PJSC NLMLONDON STOCK 
 EXCHANGE 2:1
 NU Holdings Ltd/Cayman Islands UN NYSE 2:1
 Nucor Corp NUE NYSE 16:1
+Bolsas y Mercados Argentinos S.A.
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
+Página 6CEDEARs Negociables en BYMA
+Nombre de la CompañíaCódigo 
+BYMAMercado donde 
+Cotiza Ratio (*)
 Nvidia Corporation NVDA NASDAQ 24:1
 Occidental Petroleum Corp. OXY NYSE 5:1
 Oracle Corporation ORCL NYSE 3:1
@@ -320,17 +324,17 @@ PROSHARES SHORT QQQ PSQ NYSE Arca 8:1
 Qualcomm Inc. QCOM NASDAQ 11:1
 Raytheon Technologies Corp RTX NYSE 5:1
 RIGETTI COMPUTING INC RGTI NASDAQ CM 2:1
-Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
-Página 7CEDEARs Negociables en BYMA
-Nombre de la CompañíaCódigo 
-BYMAMercado donde 
-Cotiza Ratio (*)
 Rio Tinto Plc RIO NYSE 8:1
 Riot Platforms RIOT NASDAQ 3:1
 Roblox Corp. RBLX NYSE 2:1
 Roku ROKU NASDAQ 13:1
 Ross Stores, Inc. ROST NASDAQ 4:1
+Bolsas y Mercados Argentinos S.A.
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
+Página 7CEDEARs Negociables en BYMA
+Nombre de la CompañíaCódigo 
+BYMAMercado donde 
+Cotiza Ratio (*)
 Royal Dutch Shell Plc SHEL NYSE 2:1
 S&P Global Inc SPGI NYSE 45:1
 Salesforce Inc. CRM NYSE 18:1
@@ -359,27 +363,26 @@ Starbucks Corporation SBUX NASDAQ 12:1
 Stellantis STLA NYSE 5:1
 StoneCo Ltd STNE NASDAQ 3:1
 SunCar Technology Group Inc SDA NASDAQ 2:1
-Suzano S.A. SUZB3 B3 1:1
 Suzano Papel E Celulose S.A. SUZ NYSE 1:1
+Suzano S.A. SUZB3 B3 1:1
 Sysco Corp. SYY NYSE 8:1
 Taiwan Semiconductor Manufacturing TSM NYSE 9:1
 Target Corporation TGT NYSE 24:1
 Tata Motors Ltd TTM NYSE 1:1
 Telebras PN RCTB4 BOVESPA 1:1000
-Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
-Página 8CEDEARs Negociables en BYMA
-Nombre de la CompañíaCódigo 
-BYMAMercado donde 
-Cotiza Ratio (*)
 Telecom Italia S.P.A. Ordinary Shares TIIAY NYSE 1:1
 Telefônica Brasil S.A. VIV NYSE 1:1
 Telefônica Brasil S.A. VIVT3 B3 1:1
 Telefonica S.A. TEFO NYSE 8:1
-TIM S.A. TIMS3 B3 01:01
 TEMPUS AI INC TEM NASDAQ GS 12:1
 Tenaris TEN NYSE 1:1
 Ternium S.A. TXR NYSE 4:1
+Bolsas y Mercados Argentinos S.A.
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
+Página 8CEDEARs Negociables en BYMA
+Nombre de la CompañíaCódigo 
+BYMAMercado donde 
+Cotiza Ratio (*)
 Tesla, Inc. TSLA NASDAQ 15:1
 Texas Instruments Inc TXN NASDAQ 5:1
 The Bank Of New York Mellon Corp. BK NYSE 2:1
@@ -401,6 +404,7 @@ The Travelers Cos. Inc. TRVV NYSE 6:1
 The Walt Disney Co. DISN NYSE 12:1
 Thermo Fisher Scientific Inc. TMO NYSE 22:1
 Tim Participações S.A. TIMB NYSE 1:1
+TIM S.A. TIMS3 B3 01:01
 TJX Companies Inc/The TJX NYSE 22:1
 T-mobile TMUS NASDAQ 33:1
 TotalEnergies SE TTE NYSE 3:1
@@ -412,25 +416,27 @@ Twitter, Inc. TWTR NYSE 2:1
 U.S. Bancorp USB NYSE 5:1
 Uber Technologies Inc. UBER NYSE 2:1
 UIPATH INC PATH NYSE 2:1
-Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
-Página 9CEDEARs Negociables en BYMA
-Nombre de la CompañíaCódigo 
-BYMAMercado donde 
-Cotiza Ratio (*)
 Ultrapar Participações S.A. UGP NYSE 1:1
 Unilever PLC - Sponsored UL NYSE 3:1
 Union Pacific Corp. UNP NYSE 20:1
 United Airlines Holdings Inc. UAL NASDAQ GS 5:1
+United States Oil Fund USO NYSE 15:1
 UnitedHealth Group Inc. UNH NYSE 33:1
 Upstart Hldgs Inc UPST NASDAQ GS 5:1
 Urban Outfitters INC. URBN NASDAQ 2:1
+Bolsas y Mercados Argentinos S.A.
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
+Página 9CEDEARs Negociables en BYMA
+Nombre de la CompañíaCódigo 
+BYMAMercado donde 
+Cotiza Ratio (*)
 Utilities Select Sector SPDR Fund XLU NYSE Arca 15:1
 Vale S.A. VALE NYSE 2:1
 Vale S.A. VALE3 B3 1:1
+Van Eck Gold Miners ETF/USA GDX NYSE 10:1
+VAN ECK SEMICONDUCTOR ETF SMH NASDAQ 50:1
 VANGUARD DIVIDEND APPRECIATION VIG NYSE Arca 39:1
 Vanguard FTSE Developed Markets ETF VEA NYSE Arca 10:1
-VAN ECK SEMICONDUCTOR ETF SMH NASDAQ 50:1
 Verisign, Inc. VRSN - 6:1
 Verizon Communications Inc. VZ NYSE 4:1
 VERTEX PHARMACEUTICALS INC VRTX NYSE 101:1
@@ -452,5 +458,5 @@ Yanzhou Coal Mining Co. Ltd. YZCA OTC US 2:1
 Yelp Inc. YELP NYSE 2:1
 Zoom Video Communications Inc. ZM NASDAQ 47:1
 Bolsas y Mercados Argentinos S.A.
-Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 24/6/2025
+Mercado registrado bajo el N° 639 de la CNV (*) Relación CEDEAR Subyacente Actualizado 3/9/2025
 Página 10

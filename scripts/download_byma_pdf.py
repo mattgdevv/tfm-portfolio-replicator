@@ -10,18 +10,70 @@ from pathlib import Path
 from typing import Dict, List, Optional
 import urllib3
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 # Suprimir warnings SSL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class BYMAPDFProcessor:
     def __init__(self):
-        self.pdf_url = "https://cdn.prod.website-files.com/6697a441a50c6b926e1972e0/685aa8ca12a91739e7cced5d_BYMA-Tabla-CEDEARs-2025-06-23.pdf"
+        # URL base de la página de CEDEARs - obtendremos la URL del PDF dinámicamente
+        self.cedeares_page_url = "https://www.byma.com.ar/productos/productos-financieros/cedears"
+        self.pdf_url = None  # Se obtendrá dinámicamente
         self.output_file = "byma_cedeares_pdf.json"
         
-    def download_pdf(self) -> Optional[bytes]:
-        """Descarga el PDF desde BYMA"""
+    def get_latest_pdf_url(self) -> Optional[str]:
+        """Obtiene la URL del PDF más reciente desde la página de BYMA"""
         try:
+            print(f"🔍 Buscando URL del PDF en: {self.cedeares_page_url}")
+            
+            # Hacer request a la página
+            response = requests.get(self.cedeares_page_url, verify=False)
+            response.raise_for_status()
+            
+            # Buscar URLs que contengan el patrón del PDF de CEDEARs
+            # Patrón: BYMA-Tabla-CEDEARs-YYYY-MM-DD.pdf
+            pattern = r'https://cdn\.prod\.website-files\.com/[^"]*BYMA-Tabla-CEDEARs-\d{4}-\d{2}-\d{2}\.pdf'
+            
+            matches = re.findall(pattern, response.text)
+            
+            if matches:
+                # Tomar la primera URL encontrada (debería ser la más reciente)
+                latest_url = matches[0]
+                print(f"✅ PDF encontrado: {latest_url}")
+                
+                # Extraer fecha del PDF para mostrar al usuario
+                date_match = re.search(r'(\d{4}-\d{2}-\d{2})', latest_url)
+                if date_match:
+                    pdf_date = date_match.group(1)
+                    print(f"📅 Fecha del PDF: {pdf_date}")
+                
+                return latest_url
+            else:
+                print("❌ No se encontró URL del PDF en la página")
+                # Fallback a URL conocida si no encontramos nada
+                fallback_url = "https://cdn.prod.website-files.com/6697a441a50c6b926e1972e0/68b86fe690fbf91e42c75e90_BYMA-Tabla-CEDEARs-2025-09-03.pdf"
+                print(f"⚠️  Usando URL fallback: {fallback_url}")
+                return fallback_url
+                
+        except Exception as e:
+            print(f"❌ Error obteniendo URL del PDF: {e}")
+            # Fallback a URL conocida
+            fallback_url = "https://cdn.prod.website-files.com/6697a441a50c6b926e1972e0/68b86fe690fbf91e42c75e90_BYMA-Tabla-CEDEARs-2025-09-03.pdf"
+            print(f"⚠️  Usando URL fallback: {fallback_url}")
+            return fallback_url
+        
+    def download_pdf(self) -> Optional[bytes]:
+        """Descarga el PDF desde BYMA usando URL dinámica"""
+        try:
+            # Obtener URL del PDF más reciente si no la tenemos
+            if not self.pdf_url:
+                self.pdf_url = self.get_latest_pdf_url()
+                
+            if not self.pdf_url:
+                print("❌ No se pudo obtener URL del PDF")
+                return None
+                
             print(f"📥 Descargando PDF desde: {self.pdf_url}")
             response = requests.get(self.pdf_url, verify=False)
             response.raise_for_status()
@@ -147,9 +199,8 @@ class BYMAPDFProcessor:
         try:
             line = line.strip()
             
-            # DEBUG HARDCODEADO: NU Holdings Ltd/Cayman Islands
+            # Detección especial para NU Holdings Ltd/Cayman Islands
             if "NU HOLDINGS LTD" in line.upper() or "CAYMAN ISLANDS" in line.upper():
-                print(f"🔍 DEBUG: Detectado NU Holdings en línea: {line}")
                 # Continuar con el parsing normal pero modificar el símbolo al final
                 nu_debug_detected = True
             else:
@@ -235,9 +286,8 @@ class BYMAPDFProcessor:
             symbol_index = parts_before_market.index(symbol)
             company_name = ' '.join(parts_before_market[:symbol_index])
             
-            # DEBUG: Modificar símbolo si se detectó NU Holdings
+            # Modificar símbolo si se detectó NU Holdings
             if nu_debug_detected:
-                print(f"🔧 DEBUG: Modificando símbolo de '{symbol}' a 'NU'")
                 symbol = 'NU'
                 company_name = 'Nu Holdings Ltd.'
                 found_market = 'NASDAQ'

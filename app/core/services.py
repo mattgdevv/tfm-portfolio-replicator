@@ -68,13 +68,14 @@ def build_services(config: Optional[Config] = None) -> Services:
     cedear_processor = CEDEARProcessor()
     international_service = InternationalPriceService(config=config)
     dollar_service = DollarRateService(config=config)
-    byma_integration = BYMAIntegration()
+    byma_integration = BYMAIntegration(config=config)
 
     price_fetcher = PriceFetcher(
         cedear_processor=cedear_processor,
         iol_session=None,  # Se configura después cuando sea necesario
         byma_integration=byma_integration,
-        dollar_service=dollar_service
+        dollar_service=dollar_service,
+        config=config
     )
 
     # Servicios con dependencias

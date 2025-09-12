@@ -22,9 +22,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class BYMAIntegration:
     """Servicio para obtener datos históricos de BYMA"""
     
-    def __init__(self):
+    def __init__(self, config=None):
         self.base_url = "https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free"
-        self.timeout = 15
+        self.timeout = getattr(config, 'request_timeout', 15) if config else 15
         self.session = requests.Session()
         
         # Headers comunes
@@ -310,9 +310,10 @@ class BYMAIntegration:
                 if 'Authorization' in iol_session.headers:
                     result["authenticated"] = True
 
-                    # Hacer una request de prueba simple
+                    # Hacer una request de prueba simple (timeout más corto para health check)
                     test_url = "https://api.invertironline.com/api/v2/Usuario"
-                    response = iol_session.get(test_url, timeout=5)
+                    health_timeout = min(self.timeout, 5)  # Usar config pero máximo 5s para health check
+                    response = iol_session.get(test_url, timeout=health_timeout)
 
                     if response.status_code == 200:
                         result["status"] = True

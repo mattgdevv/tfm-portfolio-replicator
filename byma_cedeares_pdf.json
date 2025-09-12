@@ -245,17 +245,17 @@
     "source": "BYMA_PDF"
   },
   {
-    "symbol": "TEAM",
-    "company_name": "ATLASSIAN CORPORATION",
-    "market": "NASDAQ GS",
-    "ratio": "47:1",
-    "source": "BYMA_PDF"
-  },
-  {
     "symbol": "T",
     "company_name": "At &T Inc.",
     "market": "NYSE",
     "ratio": "3:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "TEAM",
+    "company_name": "ATLASSIAN CORPORATION",
+    "market": "NASDAQ GS",
+    "ratio": "47:1",
     "source": "BYMA_PDF"
   },
   {
@@ -1183,6 +1183,20 @@
     "source": "BYMA_PDF"
   },
   {
+    "symbol": "IWDA",
+    "company_name": "iSHARES Core MSCI World UCITS",
+    "market": "LONDON STOCK EXCHANGE",
+    "ratio": "24:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "IEMG",
+    "company_name": "iShares Core MSCI Emerging Markets ETF",
+    "market": "NYSE",
+    "ratio": "12:1",
+    "source": "BYMA_PDF"
+  },
+  {
     "symbol": "IEUR",
     "company_name": "iShares Core MSCI Europe ETF",
     "market": "NYSE ARCA",
@@ -1204,10 +1218,24 @@
     "source": "BYMA_PDF"
   },
   {
+    "symbol": "ACWI",
+    "company_name": "iShares MSCI",
+    "market": "NASDAQ",
+    "ratio": "26:1",
+    "source": "BYMA_PDF"
+  },
+  {
     "symbol": "EWZ",
     "company_name": "ISHARES MSCI BRAZIL CAP",
     "market": "NYSE ARCA",
     "ratio": "2:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "EFA",
+    "company_name": "iShares MSCI EAFE ETF",
+    "market": "NYSE",
+    "ratio": "18:1",
     "source": "BYMA_PDF"
   },
   {
@@ -2128,16 +2156,16 @@
     "source": "BYMA_PDF"
   },
   {
-    "symbol": "SUZB3",
-    "company_name": "Suzano S.A.",
-    "market": "B3",
+    "symbol": "SUZ",
+    "company_name": "Suzano Papel E Celulose S.A.",
+    "market": "NYSE",
     "ratio": "1:1",
     "source": "BYMA_PDF"
   },
   {
-    "symbol": "SUZ",
-    "company_name": "Suzano Papel E Celulose S.A.",
-    "market": "NYSE",
+    "symbol": "SUZB3",
+    "company_name": "Suzano S.A.",
+    "market": "B3",
     "ratio": "1:1",
     "source": "BYMA_PDF"
   },
@@ -2202,13 +2230,6 @@
     "company_name": "Telefonica S.A.",
     "market": "NYSE",
     "ratio": "8:1",
-    "source": "BYMA_PDF"
-  },
-  {
-    "symbol": "TIMS3",
-    "company_name": "TIM S.A.",
-    "market": "B3",
-    "ratio": "01:01",
     "source": "BYMA_PDF"
   },
   {
@@ -2380,6 +2401,13 @@
     "source": "BYMA_PDF"
   },
   {
+    "symbol": "TIMS3",
+    "company_name": "TIM S.A.",
+    "market": "B3",
+    "ratio": "01:01",
+    "source": "BYMA_PDF"
+  },
+  {
     "symbol": "TJX",
     "company_name": "",
     "market": "NYSE",
@@ -2485,6 +2513,13 @@
     "source": "BYMA_PDF"
   },
   {
+    "symbol": "USO",
+    "company_name": "United States Oil Fund",
+    "market": "NYSE",
+    "ratio": "15:1",
+    "source": "BYMA_PDF"
+  },
+  {
     "symbol": "UNH",
     "company_name": "UnitedHealth Group Inc.",
     "market": "NYSE",
@@ -2527,6 +2562,20 @@
     "source": "BYMA_PDF"
   },
   {
+    "symbol": "GDX",
+    "company_name": "Van Eck Gold Miners ETF/USA",
+    "market": "NYSE",
+    "ratio": "10:1",
+    "source": "BYMA_PDF"
+  },
+  {
+    "symbol": "SMH",
+    "company_name": "VAN ECK SEMICONDUCTOR ETF",
+    "market": "NASDAQ",
+    "ratio": "50:1",
+    "source": "BYMA_PDF"
+  },
+  {
     "symbol": "VIG",
     "company_name": "VANGUARD DIVIDEND APPRECIATION",
     "market": "NYSE ARCA",
@@ -2538,13 +2587,6 @@
     "company_name": "Vanguard FTSE Developed Markets ETF",
     "market": "NYSE ARCA",
     "ratio": "10:1",
-    "source": "BYMA_PDF"
-  },
-  {
-    "symbol": "SMH",
-    "company_name": "VAN ECK SEMICONDUCTOR ETF",
-    "market": "NASDAQ",
-    "ratio": "50:1",
     "source": "BYMA_PDF"
   },
   {

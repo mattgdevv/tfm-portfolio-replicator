@@ -397,8 +397,7 @@ ORDER BY arbitrage_percentage DESC;
 │
 ├── 📁 scripts/               # Herramientas ejecutables independientes
 │   ├── etl_cli.py           # Pipeline ETL automático principal
-│   ├── download_byma_pdf.py # Descarga datos BYMA
-│   └── update_byma_cedeares.py
+│   └── download_byma_pdf.py # Descarga datos BYMA
 │
 ├── 📁 docs/                 # Documentación técnica
 ├── 📁 output/               # Resultados de análisis y base de datos

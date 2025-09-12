@@ -14,6 +14,7 @@ loguru>=0.7.0
 
 # Data processing
 # pandas already included above
+PyPDF2>=3.0.0
 
 # HTTP client
 # requests already included above
