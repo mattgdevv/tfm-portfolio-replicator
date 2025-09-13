@@ -172,4 +172,45 @@ class IOLIntegration:
             
         except Exception as e:
             print(f"Warning: Could not get dollar rate from API: {e}")
-            return 1000.0  # Default fallback 
+            return 1000.0  # Default fallback
+
+    async def check_health(self) -> Dict[str, Any]:
+        """
+        Verifica el estado de salud de IOL
+
+        Returns:
+            Dict con información de salud:
+            - status: bool (True si operativo)
+            - authenticated: bool (True si sesión válida)
+            - error: str (mensaje de error si falla)
+        """
+        result = {
+            "status": False,
+            "authenticated": False,
+            "error": ""
+        }
+
+        try:
+            # Verificar si la sesión IOL existe y está configurada
+            if self.session and hasattr(self.session, 'headers'):
+                # Verificar si tiene headers de autorización (indicativo de autenticación)
+                if 'Authorization' in self.session.headers:
+                    result["authenticated"] = True
+
+                    # Hacer una request de prueba simple (timeout corto para health check)
+                    health_check_url = f"{self.auth.base_url}/api/v2/Usuario"
+                    response = self.session.get(health_check_url, timeout=5)
+
+                    if response.status_code == 200:
+                        result["status"] = True
+                    else:
+                        result["error"] = f"HTTP {response.status_code}"
+                else:
+                    result["error"] = "Sesión sin autenticación"
+            else:
+                result["error"] = "Sesión no inicializada"
+
+        except Exception as e:
+            result["error"] = f"Error verificando IOL: {str(e)}"
+
+        return result 

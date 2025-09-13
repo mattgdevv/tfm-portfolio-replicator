@@ -49,9 +49,6 @@ class MonitoringCommands:
         print("\n🔍 DIAGNÓSTICO COMPLETO DE SERVICIOS")
         print("=" * 60)
 
-        # Verificar si hay sesión IOL activa
-        iol_session = getattr(self.iol_integration, 'session', None)
-
         # 1. Verificar BYMA
         print("🏛️  Verificando BYMA...")
         try:
@@ -74,9 +71,9 @@ class MonitoringCommands:
         # 2. Verificar IOL
         print("🏦 Verificando IOL...")
         try:
-            iol_health = await self.services.byma_integration.check_iol_health(iol_session)
+            iol_health = await self.iol_integration.check_health()
 
-            if iol_session:
+            if self.iol_integration.session:
                 auth_icon = "🔐" if iol_health["authenticated"] else "🔓"
                 print(f"   {auth_icon} Autenticado: {'Sí' if iol_health['authenticated'] else 'No'}")
             else:
