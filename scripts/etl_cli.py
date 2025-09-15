@@ -315,6 +315,8 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
             # Autenticar con IOL
             await services.iol_integration.authenticate(config.iol_username, config.iol_password)
             
+            print("🔐 Sesión IOL establecida - CCL AL30 disponible")
+            
             # Obtener portfolio desde IOL API
             portfolio = await services.iol_integration.get_portfolio()
             broker_name = "IOL"

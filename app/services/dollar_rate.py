@@ -272,10 +272,6 @@ class DollarRateService:
             # Calcular CCL
             ccl_rate = al30_price / al30d_price
             
-            # Validar que el CCL sea razonable (entre 800 y 2000 ARS)
-            if ccl_rate < 800 or ccl_rate > 2000:
-                raise ValueError(f"CCL calculado fuera de rango razonable: ${ccl_rate}")
-            
             logger.info(f"📊 CCL AL30 calculado: AL30=${al30_price} / AL30D=${al30d_price} = ${ccl_rate}")
             
             return {

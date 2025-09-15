@@ -27,11 +27,11 @@ Portfolio Replicator implementa una **arquitectura de capas moderna** con **Depe
                           │ ├─ Services (Container)
                           │ └─ Config (Configuración centralizada)
 ─────────────────────────┼─────────────────────────────────────
-🔧  Services Layer        │ Lógica de Negocio (16 servicios)
+🔧  Services Layer        │ Lógica de Negocio (15 servicios)
                           │ ├─ ArbitrageDetector
                           │ ├─ DatabaseService
                           │ ├─ PriceFetcher
-                          │ └─ ... (13 servicios adicionales)
+                          │ └─ ... (12 servicios adicionales)
 ─────────────────────────┼─────────────────────────────────────
 🔌  Integration Layer     │ APIs Externas
                           │ ├─ IOLIntegration (Broker argentino)
@@ -62,7 +62,7 @@ class Services:
     international_service: InternationalPriceService
     byma_integration: BYMAIntegration
     iol_integration: IOLIntegration
-    # ... 16 servicios especializados total
+    # ... 15 servicios especializados total
 ```
 
 **🎯 Patrón Factory + DI Container:**
@@ -139,7 +139,7 @@ class BYMAIntegration:
 | **asyncio** | Concurrencia | Manejo eficiente de múltiples APIs simultáneas |
 | **SQLite** | Base de datos | Embebida, perfecta para prototipo académico |
 | **Pandas** | Procesamiento | De facto para transformación de datos financieros |
-| **requests + aiohttp** | HTTP clients | APIs REST síncronas y asíncronas |
+| **requests** | HTTP clients | APIs REST síncronas |
 
 ### **Architectural Patterns**
 
@@ -248,9 +248,9 @@ CREATE TABLE pipeline_metrics (
            ▼
 💰 PRICE FETCHING (Multi-source)
 ├─ Finnhub API (internacional)
+├─ Cache lookup (72h TTL) → cuando Finnhub falla
 ├─ IOL API (local argentino)
-├─ Cache lookup (180s TTL)
-└─ Theoretical pricing (fallback)
+└─ Theoretical pricing (último recurso)
            │
            ▼
 📈 ARBITRAGE ANALYSIS
@@ -309,20 +309,16 @@ class Config:
 
 ```python
 async def get_price_with_fallbacks(symbol):
-    """Ejemplo de degradación elegante"""
+    """Ejemplo de degradación elegante para precios internacionales"""
     try:
         # 1. Fuente principal (Finnhub)
         return await finnhub_service.get_price(symbol)
     except APIException:
         try:
-            # 2. Fuente secundaria (IOL)
-            return await iol_service.get_price(symbol)
-        except AuthException:
-            try:
-                # 3. Cache local
-                return cache.get_last_known_price(symbol)
-            except CacheException:
-                # 4. Estimación teórica
+            # 2. Cache local (72h TTL)
+            return cache.get_last_known_price(symbol)
+        except CacheException:
+            # 3. Estimación teórica basada en ratios
                 return estimate_theoretical_price(symbol)
 ```
 
@@ -396,7 +392,7 @@ class PortfolioOptimizer:
 
 ### **✅ Ventajas Clave**
 
-1. **Modularidad Extrema**: 16 servicios especializados, cada uno con responsabilidad única
+1. **Modularidad Extrema**: 15 servicios especializados, cada uno con responsabilidad única
 2. **Dependency Injection Estricta**: Zero estado global, testabilidad máxima
 3. **Resilencia**: Múltiples fallbacks garantizan operación 24/7
 4. **Configurabilidad**: Jerarquía clara de configuración con overrides
@@ -418,7 +414,7 @@ class PortfolioOptimizer:
 
 ## 📊 Métricas del Sistema
 
-- **16 servicios especializados** con inyección de dependencias
+- **15 servicios especializados** con inyección de dependencias
 - **4 fuentes de datos externas** con fallbacks automáticos  
 - **4 tablas SQLite** para persistencia relacional
 - **2 modos de ejecución** (interactivo + automático)

@@ -56,7 +56,7 @@ class ArbitrageDetector:
 ```
 
 #### **✅ Arquitectura de Microservicios**
-- **16 servicios especializados** con Dependency Injection
+- **15 servicios especializados** con Dependency Injection
 - **Zero estado global** - arquitectura DI pura
 - **Validación automática** de dependencias
 
@@ -233,7 +233,7 @@ Código auto-explicativo es suficiente
 
 | Métrica | Objetivo | Alcanzado | Estado |
 |---------|----------|-----------|---------|
-| **Servicios modulares** | 10+ | 16 | ✅ Superado |
+| **Servicios modulares** | 10+ | 15 | ✅ Superado |
 | **Fuentes de datos** | 2-3 | 4 | ✅ Superado |
 | **Cobertura CEDEARs** | 80% | 100% | ✅ Superado |
 | **Disponibilidad sistema** | 95% | 99%+ | ✅ Superado |

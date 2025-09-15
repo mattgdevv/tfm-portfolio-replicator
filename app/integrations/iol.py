@@ -58,13 +58,14 @@ class IOLAuth:
             raise Exception(f"Error refreshing IOL API tokens: {str(e)}")
 
 class IOLIntegration:
-    def __init__(self, dollar_service, cedear_processor):
+    def __init__(self, dollar_service, cedear_processor, services_container=None):
         """
         Constructor con Dependency Injection estricta
         
         Args:
             dollar_service: Servicio de cotización dólar (REQUERIDO)
             cedear_processor: Procesador de CEDEARs (REQUERIDO)
+            services_container: Container de servicios para notificación automática
         """
         if dollar_service is None:
             raise ValueError("dollar_service es requerido - use build_services() para crear instancias")
@@ -75,9 +76,10 @@ class IOLIntegration:
         self.session = None
         self.dollar_service = dollar_service
         self.cedear_processor = cedear_processor
+        self._services_container = services_container
 
     async def authenticate(self, username: str, password: str):
-        """Authenticate with IOL API."""
+        """Authenticate with IOL API and notify dependent services."""
         self.auth = IOLAuth(username, password)
         bearer_token = self.auth.get_bearer_token()
         
@@ -89,6 +91,22 @@ class IOLIntegration:
         
         # Establecer la sesión en el servicio de dólar para CCL AL30
         self.dollar_service.set_iol_session(self.session)
+        
+        # Notificar automáticamente a servicios dependientes si hay container disponible
+        self._notify_session_established()
+
+    def _notify_session_established(self):
+        """Notifica a todos los servicios que necesitan la sesión IOL"""
+        if not self._services_container:
+            return
+            
+        # Lista de servicios que necesitan la sesión IOL
+        services_needing_session = ['price_fetcher', 'arbitrage_detector', 'variation_analyzer']
+        
+        for service_name in services_needing_session:
+            service = getattr(self._services_container, service_name, None)
+            if service and hasattr(service, 'set_iol_session'):
+                service.set_iol_session(self.session)
 
     async def get_portfolio(self) -> Portfolio:
         """Get portfolio from IOL API."""

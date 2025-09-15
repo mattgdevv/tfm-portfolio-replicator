@@ -137,7 +137,8 @@ def build_services(config: Optional[Config] = None) -> Services:
     from ..integrations.iol import IOLIntegration
     iol_integration = IOLIntegration(
         dollar_service=dollar_service,
-        cedear_processor=cedear_processor
+        cedear_processor=cedear_processor,
+        services_container=services_container  # Pasar container para notificación automática
     )
     portfolio_display_service = PortfolioDisplayService(services_container, iol_integration, cedear_processor)
     

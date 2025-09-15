@@ -140,12 +140,6 @@ class PriceFetcher:
             Tuple: (precio_hoy_ars, precio_ayer_ars) o (precio_hoy_ars, None)
         """
         try:
-            # Verificar si mercado está cerrado
-            market_message = get_market_status_message("AR")
-            if market_message:
-                logger.debug(f"🏦 Mercado cerrado - no hay precios BYMA para {symbol}")
-                return None, None
-
             # Obtener información del CEDEAR
             _, conversion_ratio = self._get_cedear_conversion_info(symbol)
 
@@ -153,7 +147,12 @@ class PriceFetcher:
             cedeares_data = await self.byma_integration._get_cedeares_data()
 
             if not cedeares_data:
-                logger.error(f"❌ No se pudieron obtener datos de CEDEARs desde BYMA")
+                # Si no hay datos de BYMA (día no hábil o API down), intentar cache
+                market_message = get_market_status_message("AR")
+                if market_message:
+                    logger.debug(f"🏦 {market_message[:50]}... - No hay datos BYMA para {symbol}")
+                else:
+                    logger.error(f"❌ No se pudieron obtener datos de CEDEARs desde BYMA")
                 return None, None
 
             # Buscar el CEDEAR específico

@@ -7,7 +7,7 @@ import os
 import asyncio
 import requests
 from typing import Optional, Dict, Any, Literal
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 # Configurar logging
@@ -37,9 +37,43 @@ class InternationalPriceService:
         self.last_finnhub_call = 0
         self.finnhub_min_interval = 1.0  # segundos
         
+        # Cache para precios (TTL de 72 horas para cubrir fines de semana)
+        self._price_cache: Dict[str, Dict[str, Any]] = {}
+        self._cache_ttl_hours = 72  # 72 horas = 3 días
+        
+        
+    def _get_from_cache(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """Obtiene precio desde caché si está disponible y válido"""
+        if symbol not in self._price_cache:
+            return None
+            
+        cached_data = self._price_cache[symbol]
+        cache_time = cached_data.get('cached_at')
+        
+        if not cache_time:
+            return None
+            
+        # Verificar si el caché expiró
+        cache_age = datetime.now() - cache_time
+        if cache_age > timedelta(hours=self._cache_ttl_hours):
+            # Caché expirado, eliminarlo
+            del self._price_cache[symbol]
+            return None
+            
+        logger.debug(f"♻️ Cache hit para {symbol}: ${cached_data['price']:.2f} USD (age: {cache_age})")
+        return cached_data.copy()
+        
+    def _set_cache(self, symbol: str, price_data: Dict[str, Any]) -> None:
+        """Guarda precio en caché con timestamp"""
+        cache_entry = price_data.copy()
+        cache_entry['cached_at'] = datetime.now()
+        cache_entry['cache_source'] = 'finnhub'
+        self._price_cache[symbol] = cache_entry
+        logger.debug(f"💾 Precio de {symbol} guardado en caché: ${price_data['price']:.2f} USD")
+        
     async def get_stock_price(self, symbol: str, preferred_source: PriceSource = "finnhub") -> Optional[Dict[str, Any]]:
         """
-        Obtiene el precio de una acción internacional usando Finnhub
+        Obtiene el precio de una acción internacional usando Finnhub con fallback a caché
         
         Args:
             symbol: Símbolo de la acción (ej: "TSLA", "PLTR")
@@ -71,6 +105,9 @@ class InternationalPriceService:
                 if result:
                     logger.debug(f"✅ Precio de {symbol} obtenido desde {source}: ${result['price']}")
                     
+                    # Guardar en caché para futuros fallbacks
+                    self._set_cache(symbol, result)
+                    
                     # Finnhub es la única fuente
                     logger.debug(f"📊 {symbol}: Precio obtenido desde {source.upper()}")
                     
@@ -79,7 +116,8 @@ class InternationalPriceService:
                         "symbol": symbol,
                         "source": source,
                         "preferred_source": preferred_source,
-                        "fallback_used": source != preferred_source,
+                        "fallback_used": False,
+                        "cache_used": False,
                         "attempted_sources": attempted_sources,
                         "timestamp": datetime.now().isoformat()
                     }
@@ -89,8 +127,26 @@ class InternationalPriceService:
                 # No deshabilitar fuentes globalmente por errores de símbolos individuales
                 # Las fuentes pueden fallar para un símbolo pero funcionar para otros
                 
-        # Si llegamos aquí, todas las fuentes fallaron
-        logger.warning(f"❌ No se pudo obtener precio de {symbol} desde ninguna fuente")
+        # Si llegamos aquí, todas las fuentes fallaron - intentar caché
+        logger.warning(f"❌ Finnhub falló para {symbol}, intentando caché...")
+        cached_result = self._get_from_cache(symbol)
+        
+        if cached_result:
+            logger.info(f"♻️ Usando precio desde caché para {symbol}: ${cached_result['price']:.2f} USD")
+            
+            return {
+                **cached_result,
+                "symbol": symbol,
+                "source": "cache",
+                "preferred_source": preferred_source,
+                "fallback_used": True,
+                "cache_used": True,
+                "attempted_sources": attempted_sources + ["cache"],
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        # Si llegamos aquí, tanto Finnhub como caché fallaron
+        logger.warning(f"❌ No se pudo obtener precio de {symbol} desde ninguna fuente (incluyendo caché)")
         return None
     
     async def _get_finnhub_price(self, symbol: str) -> Optional[Dict[str, Any]]:

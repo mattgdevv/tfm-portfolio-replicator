@@ -2,7 +2,7 @@
 
 **Sistema ETL de detección de arbitraje multi-fuente para CEDEARs vs activos subyacentes**
 
-> **🎯 Valor único**: Primera solución que detecta automáticamente oportunidades de arbitraje entre CEDEARs argentinos y sus activos subyacentes internacionales.
+
 
 ---
 
@@ -72,7 +72,7 @@ python scripts/etl_cli.py --source iol --threshold 0.01 --verbose
 | **Genérico** | Excel/CSV | `symbol`, `quantity` | `--broker generic` |
 
 ### **📝 Formato Bull Market**
-```csv
+```csv/xlsx (Copiar y pegar portfolio - carece de funcionalidad para exportar)
 Producto,Cantidad,Ultimo Precio,PPC,Total
 "AAPL
 CEDEAR APPLE INC","20,00","USD 11,40","USD 4,52","USD 227,91"
@@ -83,7 +83,7 @@ CEDEAR MICROSOFT CORP","15,00","USD 8,25","USD 7,10","USD 123,75"
 - **Cantidad**: Formato argentino con comas decimales
 
 ### **📝 Formato Cocos Capital**
-```csv
+```csv exportado
 instrumento,cantidad,precio,moneda,total
 AAPL,20,11.40,USD,228.00
 MSFT,15,8.25,USD,123.75
@@ -93,7 +93,7 @@ MSFT,15,8.25,USD,123.75
 
 ### **📝 Formato Genérico (Standard)**
 ```csv
-symbol,quantity,price
+symbol,quantity
 AAPL,20,11.40
 MSFT,15,8.25
 GOOGL,5,45.20
@@ -157,7 +157,7 @@ AAPL (Apple)
 🖥️  Application Layer    → main.py (interactivo) + etl_cli.py (automático)
 🌊  Workflow Layer       → Commands + Interactive Flows  
 🏗️  Core Layer          → DI Container + Configuration
-🔧  Services Layer       → 16 microservicios especializados
+🔧  Services Layer       → 15 servicios especializados
 🔌  Integration Layer    → APIs externas (IOL, BYMA, Finnhub)
 💾  Data Layer          → SQLite + JSON + Portfolio Models
 ```
@@ -165,9 +165,9 @@ AAPL (Apple)
 ### **Tecnologías Clave**
 - **Python 3.8+ + asyncio**: Concurrencia eficiente para APIs
 - **SQLite**: Persistencia embebida para prototipo académico  
-- **Dependency Injection**: 16 servicios modulares con DI estricta
+- **Dependency Injection**: 15 servicios modulares con DI estricta
 - **Pandas**: Procesamiento de datos financieros
-- **requests/aiohttp**: APIs REST síncronas y asíncronas
+- **requests**: APIs REST síncronas
 
 ## 🎯 Dos Modos de Ejecución
 
@@ -338,8 +338,8 @@ python scripts/etl_cli.py --health-check --verbose
 
 ### **⚠️ Limitaciones Actuales**
 - **Alcance geográfico**: Solo Argentina (arquitectura preparada para expansión)
-- **Precios delayed**: 15-30 min delay (APIs gratuitas)
-- **IOL session expiry**: Re-autenticación periódica requerida
+- **Precios delayed**: 15-30 min delay (APIs gratuitas/públicas)
+- **IOL tokens**: Gestión automática con refresh según necesidad
 
 ### **🔮 Roadmap Futuro**
 - [ ] **Extensión Brasil**: BDRs + fuentes locales
@@ -350,7 +350,7 @@ python scripts/etl_cli.py --health-check --verbose
 
 ## 📊 Métricas del Sistema
 
-- **16 servicios especializados** con dependency injection
+- **15 servicios especializados** con dependency injection
 - **4 fuentes de datos** con fallbacks automáticos
 - **4 tablas SQLite** para análisis histórico  
 - **2 modos de ejecución** (interactivo + automático)
