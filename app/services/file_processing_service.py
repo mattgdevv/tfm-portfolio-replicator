@@ -24,12 +24,12 @@ class FileProcessingService:
             file_path = await self._get_file_path()
             
             if not file_path:
-                print("❌ No se seleccionó archivo")
+                print("[ERROR] No se seleccionó archivo")
                 return None
             
             # Verificar que el archivo existe
             if not Path(file_path).exists():
-                print(f"❌ El archivo no existe: {file_path}")
+                print(f"[ERROR] El archivo no existe: {file_path}")
                 return None
             
             print(f"📁 Archivo seleccionado: {Path(file_path).name}")
@@ -40,13 +40,13 @@ class FileProcessingService:
                 return None
             
             # Procesar el archivo
-            print("📊 Procesando archivo...")
+            print("[DATA] Procesando archivo...")
             portfolio = await self.portfolio_processor.process_file(file_path, broker_type)
             
             return portfolio
             
         except Exception as e:
-            print(f"❌ Error procesando archivo: {e}")
+            print(f"[ERROR] Error procesando archivo: {e}")
             return None
     
     async def _get_file_path(self) -> Optional[str]:
@@ -57,7 +57,7 @@ class FileProcessingService:
         try:
             file_path = self._show_file_dialog()
         except Exception as e:
-            print(f"⚠️  Error con interfaz gráfica: {e}")
+            print(f"[WARNING]  Error con interfaz gráfica: {e}")
             print("🔄 Cambiando a modo manual...")
         
         # Si no se obtuvo archivo con tkinter, usar modo manual
@@ -92,10 +92,10 @@ class FileProcessingService:
             )
             if archivo:
                 file_path = archivo
-                print(f"✅ Archivo seleccionado: {archivo}")
+                print(f"[SUCCESS] Archivo seleccionado: {archivo}")
                 root.quit()  # Cerrar la ventana
             else:
-                print("❌ No se seleccionó ningún archivo")
+                print("[ERROR] No se seleccionó ningún archivo")
                 root.quit()
         
         # Crear el botón y agregarlo a la ventana
@@ -109,7 +109,7 @@ class FileProcessingService:
                        font=("Arial", 12))
         label.pack(pady=20)
         
-        print("🔍 Abriendo ventana para adjuntar archivo...")
+        print("[SEARCH] Abriendo ventana para adjuntar archivo...")
         
         # Iniciar el bucle principal
         root.mainloop()
@@ -145,14 +145,14 @@ class FileProcessingService:
         choice = input("Elige opción (1-3): ").strip()
         
         if choice == "1":
-            print("✅ Cocos Capital seleccionado")
+            print("[SUCCESS] Cocos Capital seleccionado")
             return "cocos"
         elif choice == "2":
-            print("✅ Bull Market seleccionado")
+            print("[SUCCESS] Bull Market seleccionado")
             return "bull_market"
         elif choice == "3":
-            print("✅ Formato estándar seleccionado")
+            print("[SUCCESS] Formato estándar seleccionado")
             return "standard"
         else:
-            print("❌ Opción inválida")
+            print("[ERROR] Opción inválida")
             return None

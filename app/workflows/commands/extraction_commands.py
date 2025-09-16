@@ -32,7 +32,7 @@ class ExtractionCommands:
         Returns:
             Portfolio: Portfolio extraído desde IOL
         """
-        print("\n📊 Obteniendo portfolio desde IOL...")
+        print("\n[IOL] Obteniendo portfolio desde IOL...")
         print("Nota: Presiona ESPACIO + Enter para volver al menú principal")
         
         try:
@@ -45,12 +45,12 @@ class ExtractionCommands:
                     
                     # Si presiona espacio, cancelar
                     if username_input == " " or (not username and username_input):
-                        print("⬅️  Volviendo al menú principal...")
+                        print("[RETURN] Volviendo al menú principal...")
                         return None
                     
                     if username:
                         break
-                    print("⚠️  Usuario requerido. Intente de nuevo.")
+                    print("[WARNING]  Usuario requerido. Intente de nuevo.")
                 
                 while True:
                     password_input = getpass("Contraseña IOL: ")
@@ -58,12 +58,12 @@ class ExtractionCommands:
                     
                     # Si presiona espacio, cancelar
                     if password_input == " " or (not password and password_input):
-                        print("⬅️  Volviendo al menú principal...")
+                        print("[RETURN] Volviendo al menú principal...")
                         return None
                     
                     if password:
                         break
-                    print("⚠️  Contraseña requerida. Intente de nuevo.")
+                    print("[WARNING]  Contraseña requerida. Intente de nuevo.")
                 
                 # Autenticar con IOL
                 print("🔐 Autenticando con IOL...")
@@ -72,21 +72,21 @@ class ExtractionCommands:
                     break  # Si llega aquí, la autenticación fue exitosa
                 except Exception as e:
                     if "401" in str(e) or "Unauthorized" in str(e):
-                        print(f"❌ Credenciales incorrectas para usuario: {username}")
-                        print("🔄 Intente de nuevo...")
+                        print(f"[ERROR] Credenciales incorrectas para usuario: {username}")
+                        print("[RETRY] Intente de nuevo...")
                     else:
-                        print(f"❌ Error de autenticación: {e}")
+                        print(f"[ERROR] Error de autenticación: {e}")
                         return None
             
             # Obtener portfolio
             print("📈 Obteniendo portfolio...")
             portfolio = await self.iol_integration.get_portfolio()
-            print(f"✅ Portfolio extraído exitosamente con {len(portfolio.positions)} posiciones")
+            print(f"[SUCCESS] Portfolio extraído exitosamente con {len(portfolio.positions)} posiciones")
             
             return portfolio
             
         except Exception as e:
-            print(f"❌ Error extrayendo portfolio IOL: {e}")
+            print(f"[ERROR] Error extrayendo portfolio IOL: {e}")
             return None
     
     async def extract_file_portfolio(self) -> Portfolio:
@@ -103,14 +103,14 @@ class ExtractionCommands:
             portfolio = await self.services.file_processing_service.handle_excel_portfolio()
             
             if portfolio and len(portfolio.positions) > 0:
-                print(f"✅ Portfolio extraído exitosamente con {len(portfolio.positions)} posiciones")
+                print(f"[SUCCESS] Portfolio extraído exitosamente con {len(portfolio.positions)} posiciones")
                 return portfolio
             else:
-                print("❌ No se pudo procesar el archivo o está vacío")
+                print("[ERROR] No se pudo procesar el archivo o está vacío")
                 return None
                 
         except Exception as e:
-            print(f"❌ Error extrayendo portfolio desde archivo: {e}")
+            print(f"[ERROR] Error extrayendo portfolio desde archivo: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -140,13 +140,13 @@ class ExtractionCommands:
             if cedeares_count > 0:
                 print(f"\n🔄 Convirtiendo {cedeares_count} CEDEARs a subyacentes...")
                 converted = self.portfolio_processor.convert_portfolio_to_underlying(portfolio)
-                print("✅ Conversión completada: {} CEDEARs convertidos".format(
+                print("[SUCCESS] Conversión completada: {} CEDEARs convertidos".format(
                     len(converted.converted_positions) if converted else 0
                 ))
             
-            print(f"\n📊 Portfolio procesado exitosamente con {len(portfolio.positions)} posiciones")
+            print(f"\n[DATA] Portfolio procesado exitosamente con {len(portfolio.positions)} posiciones")
             return cedeares_count, converted
             
         except Exception as e:
-            print(f"❌ Error procesando portfolio: {e}")
+            print(f"[ERROR] Error procesando portfolio: {e}")
             return 0, None

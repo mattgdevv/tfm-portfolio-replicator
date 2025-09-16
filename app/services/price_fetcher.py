@@ -118,14 +118,14 @@ class PriceFetcher:
             precio_ayer = data.get("cierreAnterior") or data.get("apertura")
 
             if not precio_ayer:
-                logger.warning(f"⚠️ No hay precio histórico IOL para {symbol}")
+                logger.warning(f"[WARNING] No hay precio histórico IOL para {symbol}")
                 return precio_hoy, None
 
             logger.debug(f"💰 IOL {symbol}: Hoy=${precio_hoy:.0f}, Ayer=${precio_ayer:.0f} ARS")
             return float(precio_hoy), float(precio_ayer)
 
         except Exception as e:
-            logger.error(f"❌ Error obteniendo precios IOL para {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo precios IOL para {symbol}: {str(e)}")
             return None, None
 
     async def _get_byma_cedear_price(self, symbol: str, include_historical: bool = False) -> Tuple[Optional[float], Optional[float]]:
@@ -152,7 +152,7 @@ class PriceFetcher:
                 if market_message:
                     logger.debug(f"🏦 {market_message[:50]}... - No hay datos BYMA para {symbol}")
                 else:
-                    logger.error(f"❌ No se pudieron obtener datos de CEDEARs desde BYMA")
+                    logger.error(f"[ERROR] No se pudieron obtener datos de CEDEARs desde BYMA")
                 return None, None
 
             # Buscar el CEDEAR específico
@@ -163,14 +163,14 @@ class PriceFetcher:
                     break
 
             if not cedear_data:
-                logger.warning(f"⚠️ CEDEAR {symbol} no encontrado en datos BYMA")
+                logger.warning(f"[WARNING] CEDEAR {symbol} no encontrado en datos BYMA")
                 return None, None
 
             # Extraer precios
             precio_hoy = cedear_data.get('trade') or cedear_data.get('closingPrice')
 
             if not precio_hoy or precio_hoy <= 0:
-                logger.warning(f"⚠️ Precio BYMA inválido para {symbol}: {precio_hoy}")
+                logger.warning(f"[WARNING] Precio BYMA inválido para {symbol}: {precio_hoy}")
                 return None, None
 
             if not include_historical:
@@ -182,7 +182,7 @@ class PriceFetcher:
             return precio_hoy, precio_hoy  # Por ahora devolvemos el mismo precio
 
         except Exception as e:
-            logger.error(f"❌ Error obteniendo precios BYMA para {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo precios BYMA para {symbol}: {str(e)}")
             return None, None
 
     async def get_cedear_price_with_action_usd(self, symbol: str) -> Tuple[Optional[float], Optional[float]]:
@@ -209,7 +209,7 @@ class PriceFetcher:
             # Obtener CCL rate
             ccl_rate = await self._get_ccl_rate_safe()
             if not ccl_rate:
-                logger.error(f"❌ No se pudo obtener CCL para calcular precio por acción USD de {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener CCL para calcular precio por acción USD de {symbol}")
                 return None, None
 
             # Calcular precio por acción en USD
@@ -221,7 +221,7 @@ class PriceFetcher:
             return cedear_price_ars, accion_via_cedear_usd
 
         except Exception as e:
-            logger.error(f"❌ Error obteniendo precio con acción USD para {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo precio con acción USD para {symbol}: {str(e)}")
             return None, None
 
     async def get_theoretical_cedear_price(self, symbol: str, underlying_price: float) -> Tuple[Optional[float], Optional[float]]:
@@ -245,7 +245,7 @@ class PriceFetcher:
             # Obtener CCL para convertir a ARS
             ccl_rate = await self._get_ccl_rate_safe()
             if not ccl_rate:
-                logger.error(f"❌ No se pudo obtener CCL para calcular precio teórico de {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener CCL para calcular precio teórico de {symbol}")
                 return None, None
             
             # Precio de 1 CEDEAR en ARS
@@ -259,7 +259,7 @@ class PriceFetcher:
             return precio_cedear_individual_ars, accion_via_cedear_teorico_usd
 
         except Exception as e:
-            logger.error(f"❌ Error calculando precio teórico para {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error calculando precio teórico para {symbol}: {str(e)}")
             return None, None
 
     async def _get_ccl_rate_safe(self) -> Optional[float]:
@@ -270,12 +270,12 @@ class PriceFetcher:
             float: CCL rate o None si no disponible (no usa fallback hardcodeado)
         """
         if not self.dollar_service:
-            logger.warning("⚠️ DollarService no disponible para obtener CCL")
+            logger.warning("[WARNING] DollarService no disponible para obtener CCL")
             return None
             
         ccl_data = await self.dollar_service.get_ccl_rate()
         if ccl_data and ccl_data.get("rate"):
             return ccl_data["rate"]
         else:
-            logger.warning("⚠️ No se pudo obtener CCL de ninguna fuente")
+            logger.warning("[WARNING] No se pudo obtener CCL de ninguna fuente")
             return None

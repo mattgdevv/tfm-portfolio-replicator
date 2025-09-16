@@ -67,21 +67,21 @@ class InteractiveFlows:
             )
             
             # 3. Análisis opcional (INTERACTIVO)
-            analyze = input("🔍 ¿Deseas analizar oportunidades de arbitraje? (s/n): ").strip().lower()
+            analyze = input("[ANALYZE] ¿Deseas analizar oportunidades de arbitraje? (s/n): ").strip().lower()
             if analyze == 's':
                 await self.analysis.analyze_portfolio(portfolio, from_iol=True)
             else:
-                print("✅ Portfolio cargado. Análisis de arbitraje omitido.")
+                print("[SUCCESS] Portfolio cargado. Análisis de arbitraje omitido.")
             
             # 4. Guardado opcional (INTERACTIVO)
-            save = input("\n💾 ¿Guardar resultados en archivo? (s/n): ").strip().lower()
+            save = input("\n[SAVE] ¿Guardar resultados en archivo? (s/n): ").strip().lower()
             if save == 's':
                 await self.monitoring.save_results(portfolio, converted if cedeares_count > 0 else None)
             
             return True
             
         except Exception as e:
-            print(f"❌ Error en flujo IOL: {e}")
+            print(f"[ERROR] Error en flujo IOL: {e}")
             return False
     
     async def interactive_file_extraction_and_analysis(self) -> bool:
@@ -103,21 +103,21 @@ class InteractiveFlows:
             )
             
             # 3. Análisis opcional (INTERACTIVO)
-            analyze = input("🔍 ¿Deseas analizar oportunidades de arbitraje? (s/n): ").strip().lower()
+            analyze = input("[ANALYZE] ¿Deseas analizar oportunidades de arbitraje? (s/n): ").strip().lower()
             if analyze == 's':
                 await self.analysis.analyze_portfolio(portfolio, from_iol=False)
             else:
-                print("✅ Portfolio cargado. Análisis de arbitraje omitido.")
+                print("[SUCCESS] Portfolio cargado. Análisis de arbitraje omitido.")
             
             # 4. Guardado opcional (INTERACTIVO)
-            save = input("\n💾 ¿Guardar resultados en archivo? (s/n): ").strip().lower()
+            save = input("\n[SAVE] ¿Guardar resultados en archivo? (s/n): ").strip().lower()
             if save == 's':
                 await self.monitoring.save_results(portfolio, converted if cedeares_count > 0 else None)
             
             return True
             
         except Exception as e:
-            print(f"❌ Error en flujo archivo: {e}")
+            print(f"[ERROR] Error en flujo archivo: {e}")
             import traceback
             traceback.print_exc()
             return False

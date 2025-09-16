@@ -147,6 +147,6 @@ def build_services(config: Optional[Config] = None) -> Services:
     services_container.portfolio_display_service = portfolio_display_service
     services_container.iol_integration = iol_integration
     
-    logger.info(f"✅ Servicios construidos para mercado: {config.market}")
+    logger.info(f"[SUCCESS] Servicios construidos para mercado: {config.market}")
     
     return services_container

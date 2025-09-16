@@ -37,7 +37,7 @@ class PortfolioProcessor:
     
     async def process_file(self, file_path: str, broker: str = "Unknown") -> Portfolio:
         """Procesa un archivo Excel/CSV y devuelve un Portfolio"""
-        print("📊 Leyendo archivo")
+        print("[INFO] Leyendo archivo")
         
         # Detectar tipo de archivo por extensión
         file_extension = file_path.lower().split('.')[-1]
@@ -45,52 +45,52 @@ class PortfolioProcessor:
         try:
             if file_extension in ['xlsx', 'xls']:
                 # Leer archivo Excel
-                print("📋 Detectado archivo Excel - leyendo...")
+                print("[DATA] Detectado archivo Excel - leyendo...")
                 file = pd.read_excel(file_path)
-                print(f"✅ Excel leído correctamente. Filas: {len(file)}, Columnas: {len(file.columns)}")
+                print(f"[SUCCESS] Excel leído correctamente. Filas: {len(file)}, Columnas: {len(file.columns)}")
             else:
                 # Leer archivo CSV con delimitador principal (cambio: , en lugar de ;)
                 file = pd.read_csv(file_path, delimiter=',')
-                print(f"✅ CSV leído correctamente. Filas: {len(file)}, Columnas: {len(file.columns)}")
+                print(f"[SUCCESS] CSV leído correctamente. Filas: {len(file)}, Columnas: {len(file.columns)}")
             
-            print(f"📋 Columnas encontradas: {list(file.columns)}")
+            print(f"[DATA] Columnas encontradas: {list(file.columns)}")
             
         except Exception as e:
             if file_extension in ['xlsx', 'xls']:
-                print(f"❌ Error leyendo Excel: {e}")
+                print(f"[ERROR] Error leyendo Excel: {e}")
                 raise Exception(f"No se pudo leer el archivo Excel: {e}")
             else:
-                print(f"❌ Error leyendo CSV: {e}")
-                print("🔄 Intentando con otros delimitadores...")
+                print(f"[ERROR] Error leyendo CSV: {e}")
+                print("[RETRY] Intentando con otros delimitadores...")
                 
                 # Intentar otros delimitadores para CSV (incluyendo ; como fallback)
                 for delimiter in [';', '\t', '|']:
                     try:
                         file = pd.read_csv(file_path, delimiter=delimiter)
-                        print(f"✅ CSV leído con delimitador '{delimiter}'. Filas: {len(file)}, Columnas: {len(file.columns)}")
-                        print(f"📋 Columnas encontradas: {list(file.columns)}")
+                        print(f"[SUCCESS] CSV leído con delimitador '{delimiter}'. Filas: {len(file)}, Columnas: {len(file.columns)}")
+                        print(f"[DATA] Columnas encontradas: {list(file.columns)}")
                         break
                     except Exception as inner_e:
-                        print(f"❌ Falló con delimitador '{delimiter}': {inner_e}")
+                        print(f"[ERROR] Falló con delimitador '{delimiter}': {inner_e}")
                         continue
                 else:
                     raise Exception("No se pudo leer el archivo con ningún delimitador")
 
         # Mostrar las primeras filas para debugging
-        print("\n📋 Primeras 3 filas del archivo:")
+        print("\n[DATA] Primeras 3 filas del archivo:")
         print(file.head(3).to_string())
         print()
 
         # Usar scanner directo de CEDEARs (sin headers) para TODOS los brokers
-        print(f"🔍 Escaneando CEDEARs directamente en el archivo...")
+        print(f"[SCAN] Escaneando CEDEARs directamente en el archivo...")
         found_positions = self._find_cedeares_and_quantities(file, broker)
         
         if not found_positions:
-            raise Exception(f"❌ No se encontraron CEDEARs con cantidades válidas en el archivo")
+            raise Exception(f"[ERROR] No se encontraron CEDEARs con cantidades válidas en el archivo")
         
         print(f"Encontrados {len(found_positions)} CEDEARs con cantidades")
 
-        print("🔄 Procesando CEDEARs encontrados...")
+        print("[PROCESS] Procesando CEDEARs encontrados...")
         
         # Crear lista de posiciones desde CEDEARs encontrados
         positions = []
@@ -100,12 +100,12 @@ class PortfolioProcessor:
                 symbol = cedear_data['symbol']
                 quantity = cedear_data['quantity']
                 
-                print(f"🔄 Procesando CEDEAR {symbol} (cantidad: {quantity})")
+                print(f"[PROCESS] Procesando CEDEAR {symbol} (cantidad: {quantity})")
                 
                 # Verificar que sea CEDEAR (debería serlo siempre)
                 is_cedear = self.cedear_processor.is_cedear(symbol)
                 if not is_cedear:
-                    print(f"⚠️  {symbol} - No es CEDEAR, saltando")
+                    print(f"[WARNING] {symbol} - No es CEDEAR, saltando")
                     continue
                 
                 # Crear Position - solo symbol y quantity, price=None (se obtiene via API)
@@ -119,7 +119,7 @@ class PortfolioProcessor:
                 
                 # Agregar información de conversión
                 try:
-                    print(f"🔄 Convirtiendo CEDEAR {symbol}...")
+                    print(f"[CONVERT] Convirtiendo CEDEAR {symbol}...")
                     underlying_symbol, underlying_quantity = self.cedear_processor.convert_cedear_to_underlying(
                         symbol, position.quantity
                     )
@@ -128,37 +128,37 @@ class PortfolioProcessor:
                     position.underlying_symbol = underlying_symbol
                     position.underlying_quantity = underlying_quantity
                     position.conversion_ratio = self.cedear_processor.parse_ratio(underlying_info["ratio"])
-                    print(f"✅ CEDEAR convertido: {underlying_symbol} x{underlying_quantity}")
+                    print(f"[SUCCESS] CEDEAR convertido: {underlying_symbol} x{underlying_quantity}")
                 except Exception as e:
                     # Si hay error en la conversión, mantener la posición original
-                    print(f"⚠️ Error convirtiendo CEDEAR {symbol}: {e}")
+                    print(f"[WARNING] Error convirtiendo CEDEAR {symbol}: {e}")
                 
                 positions.append(position)
-                print(f"✅ Posición agregada: {symbol}")
-                
-            except Exception as e:
-                print(f"❌ Error procesando CEDEAR {cedear_data}: {e}")
-                continue
+                print(f"[SUCCESS] Posición agregada: {symbol}")
 
-        print(f"✅ Procesamiento completado. {len(positions)} CEDEARs procesados")
+            except Exception as e:
+                print(f"[ERROR] Error procesando CEDEAR {cedear_data}: {e}")
+                continue
+        
+        print(f"[SUCCESS] Procesamiento completado. {len(positions)} CEDEARs procesados")
         
         # Obtener cotización del dólar para posiciones USD
         usd_positions = [p for p in positions if p.currency.upper() == 'USD']
         if usd_positions:
-            print(f"\n💱 Obteniendo cotización CCL para {len(usd_positions)} posiciones en USD...")
+            print(f"\n[RATE] Obteniendo cotización CCL para {len(usd_positions)} posiciones en USD...")
             dollar_rate = await self._get_dollar_rate()
             
             if dollar_rate:
-                print(f"✅ Cotización CCL obtenida: ${dollar_rate['rate']} (fuente: {dollar_rate['source']})")
+                print(f"[SUCCESS] Cotización CCL obtenida: ${dollar_rate['rate']} (fuente: {dollar_rate['source']})")
                 
                 # Agregar información del dólar a las posiciones USD
                 for position in usd_positions:
                     position.dollar_rate = dollar_rate['rate']
                     position.dollar_source = dollar_rate['source']
                     position.total_value_ars = position.total_value * dollar_rate['rate']
-                    print(f"📊 {position.symbol}: USD ${position.total_value} = ARS ${position.total_value_ars:,.0f}")
+                    print(f"[DATA] {position.symbol}: USD ${position.total_value} = ARS ${position.total_value_ars:,.0f}")
             else:
-                print("⚠️  No se pudo obtener cotización del dólar - valores en ARS no disponibles")
+                print("[WARNING] No se pudo obtener cotización del dólar - valores en ARS no disponibles")
         
         return Portfolio(
             broker=broker,
@@ -213,7 +213,7 @@ class PortfolioProcessor:
             Lista de oportunidades de arbitraje detectadas
         """
         
-        print(f"\n🔍 Analizando oportunidades de arbitraje (threshold: {threshold_percentage:.1%})...")
+        print(f"\n[ANALYZE] Analizando oportunidades de arbitraje (threshold: {threshold_percentage:.1%})...")
         
         # Verificar disponibilidad de servicios
         if not self.arbitrage_detector:
@@ -237,7 +237,7 @@ class PortfolioProcessor:
             print("ℹ️  No se encontraron CEDEARs en el portfolio para analizar")
             return []
         
-        print(f"📊 Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
+        print(f"[DATA] Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
         
         # Detectar arbitrajes
         opportunities = await self.arbitrage_detector.detect_portfolio_arbitrages(
@@ -254,7 +254,7 @@ class PortfolioProcessor:
                 print(self.arbitrage_detector.format_alert(opp))
                 print()
         else:
-            print(f"\n✅ No se detectaron oportunidades de arbitraje superiores al {threshold_percentage:.1%}")
+            print(f"\n[SUCCESS] No se detectaron oportunidades de arbitraje superiores al {threshold_percentage:.1%}")
         
         return opportunities
     
@@ -310,7 +310,7 @@ class PortfolioProcessor:
         
         if not clean_value:
             if self.debug:
-                print(f"⚠️  Valor sin números detectables: '{value}'")
+                print(f"[WARNING]  Valor sin números detectables: '{value}'")
             return 0.0
         
         # Manejar formato europeo (comas como separador decimal)
@@ -329,18 +329,18 @@ class PortfolioProcessor:
         try:
             result = float(clean_value)
             if self.debug and str(value) != str(result):
-                print(f"🔄 Número limpiado: '{value}' → {result}")
+                print(f"[CLEAN] Número limpiado: '{value}' → {result}")
             return result
         except ValueError:
             if self.debug:
-                print(f"⚠️  No se pudo convertir a número: '{value}' → '{clean_value}'")
+                print(f"[WARNING]  No se pudo convertir a número: '{value}' → '{clean_value}'")
             return 0.0
     
     
     async def _get_dollar_rate(self) -> Optional[Dict[str, Any]]:
         """Obtiene la cotización del dólar CCL usando la fuente configurada"""
         if not self.dollar_service:
-            print("⚠️  Dollar service no disponible - usando tasa por defecto")
+            print("[WARNING]  Dollar service no disponible - usando tasa por defecto")
             return {"rate": 1000.0, "source": "default", "fallback_used": True}
             
         try:
@@ -348,7 +348,7 @@ class PortfolioProcessor:
             print(f"💱 Usando fuente CCL configurada: {preferred_source}")
             return await self.dollar_service.get_ccl_rate(preferred_source)
         except Exception as e:
-            print(f"❌ Error obteniendo cotización del dólar: {e}")
+            print(f"[ERROR] Error obteniendo cotización del dólar: {e}")
             return {"rate": 1000.0, "source": "fallback", "fallback_used": True}
     
     def _get_broker_column_mapping(self, dataframe, broker: str) -> Dict[str, str]:
@@ -374,11 +374,11 @@ class PortfolioProcessor:
         # Formato conocido: instrumento,cantidad,precio,moneda,total
         if "instrumento" in columns:
             mapping["symbol"] = "instrumento"
-            print("✅ Cocos: symbol → 'instrumento'")
+            print("[SUCCESS] Cocos: symbol → 'instrumento'")
         
         if "cantidad" in columns:
             mapping["quantity"] = "cantidad"
-            print("✅ Cocos: quantity → 'cantidad'")
+            print("[SUCCESS] Cocos: quantity → 'cantidad'")
         
         # Opcionales
         if "precio" in columns:
@@ -388,7 +388,7 @@ class PortfolioProcessor:
         
         # Validar campos requeridos
         if "symbol" not in mapping or "quantity" not in mapping:
-            raise Exception(f"❌ Formato Cocos incompleto. Se esperaba 'instrumento' y 'cantidad'. Disponible: {columns}")
+            raise Exception(f"[ERROR] Formato Cocos incompleto. Se esperaba 'instrumento' y 'cantidad'. Disponible: {columns}")
         
         return mapping
     
@@ -414,10 +414,10 @@ class PortfolioProcessor:
         
         # Validar campos requeridos
         if "symbol" not in mapping or "quantity" not in mapping:
-            raise Exception(f"❌ Formato Bull Market incompleto. Se esperaba 'producto' y 'cantidad'. Disponible: {columns}")
+            raise Exception(f"[ERROR] Formato Bull Market incompleto. Se esperaba 'producto' y 'cantidad'. Disponible: {columns}")
             
-        print(f"✅ Bull Market: symbol → '{mapping['symbol']}'")
-        print(f"✅ Bull Market: quantity → '{mapping['quantity']}'")
+        print(f"[SUCCESS] Bull Market: symbol → '{mapping['symbol']}'")
+        print(f"[SUCCESS] Bull Market: quantity → '{mapping['quantity']}'")
         print("Nota: Bull Market: solo symbol+quantity (precios via API)")
             
         return mapping
@@ -430,7 +430,7 @@ class PortfolioProcessor:
         known_cedeares = {cedear["symbol"].upper() for cedear in self.cedear_processor.get_all_cedeares()}
         
         if self.debug:
-            print(f"🔍 Escaneando {len(known_cedeares)} CEDEARs conocidos...")
+            print(f"[SEARCH] Escaneando {len(known_cedeares)} CEDEARs conocidos...")
         
         found_positions = []
         
@@ -458,7 +458,7 @@ class PortfolioProcessor:
                                         print(f"{ticker} encontrado en ({row_idx+1}, {col_idx+1}) con cantidad {quantity}")
                 except Exception as e:
                     if self.debug:
-                        print(f"⚠️  Error en celda ({row_idx+1}, {col_idx+1}): {e}")
+                        print(f"[WARNING]  Error en celda ({row_idx+1}, {col_idx+1}): {e}")
                     continue
         
         return found_positions
@@ -522,7 +522,7 @@ class PortfolioProcessor:
         known_cedeares = {cedear["symbol"].upper() for cedear in self.cedear_processor.get_all_cedeares()}
         
         if self.debug:
-            print(f"🔍 Escaneando rango completo de CEDEARs en {len(known_cedeares)} símbolos conocidos...")
+            print(f"[SEARCH] Escaneando rango completo de CEDEARs en {len(known_cedeares)} símbolos conocidos...")
         
         # Buscar todas las filas que contienen CEDEARs
         cedear_rows = []
@@ -533,7 +533,7 @@ class PortfolioProcessor:
                     print(f"CEDEAR en fila {row_idx + 1}")
         
         if not cedear_rows:
-            raise Exception(f"❌ No se detectaron CEDEARs conocidos en el archivo {broker}")
+            raise Exception(f"[ERROR] No se detectaron CEDEARs conocidos en el archivo {broker}")
         
         # Determinar rango de datos
         data_start_row = min(cedear_rows)
@@ -587,7 +587,7 @@ class PortfolioProcessor:
         
         # Fallback: usar fila inmediatamente anterior
         fallback_row = max(0, data_start_row - 1)
-        print(f"⚠️  Headers no encontrados, usando fila {fallback_row + 1} como fallback")
+        print(f"[WARNING]  Headers no encontrados, usando fila {fallback_row + 1} como fallback")
         return fallback_row
     
     def _extract_bullmarket_ticker(self, raw_product: str) -> str:
@@ -608,7 +608,7 @@ class PortfolioProcessor:
             ticker = first_line.split()[0] if first_line.split() else ""
             
             if self.debug:
-                print(f"🔄 Bull Market ticker extraído: '{raw_product}' -> '{ticker}'")
+                print(f"[EXTRACT] Bull Market ticker extraído: '{raw_product}' -> '{ticker}'")
             
             return ticker
         
@@ -620,15 +620,15 @@ class PortfolioProcessor:
         
         if "symbol" in columns:
             mapping["symbol"] = "symbol"
-            print("✅ Estándar: symbol → 'symbol'")
+            print("[SUCCESS] Estándar: symbol → 'symbol'")
         
         if "quantity" in columns:
             mapping["quantity"] = "quantity"
-            print("✅ Estándar: quantity → 'quantity'")
+            print("[SUCCESS] Estándar: quantity → 'quantity'")
         
         # Validar campos requeridos
         if "symbol" not in mapping or "quantity" not in mapping:
-            print("❌ Formato estándar requerido:")
+            print("[ERROR] Formato estándar requerido:")
             print("📋 Columnas esperadas: 'symbol', 'quantity'")
             print(f"📋 Columnas disponibles: {columns}")
             raise Exception("Use formato estándar: CSV con columnas 'symbol,quantity'")

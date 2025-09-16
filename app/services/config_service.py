@@ -24,7 +24,7 @@ class ConfigService:
             "ccl_al30": "CCL AL30 (AL30/AL30D desde IOL)"
         }
         
-        print(f"🔍 Fuente actual: {source_names.get(current_source, current_source)}")
+        print(f"[SEARCH] Fuente actual: {source_names.get(current_source, current_source)}")
         
         # Mostrar opciones disponibles
         print("\nFuentes disponibles:")
@@ -38,16 +38,16 @@ class ConfigService:
         elif choice == "2":
             new_source = "ccl_al30"
         elif choice == "":
-            print("✅ Manteniendo fuente actual")
+            print("[SUCCESS] Manteniendo fuente actual")
             return
         else:
-            print("❌ Opción inválida")
+            print("[ERROR] Opción inválida")
             return
         
         # Actualizar configuración
         if self.config:
             self.config.preferred_ccl_source = new_source
-        print(f"✅ Fuente CCL actualizada a: {source_names[new_source]}")
+        print(f"[SUCCESS] Fuente CCL actualizada a: {source_names[new_source]}")
         
         # Probar la nueva fuente
         probar = input("\n🧪 ¿Probar la nueva fuente? (s/n): ").strip().lower()
@@ -62,15 +62,15 @@ class ConfigService:
             result = await self.services.dollar_service.get_ccl_rate(source)
             
             if result:
-                print(f"✅ Fuente funcionando correctamente:")
+                print(f"[SUCCESS] Fuente funcionando correctamente:")
                 print(f"   Cotización: ${result['rate']}")
                 print(f"   Fuente: {result['source']}")
                 print(f"   Última actualización: {result.get('last_update', 'N/A')}")
             else:
-                print("❌ La fuente no está disponible")
+                print("[ERROR] La fuente no está disponible")
                 
         except Exception as e:
-            print(f"❌ Error probando fuente: {e}")
+            print(f"[ERROR] Error probando fuente: {e}")
 
     def load_local_preferences(self):
         """Carga preferencias locales (como fuente CCL preferida) desde un archivo simple."""

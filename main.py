@@ -106,7 +106,7 @@ class PortfolioReplicatorInteractive:
             print("\n¿Qué flujo interactivo deseas ejecutar?")
             print("1. 📥 IOL → Análisis → Guardado (interactivo)")
             print("2. 📄 Archivo → Análisis → Guardado (interactivo)") 
-            print("3. Actualizar ratios de CEDEARs (PDF BYMA)")
+            print("3. 🔄 Actualizar ratios de CEDEARs (PDF BYMA)")
             print("4. 🏥 Diagnóstico de servicios")
             print("5. 🚪 Salir")
 
@@ -133,9 +133,9 @@ async def main():
         print("🌅 Inicializando Portfolio Replicator Interactivo...")
         market_message = get_market_status_message()
         if market_message:
-            print(f"📅 {market_message}")
+            print(f"[DATE] {market_message}")
         else:
-            print("📅 Mercados abiertos - Datos en tiempo real disponibles")
+            print("[DATE] Mercados abiertos - Datos en tiempo real disponibles")
         print()
         
         # Construir servicios con DI
@@ -147,7 +147,7 @@ async def main():
         await replicator.run()
         
     except KeyboardInterrupt:
-        print("\n\n⏹️  Aplicación interrumpida por el usuario")
+        print("\n\n[STOP]  Aplicación interrumpida por el usuario")
     except Exception as e:
         print(f"\nError crítico en aplicación: {e}")
         import traceback

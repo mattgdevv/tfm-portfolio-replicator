@@ -63,19 +63,19 @@ class BYMAIntegration:
         """
 
         try:
-            # 1️⃣ Determinar la fecha objetivo (último día hábil)
+            # 1. Determinar la fecha objetivo (último día hábil)
             if date is None:
                 target_dt = self.get_last_business_day(datetime.now())
             else:
                 target_dt = self.get_last_business_day(datetime.strptime(date, "%Y-%m-%d"))
 
-            # 2️⃣ Obtener o descargar el dataset histórico
+            # 2. Obtener o descargar el dataset histórico
             cache_key = "ccl_historical_data"
             data = self._get_from_cache(cache_key)
             if data is None:
                 url = "https://data-widgets.byma.com.ar/wp-admin/admin-ajax.php"
                 payload = {"action": "get_indice_dolar"}
-                logger.debug("🔍 Descargando dataset histórico CCL desde BYMA…")
+                logger.debug("[SEARCH] Descargando dataset histórico CCL desde BYMA…")
                 
                 # WordPress AJAX requiere form data, no JSON
                 headers = {
@@ -96,17 +96,17 @@ class BYMAIntegration:
                     data = raw["result"]
                     self._set_cache(cache_key, data)
                 else:
-                    logger.warning("⚠️  Formato inesperado en respuesta del CCL histórico BYMA")
+                    logger.warning("[WARNING]  Formato inesperado en respuesta del CCL histórico BYMA")
                     return None
 
             if not data:
-                logger.warning("⚠️  Dataset CCL histórico vacío")
+                logger.warning("[WARNING]  Dataset CCL histórico vacío")
                 return None
 
-            # 3️⃣ Construir índice por fecha para búsqueda rápida
+            # 3. Construir índice por fecha para búsqueda rápida
             by_date = {item.get("date"): item for item in data if "date" in item}
 
-            # 4️⃣ Buscar el registro por fecha; si no está, retroceder 1–2 hábiles
+            # 4. Buscar el registro por fecha; si no está, retroceder 1–2 hábiles
             def find_record(dt: datetime):
                 return by_date.get(dt.strftime("%Y-%m-%d"))
 
@@ -123,19 +123,19 @@ class BYMAIntegration:
                 if record:
                     used_dt = fallback_dt2
             if not record:
-                logger.warning(f"⚠️  No se encontró CCL histórico para {target_dt.strftime('%Y-%m-%d')} (ni con retroceso 1–2 hábiles)")
+                logger.warning(f"[WARNING]  No se encontró CCL histórico para {target_dt.strftime('%Y-%m-%d')} (ni con retroceso 1–2 hábiles)")
                 return None
 
             price = record.get("cclClosingPrice") or record.get("bymaClosingPrice")
             if price:
-                logger.debug(f"💱 BYMA CCL histórico {used_dt.strftime('%Y-%m-%d')}: ${float(price):.2f} ARS/USD")
+                logger.debug(f"[CCL] BYMA CCL histórico {used_dt.strftime('%Y-%m-%d')}: ${float(price):.2f} ARS/USD")
                 return float(price)
 
-            logger.warning(f"⚠️  Registro de CCL inválido para {date_str}: {record}")
+            logger.warning(f"[WARNING]  Registro de CCL inválido para {date_str}: {record}")
             return None
 
         except Exception as e:
-            logger.error(f"❌ Error obteniendo CCL histórico BYMA: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo CCL histórico BYMA: {str(e)}")
             return None
     
     async def _get_cedeares_data(self) -> Optional[List[Dict]]:
@@ -145,15 +145,15 @@ class BYMAIntegration:
         market_message = get_market_status_message("AR")
         if market_message:
             logger.info(market_message)
-            return None  # ✅ Trigger fallback limpio, sin errores
+            return None  # [SUCCESS] Trigger fallback limpio, sin errores
 
-        # 🔍 Check BYMA health en días hábiles - detectar caídas de servicio
+        # [SEARCH] Check BYMA health en días hábiles - detectar caídas de servicio
         if is_business_day_by_market(datetime.now(), "AR"):
             health_check = await self.check_byma_health()
             if not health_check["status"]:
-                fallback_message = f"⚠️ BYMA no responde en día hábil ({health_check['response_time']}s) - {health_check['error']} - Usando precios internacionales y CCL para estimar precios de CEDEARs"
+                fallback_message = f"[WARNING] BYMA no responde en día hábil ({health_check['response_time']}s) - {health_check['error']} - Usando precios internacionales y CCL para estimar precios de CEDEARs"
                 logger.warning(fallback_message)
-                return None  # ✅ Trigger fallback limpio con mensaje informativo
+                return None  # [SUCCESS] Trigger fallback limpio con mensaje informativo
         
         cache_key = "cedeares_data"
         cached = self._get_from_cache(cache_key)
@@ -169,7 +169,7 @@ class BYMAIntegration:
                 "Content-Type": "application/json, text/plain"
             }
             
-            logger.debug("🔍 Obteniendo datos de CEDEARs desde BYMA...")
+            logger.debug("[SEARCH] Obteniendo datos de CEDEARs desde BYMA...")
             
             response = self.session.post(
                 url, 
@@ -183,21 +183,21 @@ class BYMAIntegration:
             data = response.json()
             
             if isinstance(data, list) and len(data) > 0:
-                logger.debug(f"✅ Obtenidos {len(data)} CEDEARs desde BYMA")
+                logger.debug(f"[SUCCESS] Obtenidos {len(data)} CEDEARs desde BYMA")
                 self._set_cache(cache_key, data)
                 return data
             else:
-                logger.warning("⚠️  Respuesta BYMA vacía o formato incorrecto")
+                logger.warning("[WARNING]  Respuesta BYMA vacía o formato incorrecto")
                 return None
                 
         except requests.exceptions.RequestException as e:
-            logger.error(f"❌ Error de conexión BYMA CEDEARs: {str(e)}")
+            logger.error(f"[ERROR] Error de conexión BYMA CEDEARs: {str(e)}")
             return None
         except json.JSONDecodeError as e:
-            logger.error(f"❌ Error parsing JSON BYMA CEDEARs: {str(e)}")
+            logger.error(f"[ERROR] Error parsing JSON BYMA CEDEARs: {str(e)}")
             return None
         except Exception as e:
-            logger.error(f"❌ Error inesperado BYMA CEDEARs: {str(e)}")
+            logger.error(f"[ERROR] Error inesperado BYMA CEDEARs: {str(e)}")
             return None
     
     def _get_from_cache(self, key: str) -> Optional[Any]:

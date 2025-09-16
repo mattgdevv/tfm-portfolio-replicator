@@ -68,7 +68,7 @@ class Config:
                     
                 print(f"📄 Configuración cargada desde .prefs.json")
             except Exception as e:
-                print(f"⚠️  Error leyendo .prefs.json: {e}")
+                print(f"[WARNING]  Error leyendo .prefs.json: {e}")
         
         # 2. Variables de entorno tienen prioridad (sobrescriben .prefs.json)
         
@@ -90,7 +90,7 @@ class Config:
     def validate(self) -> None:
         """Valida que la configuración sea válida"""
         if not self.finnhub_api_key:
-            print("⚠️  FINNHUB_API_KEY no configurada - precios internacionales limitados")
+            print("[WARNING]  FINNHUB_API_KEY no configurada - precios internacionales limitados")
         
         if self.arbitrage_threshold <= 0:
             raise ValueError("arbitrage_threshold debe ser > 0")

@@ -9,9 +9,9 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 import logging
 
-# ❌ ELIMINADO: import de servicio global - migrar a DI cuando sea necesario
+# [ERROR] ELIMINADO: import de servicio global - migrar a DI cuando sea necesario
 # from .international_prices import international_price_service
-# ❌ ELIMINADO: imports de servicios globales - migrar a DI cuando sea necesario  
+# [ERROR] ELIMINADO: imports de servicios globales - migrar a DI cuando sea necesario  
 # from .dollar_rate import dollar_service
 # from .byma_historical import byma_historical_service
 from ..processors.cedeares import CEDEARProcessor
@@ -108,31 +108,31 @@ class VariationAnalyzer:
             CEDEARVariationAnalysis o None si hay error
         """
         
-        logger.debug(f"🔍 Analizando variación para {symbol} (modo: {self.mode})")
+        logger.debug(f"[SEARCH] Analizando variación para {symbol} (modo: {self.mode})")
         
         try:
             # 1. Obtener precios actuales del subyacente
             underlying_today = await self.international_service.get_stock_price(symbol)
             if not underlying_today:
-                logger.error(f"❌ No se pudo obtener precio actual de {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener precio actual de {symbol}")
                 return None
             
             # 2. Obtener precios históricos del subyacente (ayer)
             underlying_yesterday = await self._get_historical_underlying_price(symbol)
             if not underlying_yesterday:
-                logger.error(f"❌ No se pudo obtener precio histórico de {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener precio histórico de {symbol}")
                 return None
             
             # 3. Obtener precios del CEDEAR (hoy y ayer)
             cedear_today_ars, cedear_yesterday_ars = await self.price_fetcher.get_cedear_price(symbol, include_historical=True)
             if not cedear_today_ars or not cedear_yesterday_ars:
-                logger.error(f"❌ No se pudo obtener precios CEDEAR para {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener precios CEDEAR para {symbol}")
                 return None
             
             # 4. Obtener CCL (hoy y ayer)
             ccl_today, ccl_yesterday = await self._get_ccl_prices()
             if not ccl_today or not ccl_yesterday:
-                logger.error(f"❌ No se pudo obtener precios CCL")
+                logger.error(f"[ERROR] No se pudo obtener precios CCL")
                 return None
             
             # 5. Calcular variaciones
@@ -156,11 +156,11 @@ class VariationAnalyzer:
                 timestamp=datetime.now().isoformat()
             )
             
-            logger.debug(f"✅ Análisis completado para {symbol}: var_cedear={var_cedear:.1%}")
+            logger.debug(f"[SUCCESS] Análisis completado para {symbol}: var_cedear={var_cedear:.1%}")
             return analysis
             
         except Exception as e:
-            logger.error(f"❌ Error analizando variación de {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error analizando variación de {symbol}: {str(e)}")
             return None
     
     async def _get_historical_underlying_price(self, symbol: str) -> Optional[float]:
@@ -168,11 +168,11 @@ class VariationAnalyzer:
         
         try:
             # Yahoo Finance eliminado - datos históricos no disponibles
-            logger.warning(f"⚠️  Datos históricos no disponibles para {symbol} (Yahoo eliminado)")
+            logger.warning(f"[WARNING]  Datos históricos no disponibles para {symbol} (Yahoo eliminado)")
             return None
             
         except Exception as e:
-            logger.error(f"❌ Error obteniendo precio histórico de {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo precio histórico de {symbol}: {str(e)}")
             return None
     
     
@@ -189,13 +189,13 @@ class VariationAnalyzer:
             
             if not ccl_yesterday:
                 ccl_yesterday = ccl_today  # Fallback al actual
-                logger.debug("⚠️  Usando CCL actual como histórico")
+                logger.debug("[WARNING]  Usando CCL actual como histórico")
             
-            logger.debug(f"💱 CCL: Hoy=${ccl_today:.0f}, Ayer=${ccl_yesterday:.0f} ARS/USD")
+            logger.debug(f"[CCL] CCL: Hoy=${ccl_today:.0f}, Ayer=${ccl_yesterday:.0f} ARS/USD")
             return ccl_today, ccl_yesterday
             
         except Exception as e:
-            logger.error(f"❌ Error obteniendo precios CCL: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo precios CCL: {str(e)}")
             return None, None
     
     async def analyze_portfolio_variations(self, symbols: List[str]) -> List[CEDEARVariationAnalysis]:
@@ -209,7 +209,7 @@ class VariationAnalyzer:
             Lista de análisis de variación
         """
         
-        logger.debug(f"🔍 Analizando variaciones para {len(symbols)} símbolos: {symbols}")
+        logger.debug(f"[SEARCH] Analizando variaciones para {len(symbols)} símbolos: {symbols}")
         
         # Ejecutar análisis en paralelo
         tasks = [
@@ -223,11 +223,11 @@ class VariationAnalyzer:
         analyses = []
         for symbol, result in zip(symbols, results):
             if isinstance(result, Exception):
-                logger.error(f"❌ Error analizando variación de {symbol}: {result}")
+                logger.error(f"[ERROR] Error analizando variación de {symbol}: {result}")
             elif result is not None:
                 analyses.append(result)
         
-        logger.info(f"✅ Análisis de variaciones completado: {len(analyses)}/{len(symbols)}")
+        logger.info(f"[SUCCESS] Análisis de variaciones completado: {len(analyses)}/{len(symbols)}")
         return analyses
     
     def format_variation_report(self, analyses: List[CEDEARVariationAnalysis]) -> str:
@@ -236,7 +236,7 @@ class VariationAnalyzer:
         if not analyses:
             return "ℹ️  No hay análisis de variaciones disponibles"
         
-        report = "\n📊 ANÁLISIS DE VARIACIONES DIARIAS\n"
+        report = "\n[DATA] ANÁLISIS DE VARIACIONES DIARIAS\n"
         report += "=" * 70 + "\n"
         report += f"Modo: {'🔴 TIEMPO REAL (IOL)' if self.mode == 'full' else '🟡 REAL (BYMA)'}\n\n"
         

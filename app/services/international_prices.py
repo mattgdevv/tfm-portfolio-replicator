@@ -60,7 +60,7 @@ class InternationalPriceService:
             del self._price_cache[symbol]
             return None
             
-        logger.debug(f"♻️ Cache hit para {symbol}: ${cached_data['price']:.2f} USD (age: {cache_age})")
+        logger.debug(f"[CACHE] Cache hit para {symbol}: ${cached_data['price']:.2f} USD (age: {cache_age})")
         return cached_data.copy()
         
     def _set_cache(self, symbol: str, price_data: Dict[str, Any]) -> None:
@@ -69,7 +69,7 @@ class InternationalPriceService:
         cache_entry['cached_at'] = datetime.now()
         cache_entry['cache_source'] = 'finnhub'
         self._price_cache[symbol] = cache_entry
-        logger.debug(f"💾 Precio de {symbol} guardado en caché: ${price_data['price']:.2f} USD")
+        logger.debug(f"[CACHE] Precio de {symbol} guardado en caché: ${price_data['price']:.2f} USD")
         
     async def get_stock_price(self, symbol: str, preferred_source: PriceSource = "finnhub") -> Optional[Dict[str, Any]]:
         """
@@ -94,7 +94,7 @@ class InternationalPriceService:
                 continue
                 
             try:
-                logger.debug(f"🔍 Obteniendo precio de {symbol} desde: {source}")
+                logger.debug(f"[SEARCH] Obteniendo precio de {symbol} desde: {source}")
                 attempted_sources.append(source)
                 
                 if source == "finnhub":
@@ -103,13 +103,13 @@ class InternationalPriceService:
                     continue
                     
                 if result:
-                    logger.debug(f"✅ Precio de {symbol} obtenido desde {source}: ${result['price']}")
+                    logger.debug(f"[SUCCESS] Precio de {symbol} obtenido desde {source}: ${result['price']}")
                     
                     # Guardar en caché para futuros fallbacks
                     self._set_cache(symbol, result)
                     
                     # Finnhub es la única fuente
-                    logger.debug(f"📊 {symbol}: Precio obtenido desde {source.upper()}")
+                    logger.debug(f"[DATA] {symbol}: Precio obtenido desde {source.upper()}")
                     
                     return {
                         **result,
@@ -123,16 +123,16 @@ class InternationalPriceService:
                     }
                     
             except Exception as e:
-                logger.debug(f"❌ {source} falló para {symbol}: {str(e)}")
+                logger.debug(f"[ERROR] {source} falló para {symbol}: {str(e)}")
                 # No deshabilitar fuentes globalmente por errores de símbolos individuales
                 # Las fuentes pueden fallar para un símbolo pero funcionar para otros
                 
         # Si llegamos aquí, todas las fuentes fallaron - intentar caché
-        logger.warning(f"❌ Finnhub falló para {symbol}, intentando caché...")
+        logger.warning(f"[ERROR] Finnhub falló para {symbol}, intentando caché...")
         cached_result = self._get_from_cache(symbol)
         
         if cached_result:
-            logger.info(f"♻️ Usando precio desde caché para {symbol}: ${cached_result['price']:.2f} USD")
+            logger.info(f"[CACHE] Usando precio desde caché para {symbol}: ${cached_result['price']:.2f} USD")
             
             return {
                 **cached_result,
@@ -146,7 +146,7 @@ class InternationalPriceService:
             }
         
         # Si llegamos aquí, tanto Finnhub como caché fallaron
-        logger.warning(f"❌ No se pudo obtener precio de {symbol} desde ninguna fuente (incluyendo caché)")
+        logger.warning(f"[ERROR] No se pudo obtener precio de {symbol} desde ninguna fuente (incluyendo caché)")
         return None
     
     async def _get_finnhub_price(self, symbol: str) -> Optional[Dict[str, Any]]:
@@ -212,7 +212,7 @@ class InternationalPriceService:
             Dict con símbolo como key y datos de precio como value
         """
         
-        logger.info(f"📊 Obteniendo precios de {len(symbols)} símbolos: {symbols}")
+        logger.info(f"[DATA] Obteniendo precios de {len(symbols)} símbolos: {symbols}")
         
         # Ejecutar todas las consultas en paralelo
         tasks = [
@@ -226,13 +226,13 @@ class InternationalPriceService:
         prices = {}
         for symbol, result in zip(symbols, results):
             if isinstance(result, Exception):
-                logger.error(f"❌ Error obteniendo {symbol}: {result}")
+                logger.error(f"[ERROR] Error obteniendo {symbol}: {result}")
                 prices[symbol] = None
             else:
                 prices[symbol] = result
         
         successful = sum(1 for p in prices.values() if p is not None)
-        logger.info(f"✅ Precios obtenidos exitosamente: {successful}/{len(symbols)}")
+        logger.info(f"[SUCCESS] Precios obtenidos exitosamente: {successful}/{len(symbols)}")
         
         return prices
     

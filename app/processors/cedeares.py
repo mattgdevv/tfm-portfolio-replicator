@@ -14,16 +14,16 @@ class CEDEARProcessor:
         data_path = Path(__file__).parent.parent.parent / "byma_cedeares_pdf.json"
         
         if not data_path.exists():
-            print("❌ No se encontraron datos de CEDEARs")
+            print("[ERROR] No se encontraron datos de CEDEARs")
             print("🔄 Descargando datos de CEDEARs desde BYMA por primera vez...")
             if self._download_cedeares_data():
                 # Intentar cargar nuevamente después de la descarga
                 data_path = Path(__file__).parent.parent.parent / "byma_cedeares_pdf.json"
                 if not data_path.exists():
-                    print("❌ Error: No se pudo descargar los datos de CEDEARs")
+                    print("[ERROR] Error: No se pudo descargar los datos de CEDEARs")
                     return []
             else:
-                print("❌ Error descargando datos de CEDEARs")
+                print("[ERROR] Error descargando datos de CEDEARs")
                 return []
         
         with open(data_path, 'r', encoding='utf-8') as f:
@@ -49,14 +49,14 @@ class CEDEARProcessor:
             ], capture_output=True, text=True, cwd=current_dir, env=env)
             
             if result.returncode == 0:
-                print("✅ Datos de CEDEARs descargados exitosamente")
+                print("[SUCCESS] Datos de CEDEARs descargados exitosamente")
                 return True
             else:
-                print(f"❌ Error en descarga: {result.stderr}")
+                print(f"[ERROR] Error en descarga: {result.stderr}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Error ejecutando descarga: {e}")
+            print(f"[ERROR] Error ejecutando descarga: {e}")
             return False
     
     def _build_cedeares_map(self) -> Dict[str, Dict]:
@@ -71,7 +71,7 @@ class CEDEARProcessor:
         """Verifica si un símbolo es un CEDEAR. Si no lo encuentra, lanza un error claro."""
         normalized_symbol = symbol.upper().strip()
         if normalized_symbol not in self.cedeares_map:
-            print(f"❌ Símbolo '{symbol}' NO encontrado en byma_cedeares.json. No se puede convertir/arbitrar este activo.")
+            print(f"[ERROR] Símbolo '{symbol}' NO encontrado en byma_cedeares.json. No se puede convertir/arbitrar este activo.")
             return False
         return True
     
@@ -80,7 +80,7 @@ class CEDEARProcessor:
         normalized_symbol = cedear_symbol.upper().strip()
         cedear = self.cedeares_map.get(normalized_symbol)
         if not cedear:
-            print(f"❌ Símbolo '{cedear_symbol}' NO encontrado en datos de CEDEARs. No se puede obtener información de subyacente.")
+            print(f"[ERROR] Símbolo '{cedear_symbol}' NO encontrado en datos de CEDEARs. No se puede obtener información de subyacente.")
             return None
         return cedear
     
@@ -123,7 +123,7 @@ class CEDEARProcessor:
         print("🔄 Recargando datos de CEDEARs...")
         self.cedeares_data = self._load_cedeares_data()
         self.cedeares_map = self._build_cedeares_map()
-        print(f"✅ Datos recargados: {len(self.cedeares_data)} CEDEARs disponibles")
+        print(f"[SUCCESS] Datos recargados: {len(self.cedeares_data)} CEDEARs disponibles")
     
     def get_cedear_info(self, symbol: str) -> Optional[Dict]:
         """Obtiene información completa de un CEDEAR"""
@@ -146,7 +146,7 @@ class CEDEARProcessor:
         if len(cedeares) > 10:
             print(f"  ... y {len(cedeares) - 10} más")
         
-        print(f"\n📊 Total de CEDEARs: {len(cedeares)}")
+        print(f"\n[DATA] Total de CEDEARs: {len(cedeares)}")
 
     def update_byma_cedeares(self):
         """Descarga y parsea el PDF de BYMA para obtener ratios de CEDEARs."""
@@ -163,7 +163,7 @@ class CEDEARProcessor:
             ], capture_output=True, text=True, cwd=".", env=env)
             
             if result.returncode == 0:
-                print("✅ PDF procesado exitosamente")
+                print("[SUCCESS] PDF procesado exitosamente")
                 # Recargar datos en el processor
                 self.reload_data()
                 if "CEDEARs" in result.stdout:
@@ -171,12 +171,12 @@ class CEDEARProcessor:
                     lines = result.stdout.strip().split('\n')
                     for line in lines:
                         if "Total de CEDEARs:" in line:
-                            print(f"✅ {line}")
+                            print(f"[SUCCESS] {line}")
                             break
                 else:
-                    print("✅ Archivo byma_cedeares_pdf.json actualizado")
+                    print("[SUCCESS] Archivo byma_cedeares_pdf.json actualizado")
             else:
-                print(f"❌ Error procesando PDF: {result.stderr}")
+                print(f"[ERROR] Error procesando PDF: {result.stderr}")
                 
         except Exception as e:
-            print(f"❌ Error ejecutando download_byma_pdf.py: {e}")
+            print(f"[ERROR] Error ejecutando download_byma_pdf.py: {e}")

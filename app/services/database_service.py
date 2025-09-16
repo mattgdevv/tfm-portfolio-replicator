@@ -105,7 +105,7 @@ class DatabaseService:
             """)
             
             conn.commit()
-            logger.info(f"✅ Base de datos inicializada: {self.db_path}")
+            logger.info(f"[SUCCESS] Base de datos inicializada: {self.db_path}")
     
     def save_portfolio_data(self, results: Dict[str, Any]) -> int:
         """
@@ -167,7 +167,7 @@ class DatabaseService:
                 ))
             
             conn.commit()
-            logger.info(f"💾 Portfolio guardado en BD: {portfolio_id} ({len(positions)} posiciones)")
+            logger.info(f"[CACHE] Portfolio guardado en BD: {portfolio_id} ({len(positions)} posiciones)")
             return portfolio_id
     
     def save_arbitrage_data(self, results: Dict[str, Any], portfolio_id: int):
@@ -252,7 +252,7 @@ class DatabaseService:
             ))
             
             conn.commit()
-            logger.info("📊 Métricas del pipeline guardadas en BD")
+            logger.info("[DATA] Métricas del pipeline guardadas en BD")
     
     def save_all(self, results: Dict[str, Any]):
         """
@@ -271,10 +271,10 @@ class DatabaseService:
             # Guardar métricas
             self.save_pipeline_metrics(results)
             
-            logger.info(f"✅ Todos los datos guardados en BD: portfolio_id={portfolio_id}")
+            logger.info(f"[SUCCESS] Todos los datos guardados en BD: portfolio_id={portfolio_id}")
             
         except Exception as e:
-            logger.error(f"❌ Error guardando en BD: {e}")
+            logger.error(f"[ERROR] Error guardando en BD: {e}")
             raise
     
     def get_portfolio_summary(self, days: int = 7) -> Dict[str, Any]:

@@ -34,7 +34,7 @@ class FileService:
             original_df = pd.DataFrame(original_data)
             original_file = f"portfolio_original_{timestamp}.xlsx"
             original_df.to_excel(original_file, index=False)
-            print(f"✅ Portfolio original guardado: {original_file}")
+            print(f"[SUCCESS] Portfolio original guardado: {original_file}")
             
             # Guardar portfolio convertido si existe
             if converted:
@@ -51,7 +51,7 @@ class FileService:
                 converted_df = pd.DataFrame(converted_data)
                 converted_file = f"portfolio_converted_{timestamp}.xlsx"
                 converted_df.to_excel(converted_file, index=False)
-                print(f"✅ Portfolio convertido guardado: {converted_file}")
+                print(f"[SUCCESS] Portfolio convertido guardado: {converted_file}")
                 
         except Exception as e:
-            print(f"❌ Error guardando archivos: {e}")
+            print(f"[ERROR] Error guardando archivos: {e}")

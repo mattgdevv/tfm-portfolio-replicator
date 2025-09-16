@@ -24,21 +24,21 @@ class MonitoringCommands:
         """
         Muestra la lista completa de CEDEARs disponibles
         """
-        print("\n📋 Lista de CEDEARs disponibles...")
+        print("\n[LIST] Lista de CEDEARs disponibles...")
         self.services.cedear_processor.show_cedeares_list()
     
     async def update_cedeares_data(self):
         """
         Actualiza los datos de CEDEARs desde BYMA
         """
-        print("\n🔄 Actualizando datos de CEDEARs desde BYMA...")
+        print("\n[BYMA] Actualizando datos de CEDEARs desde BYMA...")
         self.services.cedear_processor.update_byma_cedeares()
     
     async def configure_ccl_source(self):
         """
         Configura la fuente de cotización CCL
         """
-        print("\n⚙️  Configurando fuente CCL...")
+        print("\n[CONFIG] Configurando fuente CCL...")
         await self.services.config_service.configure_ccl_source()
     
     async def run_health_diagnostics(self):
@@ -46,67 +46,67 @@ class MonitoringCommands:
         Ejecuta diagnósticos de salud completos de todos los servicios del sistema
         Incluye métricas avanzadas de performance y recomendaciones
         """
-        print("\n🔍 DIAGNÓSTICO COMPLETO DE SERVICIOS")
+        print("\n[DIAGNOSTIC] DIAGNÓSTICO COMPLETO DE SERVICIOS")
         print("=" * 60)
 
         # 1. Verificar BYMA
-        print("🏛️  Verificando BYMA...")
+        print("[CHECK] Verificando BYMA...")
         try:
             byma_health = await self.services.byma_integration.check_byma_health()
-            status_icon = "✅" if byma_health["status"] else "❌"
-            business_day_icon = "📅" if byma_health["business_day"] else "🏖️"
+            status_icon = "[OK]" if byma_health["status"] else "[FAIL]"
+            business_day_icon = "[BUSINESS]" if byma_health["business_day"] else "[HOLIDAY]"
 
             print(f"   {status_icon} Estado: {'Operativo' if byma_health['status'] else 'No responde'}")
             print(f"   {business_day_icon} Día hábil: {'Sí' if byma_health['business_day'] else 'No'}")
-            print(f"   ⏱️  Tiempo respuesta: {byma_health['response_time']}s")
+            print(f"   [TIME] Tiempo respuesta: {byma_health['response_time']}s")
 
             if not byma_health["status"]:
-                print(f"   ⚠️  Error: {byma_health['error']}")
+                print(f"   [WARNING] Error: {byma_health['error']}")
 
         except Exception as e:
-            print(f"   ❌ Error verificando BYMA: {str(e)}")
+            print(f"   [ERROR] Error verificando BYMA: {str(e)}")
 
         print()
 
         # 2. Verificar IOL
-        print("🏦 Verificando IOL...")
+        print("[CHECK] Verificando IOL...")
         try:
             iol_health = await self.iol_integration.check_health()
 
             if self.iol_integration.session:
-                auth_icon = "🔐" if iol_health["authenticated"] else "🔓"
+                auth_icon = "[AUTH]" if iol_health["authenticated"] else "[NO-AUTH]"
                 print(f"   {auth_icon} Autenticado: {'Sí' if iol_health['authenticated'] else 'No'}")
             else:
-                print("   📴 Sin sesión IOL activa")
+                print("   [OFFLINE] Sin sesión IOL activa")
 
-            status_icon = "✅" if iol_health["status"] else "❌"
+            status_icon = "[OK]" if iol_health["status"] else "[FAIL]"
             print(f"   {status_icon} Estado: {'Operativo' if iol_health['status'] else 'No disponible'}")
 
             if not iol_health["status"]:
-                print(f"   ⚠️  Error: {iol_health['error']}")
+                print(f"   [WARNING] Error: {iol_health['error']}")
 
         except Exception as e:
-            print(f"   ❌ Error verificando IOL: {str(e)}")
+            print(f"   [ERROR] Error verificando IOL: {str(e)}")
 
         print()
 
         # 3. Verificar Database SQLite
-        print("💾 Verificando Base de Datos...")
+        print("[CHECK] Verificando Base de Datos...")
         try:
             db_health = await self._check_database_health()
-            db_icon = "✅" if db_health["status"] else "❌"
+            db_icon = "[OK]" if db_health["status"] else "[FAIL]"
 
             print(f"   {db_icon} Conectividad: {'Operativa' if db_health['status'] else 'Error'}")
-            print(f"   📊 Tablas: {db_health['tables_count']} encontradas")
-            print(f"   📈 Portfolios: {db_health['portfolio_count']}, Posiciones: {db_health['positions_count']}")
-            print(f"   🚨 Arbitrajes: {db_health['arbitrage_count']}, Métricas: {db_health['metrics_count']}")
+            print(f"   [DATA] Tablas: {db_health['tables_count']} encontradas")
+            print(f"   [METRICS] Portfolios: {db_health['portfolio_count']}, Posiciones: {db_health['positions_count']}")
+            print(f"   [ALERT] Arbitrajes: {db_health['arbitrage_count']}, Métricas: {db_health['metrics_count']}")
             print(f"   🕒 Última ejecución: {db_health['last_execution']}")
 
             if not db_health["status"]:
-                print(f"   ⚠️  Error: {db_health['error']}")
+                print(f"   [WARNING]  Error: {db_health['error']}")
 
         except Exception as e:
-            print(f"   ❌ Error verificando Base de Datos: {str(e)}")
+            print(f"   [FAIL] Error verificando Base de Datos: {str(e)}")
 
         print()
 
@@ -115,20 +115,20 @@ class MonitoringCommands:
         try:
             # Verificar DolarAPI
             ccl_health = await self._check_ccl_api_health()
-            ccl_icon = "✅" if ccl_health["status"] else "❌"
+            ccl_icon = "[OK]" if ccl_health["status"] else "[FAIL]"
             print(f"   {ccl_icon} DolarAPI: {'Operativo' if ccl_health['status'] else 'No disponible'}")
             if ccl_health["status"]:
                 print(f"   💵 CCL actual: ${ccl_health['ccl_rate']}")
 
             # Verificar Finnhub
             finnhub_health = await self._check_finnhub_health()
-            finnhub_icon = "✅" if finnhub_health["status"] else "❌"
+            finnhub_icon = "[OK]" if finnhub_health["status"] else "[FAIL]"
             print(f"   {finnhub_icon} Finnhub: {'Operativo' if finnhub_health['status'] else 'No disponible'}")
             if finnhub_health["status"]:
-                print(f"   📊 Símbolo ejemplo: {finnhub_health['test_symbol']} = ${finnhub_health['test_price']}")
+                print(f"   [DATA] Símbolo ejemplo: {finnhub_health['test_symbol']} = ${finnhub_health['test_price']}")
 
         except Exception as e:
-            print(f"   ❌ Error verificando APIs externas: {str(e)}")
+            print(f"   [FAIL] Error verificando APIs externas: {str(e)}")
 
         print()
 
@@ -136,31 +136,31 @@ class MonitoringCommands:
         print("Verificando Performance...")
         try:
             perf_health = await self._check_performance_health()
-            cache_icon = "✅" if perf_health["cache_working"] else "❌"
+            cache_icon = "[OK]" if perf_health["cache_working"] else "[FAIL]"
 
             print(f"   {cache_icon} Sistema de Cache: {'Operativo' if perf_health['cache_working'] else 'Error'}")
-            print(f"   📊 Cache hits: {perf_health['cache_stats']['hits']}")
-            print(f"   📊 Cache misses: {perf_health['cache_stats']['misses']}")
+            print(f"   [DATA] Cache hits: {perf_health['cache_stats']['hits']}")
+            print(f"   [DATA] Cache misses: {perf_health['cache_stats']['misses']}")
             print(f"   Promedio respuesta: {perf_health['avg_response_time']}ms")
 
         except Exception as e:
-            print(f"   ❌ Error verificando Performance: {str(e)}")
+            print(f"   [FAIL] Error verificando Performance: {str(e)}")
 
         print()
 
         # 6. Verificación Sistema y Recursos
-        print("🖥️  Verificando Sistema...")
+        print("[SYSTEM] Verificando Sistema...")
         try:
             system_health = await self._check_system_health()
-            memory_icon = "✅" if system_health["memory_ok"] else "⚠️"
-            disk_icon = "✅" if system_health["disk_ok"] else "⚠️"
+            memory_icon = "[OK]" if system_health["memory_ok"] else "[WARNING]"
+            disk_icon = "[OK]" if system_health["disk_ok"] else "[WARNING]"
 
             print(f"   {memory_icon} Memoria: {system_health['memory_usage']:.1f}% utilizada")
             print(f"   {disk_icon} Disco: {system_health['disk_usage']:.1f}% utilizado")
-            print(f"   🔗 Conectividad: {'OK' if system_health['network_ok'] else 'Error'}")
+            print(f"   [NETWORK] Conectividad: {'OK' if system_health['network_ok'] else 'Error'}")
 
         except Exception as e:
-            print(f"   ❌ Error verificando sistema: {str(e)}")
+            print(f"   [FAIL] Error verificando sistema: {str(e)}")
 
         print()
         print("ACLARACIONES:")
@@ -187,7 +187,7 @@ class MonitoringCommands:
             portfolio: Portfolio original
             converted_portfolio: Portfolio convertido (opcional)
         """
-        print("\n💾 Guardando resultados...")
+        print("\n[SAVE] Guardando resultados...")
         await self.services.file_service.save_results(portfolio, converted_portfolio)
 
     # ===============================================

@@ -31,7 +31,7 @@ class BYMAPDFProcessor:
     def get_latest_pdf_url(self) -> Optional[str]:
         """Obtiene la URL del PDF más reciente desde la página de BYMA"""
         try:
-            print(f"🔍 Buscando URL del PDF en: {self.cedeares_page_url}")
+            print(f"[SEARCH] Buscando URL del PDF en: {self.cedeares_page_url}")
             
             # Hacer request a la página
             response = requests.get(self.cedeares_page_url, verify=False)
@@ -46,27 +46,27 @@ class BYMAPDFProcessor:
             if matches:
                 # Tomar la primera URL encontrada (debería ser la más reciente)
                 latest_url = matches[0]
-                print(f"✅ PDF encontrado: {latest_url}")
+                print(f"[SUCCESS] PDF encontrado: {latest_url}")
                 
                 # Extraer fecha del PDF para mostrar al usuario
                 date_match = re.search(r'(\d{4}-\d{2}-\d{2})', latest_url)
                 if date_match:
                     pdf_date = date_match.group(1)
-                    print(f"📅 Fecha del PDF: {pdf_date}")
+                    print(f"[DATE] Fecha del PDF: {pdf_date}")
                 
                 return latest_url
             else:
-                print("❌ No se encontró URL del PDF en la página")
+                print("[ERROR] No se encontró URL del PDF en la página")
                 # Fallback a URL conocida si no encontramos nada
                 fallback_url = "https://cdn.prod.website-files.com/6697a441a50c6b926e1972e0/68b86fe690fbf91e42c75e90_BYMA-Tabla-CEDEARs-2025-09-03.pdf"
-                print(f"⚠️  Usando URL fallback: {fallback_url}")
+                print(f"[WARNING]  Usando URL fallback: {fallback_url}")
                 return fallback_url
                 
         except Exception as e:
-            print(f"❌ Error obteniendo URL del PDF: {e}")
+            print(f"[ERROR] Error obteniendo URL del PDF: {e}")
             # Fallback a URL conocida
             fallback_url = "https://cdn.prod.website-files.com/6697a441a50c6b926e1972e0/68b86fe690fbf91e42c75e90_BYMA-Tabla-CEDEARs-2025-09-03.pdf"
-            print(f"⚠️  Usando URL fallback: {fallback_url}")
+            print(f"[WARNING]  Usando URL fallback: {fallback_url}")
             return fallback_url
         
     def download_pdf(self) -> Optional[bytes]:
@@ -77,10 +77,10 @@ class BYMAPDFProcessor:
                 self.pdf_url = self.get_latest_pdf_url()
                 
             if not self.pdf_url:
-                print("❌ No se pudo obtener URL del PDF")
+                print("[ERROR] No se pudo obtener URL del PDF")
                 return None
                 
-            print(f"📥 Descargando PDF desde: {self.pdf_url}")
+            print(f"[DOWNLOAD] Descargando PDF desde: {self.pdf_url}")
             response = requests.get(self.pdf_url, verify=False)
             response.raise_for_status()
             
@@ -89,11 +89,11 @@ class BYMAPDFProcessor:
             with open(pdf_file, 'wb') as f:
                 f.write(response.content)
             
-            print(f"✅ PDF guardado como: {pdf_file}")
+            print(f"[SUCCESS] PDF guardado como: {pdf_file}")
             return response.content
             
         except Exception as e:
-            print(f"❌ Error descargando PDF: {e}")
+            print(f"[ERROR] Error descargando PDF: {e}")
             return None
     
     def extract_text_from_pdf(self, pdf_content: bytes) -> str:
@@ -111,11 +111,11 @@ class BYMAPDFProcessor:
                 for page in pdf_reader.pages:
                     text += page.extract_text()
                 
-                print("✅ Texto extraído con PyPDF2")
+                print("[SUCCESS] Texto extraído con PyPDF2")
                 return text
                 
             except ImportError:
-                print("⚠️  PyPDF2 no está instalado, intentando con pdfplumber...")
+                print("[WARNING]  PyPDF2 no está instalado, intentando con pdfplumber...")
                 
             # Intentar con pdfplumber
             try:
@@ -128,11 +128,11 @@ class BYMAPDFProcessor:
                     for page in pdf.pages:
                         text += page.extract_text() or ""
                 
-                print("✅ Texto extraído con pdfplumber")
+                print("[SUCCESS] Texto extraído con pdfplumber")
                 return text
                 
             except ImportError:
-                print("⚠️  pdfplumber no está instalado, intentando con fitz...")
+                print("[WARNING]  pdfplumber no está instalado, intentando con fitz...")
             
             # Intentar con PyMuPDF (fitz)
             try:
@@ -147,16 +147,16 @@ class BYMAPDFProcessor:
                     text += page.get_text()
                 
                 doc.close()
-                print("✅ Texto extraído con PyMuPDF")
+                print("[SUCCESS] Texto extraído con PyMuPDF")
                 return text
                 
             except ImportError:
-                print("❌ No se encontró ninguna librería PDF instalada")
+                print("[ERROR] No se encontró ninguna librería PDF instalada")
                 print("Instala una de estas: pip install PyPDF2 pdfplumber PyMuPDF")
                 return ""
                 
         except Exception as e:
-            print(f"❌ Error extrayendo texto del PDF: {e}")
+            print(f"[ERROR] Error extrayendo texto del PDF: {e}")
             return ""
     
     def parse_cedears_from_text(self, text: str) -> List[Dict]:
@@ -183,7 +183,7 @@ class BYMAPDFProcessor:
             # Buscar el inicio de la tabla (puede contener "CEDEAR" o "Ratio")
             if not table_started and ("CEDEAR" in line.upper() or "RATIO" in line.upper()):
                 table_started = True
-                print(f"🔍 Inicio de tabla detectado: {line}")
+                print(f"[SEARCH] Inicio de tabla detectado: {line}")
                 continue
             
             if table_started:
@@ -197,7 +197,7 @@ class BYMAPDFProcessor:
                 if cedear_data:
                     cedeares.append(cedear_data)
         
-        print(f"📊 Encontrados {len(cedeares)} CEDEARs en el PDF")
+        print(f"[DATA] Encontrados {len(cedeares)} CEDEARs en el PDF")
         return cedeares
     
     def parse_cedear_line(self, line: str, next_line: str = None) -> Optional[Dict]:
@@ -307,7 +307,7 @@ class BYMAPDFProcessor:
             }
             
         except Exception as e:
-            print(f"⚠️  Error parseando línea: {line} - {e}")
+            print(f"[WARNING]  Error parseando línea: {line} - {e}")
             return None
     
     def save_results(self, cedeares: List[Dict]):
@@ -316,45 +316,45 @@ class BYMAPDFProcessor:
             with open(self.output_file, 'w', encoding='utf-8') as f:
                 json.dump(cedeares, f, indent=2, ensure_ascii=False)
             
-            print(f"💾 Datos guardados en: {self.output_file}")
-            print(f"📊 Total de CEDEARs: {len(cedeares)}")
+            print(f"[SAVE] Datos guardados en: {self.output_file}")
+            print(f"[DATA] Total de CEDEARs: {len(cedeares)}")
             
             # Mostrar algunos ejemplos
-            print("\n📋 Ejemplos de CEDEARs del PDF:")
+            print("\n[LIST] Ejemplos de CEDEARs del PDF:")
             for i, cedear in enumerate(cedeares[:5], 1):
                 print(f"  {i}. {cedear['symbol']} - {cedear['company_name']} - Ratio: {cedear['ratio']}")
             
         except Exception as e:
-            print(f"❌ Error guardando resultados: {e}")
+            print(f"[ERROR] Error guardando resultados: {e}")
     
     def run(self):
         """Ejecuta el proceso completo"""
-        print("🚀 Procesador de PDF de BYMA - CEDEARs")
+        print("[PROCESSOR] Procesador de PDF de BYMA - CEDEARs")
         print("=" * 50)
         
         # 1. Descargar PDF
         pdf_content = self.download_pdf()
         if not pdf_content:
-            print("❌ No se pudo descargar el PDF")
+            print("[ERROR] No se pudo descargar el PDF")
             return
         
         # 2. Extraer texto
         text = self.extract_text_from_pdf(pdf_content)
         if not text:
-            print("❌ No se pudo extraer texto del PDF")
+            print("[ERROR] No se pudo extraer texto del PDF")
             return
         
         # 3. Parsear CEDEARs
         cedeares = self.parse_cedears_from_text(text)
         if not cedeares:
-            print("❌ No se encontraron CEDEARs en el PDF")
-            print("💡 Revisá el archivo byma_pdf_text.txt para ver el contenido extraído")
+            print("[ERROR] No se encontraron CEDEARs en el PDF")
+            print("[TIP] Revisá el archivo byma_pdf_text.txt para ver el contenido extraído")
             return
         
         # 4. Guardar resultados
         self.save_results(cedeares)
         
-        print("\n✅ Proceso completado!")
+        print("\n[SUCCESS] Proceso completado!")
 
 def main():
     import sys

@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 import logging
 
-# ❌ ELIMINADO: imports de servicios globales - usar DI
+# [ERROR] ELIMINADO: imports de servicios globales - usar DI
 # from .international_prices import international_price_service
 # from .dollar_rate import dollar_service  
 # from .byma_historical import byma_historical_service
@@ -153,13 +153,13 @@ class ArbitrageDetector:
         if threshold_percentage is None:
             threshold_percentage = self.config.arbitrage_threshold if self.config else 0.005
         
-        logger.debug(f"🔍 Analizando arbitraje para {symbol} (modo: {self.mode}, threshold: {threshold_percentage})")
+        logger.debug(f"[SEARCH] Analizando arbitraje para {symbol} (modo: {self.mode}, threshold: {threshold_percentage})")
         
         try:
             # 1. Obtener precio del activo subyacente (siempre Yahoo/Finnhub)
             underlying_data = await self.international_service.get_stock_price(symbol)
             if not underlying_data:
-                logger.error(f"❌ No se pudo obtener precio subyacente para {symbol}")
+                logger.error(f"[ERROR] No se pudo obtener precio subyacente para {symbol}")
                 return None
             
             underlying_price_usd = underlying_data["price"]
@@ -169,7 +169,7 @@ class ArbitrageDetector:
             cedear_price_ars, accion_via_cedear_usd = await self.price_fetcher.get_cedear_price_with_action_usd(symbol)
             if not accion_via_cedear_usd:
                 # FALLBACK: Intentar estimación teórica
-                logger.warning(f"⚠️  No se pudo obtener precio real de {symbol}, intentando estimación teórica...")
+                logger.warning(f"[WARNING]  No se pudo obtener precio real de {symbol}, intentando estimación teórica...")
                 cedear_teorico_ars, accion_teorica_usd = await self.price_fetcher.get_theoretical_cedear_price(symbol, underlying_price_usd)
                 
                 if accion_teorica_usd:
@@ -177,7 +177,7 @@ class ArbitrageDetector:
                     cedear_price_ars = cedear_teorico_ars
                     accion_via_cedear_usd = accion_teorica_usd
                 else:
-                    logger.error(f"❌ No se pudo estimar precio teórico para {symbol}")
+                    logger.error(f"[ERROR] No se pudo estimar precio teórico para {symbol}")
                     return None
             
             logger.debug(f"🏦 {symbol} acción vía CEDEAR: ${accion_via_cedear_usd:.2f} USD (CEDEAR: ${cedear_price_ars:.0f} ARS)")
@@ -186,7 +186,7 @@ class ArbitrageDetector:
             difference_usd = underlying_price_usd - accion_via_cedear_usd
             difference_percentage = abs(difference_usd) / underlying_price_usd
             
-            logger.debug(f"📊 Diferencia: ${difference_usd:.2f} USD ({difference_percentage:.1%})")
+            logger.debug(f"[DATA] Diferencia: ${difference_usd:.2f} USD ({difference_percentage:.1%})")
             
             # 4. Verificar si supera el umbral
             if difference_percentage >= threshold_percentage:
@@ -207,11 +207,11 @@ class ArbitrageDetector:
                 logger.info(f"🚨 OPORTUNIDAD DETECTADA: {symbol} - {difference_percentage:.1%}")
                 return opportunity
             else:
-                logger.debug(f"✅ {symbol}: Diferencia {difference_percentage:.1%} < {threshold_percentage:.1%} (sin arbitraje)")
+                logger.debug(f"[SUCCESS] {symbol}: Diferencia {difference_percentage:.1%} < {threshold_percentage:.1%} (sin arbitraje)")
                 return None
                 
         except Exception as e:
-            logger.error(f"❌ Error analizando {symbol}: {str(e)}")
+            logger.error(f"[ERROR] Error analizando {symbol}: {str(e)}")
             return None
     
     
@@ -234,7 +234,7 @@ class ArbitrageDetector:
         if threshold_percentage is None:
             threshold_percentage = self.config.arbitrage_threshold if self.config else 0.005
         
-        logger.debug(f"🔍 Analizando arbitrajes para {len(symbols)} símbolos: {symbols}, threshold: {threshold_percentage}")
+        logger.debug(f"[SEARCH] Analizando arbitrajes para {len(symbols)} símbolos: {symbols}, threshold: {threshold_percentage}")
         
         # Ejecutar análisis en paralelo para eficiencia
         tasks = [
@@ -248,7 +248,7 @@ class ArbitrageDetector:
         opportunities = []
         for symbol, result in zip(symbols, results):
             if isinstance(result, Exception):
-                logger.error(f"❌ Error analizando {symbol}: {result}")
+                logger.error(f"[ERROR] Error analizando {symbol}: {result}")
             elif result is not None:
                 opportunities.append(result)
         
@@ -326,7 +326,7 @@ class ArbitrageDetector:
         if threshold is None:
             threshold = self.config.arbitrage_threshold if self.config else 0.005
 
-        logger.info(f"🔍 Analizando portfolio con {len(portfolio.positions)} posiciones (threshold: {threshold})")
+        logger.info(f"[SEARCH] Analizando portfolio con {len(portfolio.positions)} posiciones (threshold: {threshold})")
 
         # Extraer solo CEDEARs para análisis
         cedear_symbols = []
@@ -335,10 +335,10 @@ class ArbitrageDetector:
                 cedear_symbols.append(pos.symbol)
 
         if not cedear_symbols:
-            logger.warning("⚠️  No se encontraron CEDEARs en el portfolio")
+            logger.warning("[WARNING]  No se encontraron CEDEARs en el portfolio")
             return {"arbitrage_opportunities": [], "price_data": {}, "summary": "No CEDEARs found"}
 
-        logger.info(f"📊 Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
+        logger.info(f"[DATA] Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
 
         # Análisis de arbitraje usando el método existente
         opportunities = await self.detect_portfolio_arbitrages(cedear_symbols, threshold)
@@ -358,7 +358,7 @@ class ArbitrageDetector:
                     }
                     sources_used.add(underlying_data.get("source", "unknown"))
             except Exception as e:
-                logger.debug(f"❌ Error obteniendo precios para {symbol}: {e}")
+                logger.debug(f"[ERROR] Error obteniendo precios para {symbol}: {e}")
                 continue
 
         # Generar resumen

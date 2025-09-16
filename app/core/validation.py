@@ -121,15 +121,15 @@ def validate_project_strict_di(project_root: Path,
         
         if violations:
             violations_found = True
-            print(f"\n❌ VIOLACIONES DI en {relative_path}:")
+            print(f"\n[ERROR] VIOLACIONES DI en {relative_path}:")
             for line_no, message in violations:
                 print(f"   Línea {line_no}: {message}")
     
     if not violations_found:
-        print(f"✅ VALIDACIÓN DI EXITOSA: {total_files} archivos verificados")
+        print(f"[SUCCESS] VALIDACIÓN DI EXITOSA: {total_files} archivos verificados")
         print("Arquitectura DI estricta confirmada")
     else:
-        print(f"\n⚠️  RESUMEN: Violaciones encontradas en {total_files} archivos")
+        print(f"\n[WARNING]  RESUMEN: Violaciones encontradas en {total_files} archivos")
         print("Corrija los imports para usar build_services() exclusivamente")
     
     return not violations_found
@@ -170,19 +170,19 @@ def check_runtime_di_strict():
     
     if violations:
         raise RuntimeError(
-            f"❌ SERVICIOS GLOBALES DETECTADOS:\n" + 
+            f"[ERROR] SERVICIOS GLOBALES DETECTADOS:\n" + 
             "\n".join(f"  - {v}" for v in violations) +
             "\nTodos los servicios deben obtenerse vía build_services()"
         )
     
-    logger.info("✅ Verificación runtime DI: OK")
+    logger.info("[SUCCESS] Verificación runtime DI: OK")
 
 
 if __name__ == "__main__":
     # Script de validación standalone
     project_root = Path(__file__).parent.parent.parent
     
-    print("🔍 Validando arquitectura DI estricta...")
+    print("[SEARCH] Validando arquitectura DI estricta...")
     
     # Validación estática
     is_valid = validate_project_strict_di(project_root)
@@ -200,5 +200,5 @@ if __name__ == "__main__":
         print("\n🎉 ARQUITECTURA DI ESTRICTA VALIDADA CORRECTAMENTE")
         sys.exit(0)
     else:
-        print("\n💥 FALLOS EN VALIDACIÓN DI - CORREGIR ANTES DE CONTINUAR")
+        print("\n[ERROR] FALLOS EN VALIDACIÓN DI - CORREGIR ANTES DE CONTINUAR")
         sys.exit(1)

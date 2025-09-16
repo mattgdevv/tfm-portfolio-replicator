@@ -78,15 +78,15 @@ def run_scheduled_etl(args):
         interval_seconds = parse_schedule_interval(args.schedule)
         interval_minutes = interval_seconds // 60
         
-        print_progress(f"🕒 MODO PERIÓDICO ACTIVADO")
-        print_progress(f"📅 Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
+        print_progress(f"[SCHEDULE] MODO PERIÓDICO ACTIVADO")
+        print_progress(f"[TIME] Ejecutando cada {args.schedule} ({interval_minutes} minutos)")
         if _verbose_mode:
             if args.source == "excel":
                 print(f"📁 Archivo: {args.file}")
                 print(f"🏦 Broker: {args.broker}")
             elif args.source == "iol":
-                print(f"🔗 Fuente: IOL API")
-        print_progress(f"⏹️  Presiona Ctrl+C para detener")
+                print(f"[SOURCE] Fuente: IOL API")
+        print_progress(f"[STOP]  Presiona Ctrl+C para detener")
         print_progress("=" * 50)
         
         log_event("INFO", "scheduler_started", 
@@ -99,7 +99,7 @@ def run_scheduled_etl(args):
             execution_count += 1
             start_time = datetime.now()
             
-            print_progress(f"\n🚀 Ejecución #{execution_count} - {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            print_progress(f"\n[RUN] Ejecución #{execution_count} - {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
             
             try:
                 # Ejecutar ETL
@@ -107,9 +107,9 @@ def run_scheduled_etl(args):
                 
                 if result["exit_code"] == 0:
                     opportunities = len(result.get("results", {}).get("opportunities", []))
-                    print_progress(f"✅ Completado - {opportunities} oportunidades encontradas")
+                    print_progress(f"[SUCCESS] Completado - {opportunities} oportunidades encontradas")
                 else:
-                    print(f"❌ Error en ejecución: {result.get('error', 'Unknown')}")
+                    print(f"[ERROR] Error en ejecución: {result.get('error', 'Unknown')}")
                 
                 log_event("INFO", "scheduled_execution_completed",
                          execution_count=execution_count,
@@ -117,7 +117,7 @@ def run_scheduled_etl(args):
                          opportunities_found=len(result.get("results", {}).get("opportunities", [])))
                 
             except Exception as e:
-                print(f"💥 Error en ejecución #{execution_count}: {e}")
+                print(f"[CRASH] Error en ejecución #{execution_count}: {e}")
                 log_event("ERROR", "scheduled_execution_failed",
                          execution_count=execution_count,
                          error=str(e))
@@ -125,18 +125,18 @@ def run_scheduled_etl(args):
             # Mostrar próxima ejecución
             next_run = datetime.now().timestamp() + interval_seconds
             next_run_str = datetime.fromtimestamp(next_run).strftime('%H:%M:%S')
-            print_progress(f"⏰ Próxima ejecución: {next_run_str}")
+            print_progress(f"[NEXT] Próxima ejecución: {next_run_str}")
             
             # Esperar hasta la próxima ejecución
             if _verbose_mode:
-                print_verbose(f"😴 Esperando {interval_minutes} minutos...")
+                print_verbose(f"[WAIT] Esperando {interval_minutes} minutos...")
             time.sleep(interval_seconds)
             
     except KeyboardInterrupt:
-        print_progress(f"\n⏹️  Scheduler detenido después de {execution_count} ejecuciones")
+        print_progress(f"\n[STOP]  Scheduler detenido después de {execution_count} ejecuciones")
         log_event("INFO", "scheduler_stopped", total_executions=execution_count)
     except ValueError as e:
-        print(f"❌ Error en configuración de schedule: {e}")
+        print(f"[ERROR] Error en configuración de schedule: {e}")
         log_event("ERROR", "scheduler_config_error", error=str(e))
         sys.exit(1)
 
@@ -231,14 +231,14 @@ def validate_args(args):
     if not args.health_check:
         # Para ETL normal, source es requerido
         if not args.source:
-            print("❌ ERROR: --source es requerido para procesamiento ETL")
-            print("💡 Use --health-check para diagnóstico únicamente")
+            print("[ERROR] ERROR: --source es requerido para procesamiento ETL")
+            print("[TIP] Use --health-check para diagnóstico únicamente")
             sys.exit(2)
         
         # Para source excel, file es requerido
         if args.source == "excel" and not args.file:
-            print("❌ ERROR: --file es requerido para --source excel")
-            print("💡 Use --source iol para obtener portfolio desde IOL API")
+            print("[ERROR] ERROR: --file es requerido para --source excel")
+            print("[TIP] Use --source iol para obtener portfolio desde IOL API")
             sys.exit(2)
 
 async def run_etl_analysis(args) -> Dict[str, Any]:
@@ -276,7 +276,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         
         # 3. Mostrar configuración efectiva
         if _verbose_mode:
-            print(f"📊 Configuración ETL:")
+            print(f"[INFO] Configuración ETL:")
             print(f"   • Threshold: {config.arbitrage_threshold} ({config.arbitrage_threshold*100:.1f}%)")
             print(f"   • Timeout: {config.request_timeout}s")
             print(f"   • Cache TTL: {config.cache_ttl_seconds}s")
@@ -285,7 +285,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
             else:
                 print(f"   ↳ Usando configuración por defecto")
         else:
-            print_progress("📊 Iniciando análisis ETL...")
+            print_progress("[INFO] Iniciando análisis ETL...")
         
         # 2. Obtener portfolio según fuente
         if args.source == "excel":
@@ -386,7 +386,7 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
         if not args.no_save:
             output_dir = Path(args.output)
             
-            # ✅ MANTENER: Archivos JSON (compatibilidad)
+            # [SUCCESS] MANTENER: Archivos JSON (compatibilidad)
             write_results(results, output_dir)
             
             # ➕ AGREGAR: Base de datos (criterio TFM)
@@ -395,31 +395,31 @@ async def run_etl_analysis(args) -> Dict[str, Any]:
                 log_event("INFO", "database_saved", db_path=str(services.database_service.db_path))
             except Exception as e:
                 log_event("ERROR", "database_save_failed", error=str(e))
-                print(f"⚠️  Error guardando en BD: {e}")
+                print(f"[WARNING]  Error guardando en BD: {e}")
             
             log_event("INFO", "results_saved", output_dir=str(output_dir))
         
         # 6. Mostrar resumen
         if _verbose_mode:
             print("\n" + "="*60)
-            print(f"📊 ETL COMPLETADO - {len(opportunities)} oportunidades encontradas")
+            print(f"[INFO] ETL COMPLETADO - {len(opportunities)} oportunidades encontradas")
             print("="*60)
         else:
-            print(f"\n📊 {len(opportunities)} oportunidades de arbitraje encontradas")
+            print(f"\n[INFO] {len(opportunities)} oportunidades de arbitraje encontradas")
         
         for opp in opportunities:
-            print(f"🚨 {opp.symbol}: {opp.difference_percentage:.1%} - {opp.recommendation}")
+            print(f"[OPPORTUNITY] {opp.symbol}: {opp.difference_percentage:.1%} - {opp.recommendation}")
         
         if not opportunities:
-            print("✅ No se detectaron oportunidades de arbitraje")
+            print("[SUCCESS] No se detectaron oportunidades de arbitraje")
         
         if _verbose_mode:
-            print(f"\n⏱️  Duración: {duration_ms}ms")
+            print(f"\n[TIME]  Duración: {duration_ms}ms")
             if not args.no_save:
-                print(f"💾 Resultados guardados en: {args.output}/")
+                print(f"[SAVE] Resultados guardados en: {args.output}/")
             print("="*60)
         elif not args.no_save:
-            print(f"💾 Resultados guardados en: {args.output}/")
+            print(f"[SAVE] Resultados guardados en: {args.output}/")
         
         log_event("INFO", "etl_success", duration_ms=duration_ms, exit_code=0)
         return {"exit_code": 0, "results": results}
@@ -507,8 +507,8 @@ def main():
             exit_code = result["exit_code"]
             
             if exit_code != 0:
-                print(f"\n❌ ERROR en health check: {result.get('error', 'Unknown error')}")
-                print("💡 Use --verbose para más detalles")
+                print(f"\n[ERROR] ERROR en health check: {result.get('error', 'Unknown error')}")
+                print("[TIP] Use --verbose para más detalles")
             
             log_event("INFO", "cli_exit", exit_code=exit_code)
             sys.exit(exit_code)
@@ -523,19 +523,19 @@ def main():
             exit_code = result["exit_code"]
             
             if exit_code != 0:
-                print(f"\n❌ ERROR: {result.get('error', 'Unknown error')}")
-                print("💡 Use --verbose para más detalles")
+                print(f"\n[ERROR] ERROR: {result.get('error', 'Unknown error')}")
+                print("[TIP] Use --verbose para más detalles")
             
             log_event("INFO", "cli_exit", exit_code=exit_code)
             sys.exit(exit_code)
         
     except KeyboardInterrupt:
         log_event("INFO", "cli_interrupted")
-        print("\n⏸️  Ejecución interrumpida por usuario")
+        print("\n[INTERRUPT]  Ejecución interrumpida por usuario")
         sys.exit(1)
     except Exception as e:
         log_event("ERROR", "cli_error", error=str(e))
-        print(f"\n💥 Error inesperado: {e}")
+        print(f"\n[CRASH] Error inesperado: {e}")
         sys.exit(2)
 
 if __name__ == "__main__":

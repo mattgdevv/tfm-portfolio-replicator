@@ -34,7 +34,7 @@ class AnalysisCommands:
             dict: Resultado del análisis de arbitraje
         """
         threshold_pct = self.services.config.arbitrage_threshold * 100
-        print(f"\n🔍 Analizando oportunidades de arbitraje (threshold: {threshold_pct:.1f}%)...")
+        print(f"\n[ANALYZE] Analizando oportunidades de arbitraje (threshold: {threshold_pct:.1f}%)...")
         
         # Configurar sesión IOL
         iol_session = None
@@ -89,25 +89,25 @@ class AnalysisCommands:
         Returns:
             dict: Resultado del análisis de arbitraje
         """
-        print("\n📊 Análisis de Arbitraje de CEDEARs")
+        print("\n[DATA] Análisis de Arbitraje de CEDEARs")
         print("=" * 50)
         print("Esta función analiza oportunidades de arbitraje para CEDEARs específicos")
         print("que tu eliges, usando el mismo sistema que el análisis de portfolio.")
         print()
         
         # Solicitar símbolos
-        symbols_input = input("🔍 Introduce símbolos de CEDEARs (separados por comas): ").strip()
+        symbols_input = input("[SEARCH] Introduce símbolos de CEDEARs (separados por comas): ").strip()
         
         if not symbols_input:
-            print("❌ No se introdujeron símbolos")
+            print("[ERROR] No se introdujeron símbolos")
             return None
         
         symbols = [s.strip().upper() for s in symbols_input.split(',') if s.strip()]
         if not symbols:
-            print("❌ No se encontraron símbolos válidos")
+            print("[ERROR] No se encontraron símbolos válidos")
             return None
             
-        print(f"\n🔍 Analizando {len(symbols)} símbolos: {symbols}")
+        print(f"\n[ANALYZE] Analizando {len(symbols)} símbolos: {symbols}")
         
         # Crear portfolio temporal
         temp_positions = []
@@ -122,10 +122,10 @@ class AnalysisCommands:
                 )
                 temp_positions.append(position)
             else:
-                print(f"⚠️  {symbol} no es un CEDEAR conocido, saltando...")
+                print(f"[WARNING]  {symbol} no es un CEDEAR conocido, saltando...")
         
         if not temp_positions:
-            print("❌ No se encontraron CEDEARs válidos")
+            print("[ERROR] No se encontraron CEDEARs válidos")
             return None
             
         temp_portfolio = Portfolio(positions=temp_positions, source="Manual")
@@ -159,13 +159,13 @@ class AnalysisCommands:
             result = await self.services.dollar_service.get_ccl_rate()
             
             if result:
-                print(f"✅ CCL actualizado: ${result['rate']:.2f} (fuente: {result.get('source_name', result.get('source'))})")
+                print(f"[SUCCESS] CCL actualizado: ${result['rate']:.2f} (fuente: {result.get('source_name', result.get('source'))})")
                 return True
             else:
-                print("❌ No se pudo refrescar CCL")
+                print("[ERROR] No se pudo refrescar CCL")
                 return False
         except Exception as e:
-            print(f"❌ Error refrescando CCL: {e}")
+            print(f"[ERROR] Error refrescando CCL: {e}")
             return False
 
     def _format_analysis_summary(self, analysis_result: Dict[str, Any]) -> str:
@@ -183,6 +183,6 @@ class AnalysisCommands:
             for opp in opportunities:
                 result += f"  • {opp.symbol}: {opp.difference_percentage:+.1%} - {opp.recommendation}\n"
         else:
-            result += f"\n✅ No se detectaron oportunidades de arbitraje superiores al {summary['threshold']:.1%}\n"
+            result += f"\n[SUCCESS] No se detectaron oportunidades de arbitraje superiores al {summary['threshold']:.1%}\n"
 
         return result

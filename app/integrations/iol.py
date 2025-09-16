@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from ..models.portfolio import Portfolio, Position
-# ❌ ELIMINADO: import de instancia global - usar DI
+# [ERROR] ELIMINADO: import de instancia global - usar DI
 # from ..processors.cedeares import CEDEARProcessor
 
 class IOLAuth:

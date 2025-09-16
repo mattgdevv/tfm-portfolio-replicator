@@ -87,7 +87,7 @@ class DollarRateService:
         for source in sources:
             cached = self._get_from_cache(f"ccl:{source}")
             if cached:
-                logger.debug(f"♻️  CCL cache hit: {source} -> ${cached['rate']}")  # Cambio a debug para reducir ruido
+                logger.debug(f"[CACHE]  CCL cache hit: {source} -> ${cached['rate']}")  # Cambio a debug para reducir ruido
                 cached["source"] = source
                 cached["preferred_source"] = preferred_source
                 cached["fallback_used"] = source != preferred_source
@@ -102,7 +102,7 @@ class DollarRateService:
                 continue
                 
             try:
-                logger.debug(f"🔍 Intentando obtener CCL desde: {source}")
+                logger.debug(f"[SEARCH] Intentando obtener CCL desde: {source}")
                 attempted_sources.append(source)
                 
                 if source == "dolarapi_ccl":
@@ -114,14 +114,14 @@ class DollarRateService:
                     continue
                     
                 if result:
-                    logger.debug(f"✅ CCL obtenido exitosamente desde {source}: ${result['rate']}")
+                    logger.debug(f"[SUCCESS] CCL obtenido exitosamente desde {source}: ${result['rate']}")
                     
                     # Mensaje conciso sobre fallback
                     if source != preferred_source:
                         fallback_info = f"usando {result.get('source_name', source)}"
-                        logger.info(f"📊 CCL: ${result['rate']:.2f} ({fallback_info})")
+                        logger.info(f"[DATA] CCL: ${result['rate']:.2f} ({fallback_info})")
                     else:
-                        logger.info(f"📊 CCL: ${result['rate']:.2f} (fuente primaria)")
+                        logger.info(f"[DATA] CCL: ${result['rate']:.2f} (fuente primaria)")
                     
                     full = {
                         **result,
@@ -136,12 +136,12 @@ class DollarRateService:
                     return full
                     
             except Exception as e:
-                logger.debug(f"❌ Error en fuente {source}: {str(e)}")
+                logger.debug(f"[ERROR] Error en fuente {source}: {str(e)}")
                 self.sources_status[source] = False
                 # No imprimir errores por fuente individual - solo al final si todas fallan
                 
         # Si llegamos aquí, todas las fuentes fallaron
-        logger.error(f"❌ Todas las fuentes CCL fallaron. Fuentes intentadas: {attempted_sources}")
+        logger.error(f"[ERROR] Todas las fuentes CCL fallaron. Fuentes intentadas: {attempted_sources}")
         
         # ÚLTIMO RECURSO: Intentar cache expirado como fallback
         for source in sources:
@@ -150,8 +150,8 @@ class DollarRateService:
                 age_seconds = (datetime.now() - cached_expired.get("_ts", datetime.now())).total_seconds()
                 age_minutes = int(age_seconds / 60)
                 
-                logger.warning(f"⚠️ Usando CCL en cache expirado de {source} (edad: {age_minutes} min)")
-                print(f"⚠️ Usando CCL en cache expirado: ${cached_expired['rate']:.2f} (edad: {age_minutes} min)")
+                logger.warning(f"[WARNING] Usando CCL en cache expirado de {source} (edad: {age_minutes} min)")
+                print(f"[WARNING] Usando CCL en cache expirado: ${cached_expired['rate']:.2f} (edad: {age_minutes} min)")
                 
                 # Limpiar metadatos internos y agregar info de fallback
                 result = {k: v for k, v in cached_expired.items() if k != "_ts"}
@@ -166,7 +166,7 @@ class DollarRateService:
                 return result
         
         # Si no hay ni cache expirado, entonces sí fallar
-        print(f"❌ ERROR: No se pudo obtener cotización CCL")
+        print(f"[ERROR] ERROR: No se pudo obtener cotización CCL")
         print(f"   • Fuentes intentadas: {', '.join(attempted_sources)}")
         if "ccl_al30" in attempted_sources and not self.iol_session:
             print(f"   • Consejo: Autentique con IOL para habilitar fallback AL30")
@@ -272,7 +272,7 @@ class DollarRateService:
             # Calcular CCL
             ccl_rate = al30_price / al30d_price
             
-            logger.info(f"📊 CCL AL30 calculado: AL30=${al30_price} / AL30D=${al30d_price} = ${ccl_rate}")
+            logger.info(f"[DATA] CCL AL30 calculado: AL30=${al30_price} / AL30D=${al30d_price} = ${ccl_rate}")
             
             return {
                 "rate": ccl_rate,
@@ -294,7 +294,7 @@ class DollarRateService:
         url = "https://dolarapi.com/v1/dolares/bolsa"
         
         try:
-            logger.info("🔍 Obteniendo MEP desde dolarapi...")
+            logger.info("[SEARCH] Obteniendo MEP desde dolarapi...")
             
             response = requests.get(url, timeout=self.timeout)
             response.raise_for_status()
@@ -316,10 +316,10 @@ class DollarRateService:
                 "raw_data": data
             }
             
-            logger.info(f"✅ MEP obtenido: ${result['rate']}")
+            logger.info(f"[SUCCESS] MEP obtenido: ${result['rate']}")
             return result
             
         except Exception as e:
-            logger.error(f"❌ Error obteniendo MEP: {str(e)}")
+            logger.error(f"[ERROR] Error obteniendo MEP: {str(e)}")
             return None
     

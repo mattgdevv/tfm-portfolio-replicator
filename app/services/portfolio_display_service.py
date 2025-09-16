@@ -20,7 +20,7 @@ class PortfolioDisplayService:
     async def process_and_show_portfolio(self, portfolio: Portfolio, source: str):
         """Procesa y muestra los resultados del portfolio"""
         print(f"\n📋 Portfolio obtenido desde {source}")
-        print(f"📊 Total de posiciones: {len(portfolio.positions)}")
+        print(f"[DATA] Total de posiciones: {len(portfolio.positions)}")
         
         # Contar CEDEARs
         cedeares_count = sum(1 for pos in portfolio.positions if pos.is_cedear)
@@ -47,20 +47,20 @@ class PortfolioDisplayService:
             try:
                 dollar_rate = await self.iol_integration.get_dollar_rate()
             except Exception as e_iol:
-                print(f"⚠️  No se pudo obtener CCL desde IOL: {e_iol}")
+                print(f"[WARNING]  No se pudo obtener CCL desde IOL: {e_iol}")
             # Fallback a DollarRateService (usa preferencia y agrega implícito como último)
             if not dollar_rate or dollar_rate <= 0:
                 ccl_result = await self.services.dollar_service.get_ccl_rate()
                 dollar_rate = (ccl_result.get("rate") if isinstance(ccl_result, dict) else ccl_result) or 1000.0
         except Exception as e:
-            print(f"⚠️  No se pudo obtener CCL: {e}")
+            print(f"[WARNING]  No se pudo obtener CCL: {e}")
             dollar_rate = 1000.0
         
         return dollar_rate
     
     async def _display_portfolio_table(self, portfolio: Portfolio, dollar_rate: float):
         """Muestra el portfolio en formato tabla"""
-        print("\n📊 PORTFOLIO (ARS)")
+        print("\n[DATA] PORTFOLIO (ARS)")
         print("┌─────────┬──────────┬─────────────────┬─────────────┬─────────────────┐")
         print("│ Símbolo │ CEDEARs  │ Valor ARS       │ Acciones    │ Valor USD       │")
         print("├─────────┼──────────┼─────────────────┼─────────────┼─────────────────┤")
