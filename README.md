@@ -166,7 +166,7 @@ python scripts/etl_cli.py --health-check --verbose
 🖥️  Application    → main.py + etl_cli.py
 🌊  Workflow       → Commands + Interactive Flows  
 🏗️  Core           → DI Container + Configuration
-🔧  Services       → 15 servicios especializados
+🔧  Services       → 15 servicios (14 activos + análisis de variaciones*)
 🔌  Integration    → APIs externas (IOL, BYMA, Finnhub)
 💾  Data           → SQLite + JSON + Models
 ```
@@ -224,5 +224,8 @@ python scripts/etl_cli.py --source excel --file portfolio.csv --threshold 0.001
 ## 📚 Documentación Adicional
 
 - **[Arquitectura Técnica](docs/TFM_ARQUITECTURA.md)** - Diseño completo del sistema
+
+### Notas Técnicas
+(*) El servicio de análisis de variaciones está implementado pero preparado para desarrollo futuro
 
 

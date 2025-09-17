@@ -57,7 +57,8 @@ class Services:
     international_service: InternationalPriceService
     byma_integration: BYMAIntegration
     iol_integration: IOLIntegration
-    # ... 15 servicios especializados total
+    variation_analyzer: VariationAnalyzer  # Preparado para desarrollo futuro
+    # ... 15 servicios total (14 activos en producción)
 ```
 
 **🎯 Patrón Factory + DI Container:**
