@@ -5,18 +5,15 @@ import os
 from typing import Dict, Any, Optional, List
 from ..models.portfolio import Portfolio, Position, ConvertedPortfolio
 from .cedeares import CEDEARProcessor
-from ..services.arbitrage_detector import ArbitrageOpportunity
 
 class PortfolioProcessor:
-    def __init__(self, cedear_processor, dollar_service=None, arbitrage_detector=None, variation_analyzer=None, config=None, verbose=False, debug=False):
+    def __init__(self, cedear_processor, dollar_service=None, config=None, verbose=False, debug=False):
         """
         Constructor con Dependency Injection estricta
         
         Args:
             cedear_processor: Procesador de CEDEARs (REQUERIDO)
             dollar_service: Servicio de cotización dólar (OPCIONAL)
-            arbitrage_detector: Detector de arbitraje (OPCIONAL)
-            variation_analyzer: Analizador de variaciones (OPCIONAL)
             config: Configuración del sistema (OPCIONAL - usa settings por defecto)
             verbose: Logging verbose para mapeo de columnas
             debug: Logging debug detallado
@@ -28,8 +25,6 @@ class PortfolioProcessor:
         
         self.cedear_processor = cedear_processor
         self.dollar_service = dollar_service
-        self.arbitrage_detector = arbitrage_detector
-        self.variation_analyzer = variation_analyzer
         self.config = config
         self.verbose = verbose
         self.debug = debug
@@ -199,64 +194,6 @@ class PortfolioProcessor:
             broker=portfolio.broker,
             conversion_summary=conversion_summary
         )
-    
-    async def detect_arbitrage_opportunities(self, portfolio: Portfolio, iol_session=None, threshold_percentage: float = 0.005) -> List[ArbitrageOpportunity]:
-        """
-        Detecta oportunidades de arbitraje en un portfolio
-        
-        Args:
-            portfolio: Portfolio a analizar
-            iol_session: Sesión de IOL para modo completo (opcional)
-            threshold_percentage: Umbral mínimo para considerar arbitraje (default: 0.5%)
-            
-        Returns:
-            Lista de oportunidades de arbitraje detectadas
-        """
-        
-        print(f"\n[ANALYZE] Analizando oportunidades de arbitraje (threshold: {threshold_percentage:.1%})...")
-        
-        # Verificar disponibilidad de servicios
-        if not self.arbitrage_detector:
-            raise ValueError("arbitrage_detector no disponible - use build_services() para crear instancias completas")
-        
-        # Configurar detector con sesión IOL si está disponible
-        if iol_session:
-            self.arbitrage_detector.set_iol_session(iol_session)
-            print("🔴 Modo COMPLETO: Usando precios en tiempo real desde IOL")
-        else:
-            self.arbitrage_detector.set_iol_session(None)
-            print("🟡 Modo LIMITADO: Usando precios BYMA + fallback Yahoo Finance .BA")
-        
-        # Obtener símbolos de CEDEARs del portfolio
-        cedear_symbols = []
-        for position in portfolio.positions:
-            if position.is_cedear and position.underlying_symbol:
-                cedear_symbols.append(position.underlying_symbol)
-        
-        if not cedear_symbols:
-            print("ℹ️  No se encontraron CEDEARs en el portfolio para analizar")
-            return []
-        
-        print(f"[DATA] Analizando {len(cedear_symbols)} CEDEARs: {cedear_symbols}")
-        
-        # Detectar arbitrajes
-        opportunities = await self.arbitrage_detector.detect_portfolio_arbitrages(
-            cedear_symbols, 
-            threshold_percentage
-        )
-        
-        # Mostrar resultados
-        if opportunities:
-            print(f"\n🚨 {len(opportunities)} OPORTUNIDADES DE ARBITRAJE DETECTADAS:")
-            print("=" * 60)
-            
-            for opp in opportunities:
-                print(self.arbitrage_detector.format_alert(opp))
-                print()
-        else:
-            print(f"\n[SUCCESS] No se detectaron oportunidades de arbitraje superiores al {threshold_percentage:.1%}")
-        
-        return opportunities
     
     # ===============================================
     # FUNCIONES AUXILIARES

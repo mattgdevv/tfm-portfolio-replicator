@@ -40,8 +40,9 @@ Portfolio Replicator implementa una **arquitectura de capas moderna** con **Depe
 ─────────────────────────┼─────────────────────────────────────
 💾  Data Layer           │ Persistencia y Modelos
                           │ ├─ SQLite Database (4 tablas)
-                          │ ├─ JSON Output
-                          │ └─ Portfolio Models (Pydantic)
+                          │ ├─ JSON Output  
+                          │ ├─ Pydantic Models (Position, Portfolio)
+                          │ └─ Validación automática de datos
 ```
 
 ## 🧩 Componentes Principales
@@ -57,8 +58,8 @@ class Services:
     international_service: InternationalPriceService
     byma_integration: BYMAIntegration
     iol_integration: IOLIntegration
-    variation_analyzer: VariationAnalyzer  # Preparado para desarrollo futuro
-    # ... 15 servicios total (14 activos en producción)
+    variation_analyzer: VariationAnalyzer  # Implementado completo, sin uso en workflows
+    # ... 15 servicios total (14 activos + 1 implementado sin uso)
 ```
 
 **🎯 Patrón Factory + DI Container:**
@@ -67,7 +68,7 @@ class Services:
 - **Zero estado global** - elimina singletons problemáticos
 - **Inyección estricta** - todos los servicios vía constructor
 
-### **2. Services Layer - Microservicios Especializados**
+### **2. Services Layer - Servicios Especializados**
 
 #### **🔍 Detección de Arbitraje**
 ```python
@@ -113,17 +114,64 @@ class BYMAIntegration:
         # CCL histórico y validación de días hábiles
 ```
 
-### **4. Services Layer - Transformación de Datos (Processors)**
+### **4. Data Models Layer - Estructuras de Datos (Pydantic)**
+
+#### **🎯 Portfolio Models con Validación Automática**
+```python
+class Position(BaseModel):
+    """Posición individual con validación Pydantic"""
+    symbol: str                    # Ticker normalizado
+    quantity: float               # Cantidad de títulos
+    price: Optional[float]        # Precio unitario (ARS/USD)
+    currency: str                 # Moneda base
+    
+    # Campos específicos para CEDEARs
+    is_cedear: bool = False
+    underlying_symbol: Optional[str]     # AAPL, TSLA, etc.
+    underlying_quantity: Optional[float] # Cantidad convertida
+    conversion_ratio: Optional[float]    # Ratio de conversión
+    
+    # Campos para FCIs y cotizaciones
+    is_fci_usd: bool = False
+    dollar_rate: Optional[float]         # CCL utilizado
+    total_value_ars: Optional[float]     # Valor en pesos
+```
+
+```python
+class Portfolio(BaseModel):
+    """Container principal de posiciones"""
+    positions: List[Position]     # Lista de posiciones
+    broker: Optional[str]         # Origen ("iol", "bullmarket")
+    timestamp: datetime           # Timestamp del análisis
+    
+class ConvertedPortfolio(BaseModel):
+    """Portfolio con CEDEARs convertidos a subyacentes"""
+    original_positions: List[Position]
+    converted_positions: List[Position]
+    conversion_summary: dict      # Métricas de conversión
+```
+
+**🔧 Ventajas del Diseño:**
+- **Validación automática** de tipos y valores vía Pydantic
+- **Serialización JSON** nativa para APIs y persistencia
+- **Flexibilidad** con campos opcionales para diferentes tipos de activos
+- **Extensibilidad** para FCIs, bonos, futuros, etc.
+- **Consistency** de datos con validación en tiempo de construcción
+
+### **5. Services Layer - Transformación de Datos (Processors)**
 
 #### **📊 CEDEARProcessor (Servicio)**
 - **Conversión automática** CEDEAR → subyacente
 - **Ratios de conversión** actualizados desde BYMA
 - **Validación de símbolos** y normalización
 
-#### **📁 PortfolioProcessor (Servicio)**
-- **Detección automática** de formato CSV/Excel
+#### **📁 PortfolioProcessor (Processor)**
+- **Procesamiento de archivos**: Excel/CSV con múltiples formatos
+- **Detección automática** de formato y delimitadores
 - **Mapeo inteligente** de columnas por broker
-- **Procesamiento multi-broker** (Bull Market, Cocos Capital)
+- **Extracción de CEDEARs**: Escaneado directo sin dependencia de headers
+- **Conversión automática**: CEDEAR → activo subyacente
+- **Responsabilidad única**: Solo transformación de datos (ETL-Transform)
 
 ## 🔧 Tecnologías y Justificación
 
@@ -131,10 +179,11 @@ class BYMAIntegration:
 
 | Tecnología | Propósito | Justificación |
 |------------|-----------|---------------|
-| **Python 3.8+** | Lenguaje principal | Ecosistema rico en APIs financieras + asyncio |
+| **Python 3.8** | Lenguaje principal | Ecosistema del ambito academico |
 | **asyncio** | Concurrencia | Manejo eficiente de múltiples APIs simultáneas |
+| **Pydantic** | Modelos de datos | Validación automática + serialización JSON |
 | **SQLite** | Base de datos | Embebida, perfecta para prototipo académico |
-| **Pandas** | Procesamiento | De facto para transformación de datos financieros |
+| **Pandas** | Procesamiento | Para transformación de datos financieros |
 | **requests** | HTTP clients | APIs REST síncronas |
 
 ### **Architectural Patterns**
@@ -345,10 +394,15 @@ def validate_strict_di():
 
 ### **Testing Strategy**
 
-- **Unit Tests**: Servicios individuales con mocks
-- **Integration Tests**: APIs reales con rate limiting
-- **End-to-End Tests**: Pipeline completo con datos reales
-- **Health Checks**: Monitoreo continuo de dependencias
+**Estado Actual del Testing:**
+- **Health Checks**: Sistema de monitoreo implementado para validar conectividad de APIs
+- **Manual Testing**: Validación manual de flujos completos durante desarrollo
+- **Error Handling**: Logging estructurado y manejo de excepciones en todos los servicios
+
+**Testing Framework Preparado:**
+- **Arquitectura DI**: Facilita testing futuro con mocks/stubs
+- **Servicios Desacoplados**: Cada componente se puede testear independientemente
+- **Configuración Flexible**: Permite entornos de testing separados
 
 ## 📈 Escalabilidad y Mantenibilidad
 
@@ -430,9 +484,9 @@ async def get_ccl_rate(self, preferred_source):
 - **4 fuentes de datos externas** con fallbacks automáticos  
 - **4 tablas SQLite** para persistencia relacional
 - **2 modos de ejecución** (interactivo + automático)
-- **6 capas arquitectónicas** bien definidas (según TFM)
+- **6 capas arquitectónicas** bien definidas
 - **Zero estado global** - DI pura
-- **99% disponibilidad simulada** incluso con APIs down
+- **Sistema de fallbacks** para operación resiliente
 
 ---
 

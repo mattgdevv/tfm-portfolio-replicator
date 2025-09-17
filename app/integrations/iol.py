@@ -2,8 +2,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from ..models.portfolio import Portfolio, Position
-# [ERROR] ELIMINADO: import de instancia global - usar DI
-# from ..processors.cedeares import CEDEARProcessor
+
 
 class IOLAuth:
     def __init__(self, username: str, password: str):

@@ -141,7 +141,7 @@ class BYMAIntegration:
     async def _get_cedeares_data(self) -> Optional[List[Dict]]:
         """Obtiene datos de CEDEARs desde BYMA API"""
 
-        # 🏦 Check market status FIRST - evita requests innecesarios cuando mercado cerrado
+        # Check market status FIRST - evita requests innecesarios cuando mercado cerrado
         market_message = get_market_status_message("AR")
         if market_message:
             logger.info(market_message)

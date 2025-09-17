@@ -152,7 +152,7 @@ class CEDEARProcessor:
         """Descarga y parsea el PDF de BYMA para obtener ratios de CEDEARs."""
         print("\n🔄 Descargando y procesando PDF de CEDEARs desde BYMA...")
         try:
-            # Ejecutar con PYTHONPATH para que encuentre el módulo app
+            # con PYTHONPATH para que encuentre el modulo app
             import os
             current_dir = os.getcwd()
             env = os.environ.copy()
