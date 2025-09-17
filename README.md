@@ -2,7 +2,7 @@
 
 **Sistema ETL para detección automática de arbitraje entre CEDEARs argentinos y activos subyacentes internacionales**
 
-*Trabajo Final de Máster - Data Engineering*
+*Trabajo Final de Máster - Perfil Data Engineering*
 
 ---
 

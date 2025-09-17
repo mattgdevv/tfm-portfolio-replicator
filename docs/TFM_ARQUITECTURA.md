@@ -349,39 +349,55 @@ def validate_strict_di():
 - **End-to-End Tests**: Pipeline completo con datos reales
 - **Health Checks**: Monitoreo continuo de dependencias
 
-## 📈 Escalabilidad y Extensibilidad
+## 📈 Escalabilidad y Mantenibilidad
 
-### **Diseño para Crecimiento**
+### **Características que Facilitan Crecimiento**
 
-#### **🌍 Extensión Geográfica (Futura)**
+#### **🔧 Modularidad Real**
+La arquitectura DI actual facilita:
+- **Agregar nuevas fuentes de datos**: Sistema de fallback permite incorporar APIs adicionales
+- **Testing independiente**: Cada servicio se puede mockear individualmente  
+- **Configuración flexible**: Nuevos parámetros vía Config centralizada
+- **Logging estructurado**: Observabilidad para debugging en producción
+
+#### **🌍 Limitaciones de Extensión Geográfica**
 ```python
-# Arquitectura preparada para otros mercados
-class BrazilBDRProcessor(PortfolioProcessor):
-    """Procesador para BDRs brasileños"""
+# ACTUAL: Específico para Argentina
+class PortfolioProcessor:
+    def _map_bullmarket_format()  # Bull Market Argentina
+    def _map_cocos_format()       # Cocos Capital Argentina
     
-class SpainETFProcessor(PortfolioProcessor):
-    """Procesador para ETFs españoles"""
+# REQUERIRÍA: Refactoring significativo para otros mercados
+# - Abstracción de brokers
+# - Múltiples procesadores de instrumentos (CEDEARs, BDRs, ETFs)
+# - Configuración por país/mercado
 ```
 
-#### **🔌 Nuevas Fuentes de Datos**
+#### **🔌 Fuentes de Datos Extensibles**
 ```python
-# Patrón Strategy permite agregar fácilmente
-class BloombergIntegration(PriceSource):
-    """Integración con Bloomberg Terminal"""
+# ACTUAL: Sistema de fallback simple pero efectivo
+async def get_ccl_rate(self, preferred_source):
+    sources = ["dolarapi_ccl", "ccl_al30"]  # Fácil agregar más
     
-class ReutersIntegration(PriceSource):
-    """Integración con Reuters API"""
+# FACILITA: Agregar nuevas fuentes sin romper código existente
+# REQUIERE: Implementar misma interfaz de retorno
 ```
 
-#### **📊 Nuevos Tipos de Análisis**
-```python
-# Servicios modulares extensibles
-class RiskAnalyzer:
-    """Análisis de riesgo y correlación"""
-    
-class PortfolioOptimizer:
-    """Optimización y rebalanceo"""
-```
+### **🎯 Fortalezas Reales para Mantenimiento**
+
+1. **DI Estricta**: Cambios en servicios no afectan dependientes
+2. **Configuración Centralizada**: Un solo lugar para ajustes
+3. **Fallbacks Automáticos**: Sistema resiliente ante fallas de APIs
+4. **Separación de Responsabilidades**: 15 servicios especializados
+5. **Validación Automática**: AST checks previenen regresiones arquitectónicas
+
+### **⚠️ Limitaciones Técnicas Actuales**
+
+- **Single-threaded**: asyncio pero no paralelización real
+- **SQLite**: Adecuado para prototipo, limitado para producción
+- **Argentina-específico**: CEDEARs, IOL, BYMA hardcodeados
+- **Cache simple**: En memoria, se pierde al reiniciar
+- **Sin API REST**: Solo CLI e interactivo
 
 ## 🎯 Fortalezas Arquitectónicas
 
@@ -391,7 +407,7 @@ class PortfolioOptimizer:
 2. **Dependency Injection Estricta**: Zero estado global, testabilidad máxima
 3. **Resilencia**: Múltiples fallbacks garantizan operación 24/7
 4. **Configurabilidad**: Jerarquía clara de configuración con overrides
-5. **Extensibilidad**: Patrón Strategy facilita agregar nuevas fuentes/mercados
+5. **Extensibilidad**: Sistema de fallback multi-fuente facilita agregar nuevas fuentes/mercados
 6. **Observabilidad**: Logging estructurado + métricas + health checks
 7. **Persistencia Estructurada**: Base de datos relacional para análisis histórico
 
@@ -419,4 +435,3 @@ class PortfolioOptimizer:
 
 ---
 
-*Arquitectura diseñada para escalabilidad, mantenibilidad y operación 24/7 en entornos financieros críticos.*
