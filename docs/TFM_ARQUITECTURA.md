@@ -28,25 +28,20 @@ Portfolio Replicator implementa una **arquitectura de capas moderna** con **Depe
                           │ └─ Config (Configuración centralizada)
 ─────────────────────────┼─────────────────────────────────────
 🔧  Services Layer        │ Lógica de Negocio (15 servicios)
-                          │ ├─ ArbitrageDetector
-                          │ ├─ DatabaseService
-                          │ ├─ PriceFetcher
-                          │ └─ ... (12 servicios adicionales)
+                          │ ├─ ArbitrageDetector, DatabaseService
+                          │ ├─ PriceFetcher, DollarRateService
+                          │ ├─ CEDEARProcessor, PortfolioProcessor  
+                          │ └─ ... (9 servicios adicionales)
 ─────────────────────────┼─────────────────────────────────────
 🔌  Integration Layer     │ APIs Externas
                           │ ├─ IOLIntegration (Broker argentino)
                           │ ├─ BYMAIntegration (Mercado oficial)
                           │ └─ Finnhub/DolarAPI (Internacional)
 ─────────────────────────┼─────────────────────────────────────
-⚙️  Processor Layer       │ Transformación de Datos
-                          │ ├─ CEDEARProcessor
-                          │ ├─ PortfolioProcessor
-                          │ └─ FileProcessor
-─────────────────────────┼─────────────────────────────────────
 💾  Data Layer           │ Persistencia y Modelos
                           │ ├─ SQLite Database (4 tablas)
                           │ ├─ JSON Output
-                          │ └─ Portfolio Models
+                          │ └─ Portfolio Models (Pydantic)
 ```
 
 ## 🧩 Componentes Principales
@@ -117,16 +112,16 @@ class BYMAIntegration:
         # CCL histórico y validación de días hábiles
 ```
 
-### **4. Processor Layer - Transformación de Datos**
+### **4. Services Layer - Transformación de Datos (Processors)**
 
-#### **📊 CEDEAR Processor**
+#### **📊 CEDEARProcessor (Servicio)**
 - **Conversión automática** CEDEAR → subyacente
-- **Ratios de conversión** actualizados
+- **Ratios de conversión** actualizados desde BYMA
 - **Validación de símbolos** y normalización
 
-#### **📁 Portfolio Processor**
+#### **📁 PortfolioProcessor (Servicio)**
 - **Detección automática** de formato CSV/Excel
-- **Mapeo inteligente** de columnas
+- **Mapeo inteligente** de columnas por broker
 - **Procesamiento multi-broker** (Bull Market, Cocos Capital)
 
 ## 🔧 Tecnologías y Justificación
@@ -418,7 +413,7 @@ class PortfolioOptimizer:
 - **4 fuentes de datos externas** con fallbacks automáticos  
 - **4 tablas SQLite** para persistencia relacional
 - **2 modos de ejecución** (interactivo + automático)
-- **5 capas arquitectónicas** bien definidas
+- **6 capas arquitectónicas** bien definidas (según TFM)
 - **Zero estado global** - DI pura
 - **99% disponibilidad simulada** incluso con APIs down
 
