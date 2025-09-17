@@ -1,14 +1,12 @@
-# 🏗️ Arquitectura Técnica - Portfolio Replicator TFM
-
-**Sistema ETL de detección de arbitraje multi-fuente con arquitectura de microservicios**
+# Arquitectura - Portfolio Replicator 
 
 ---
 
-## 📊 Resumen Ejecutivo
+## Resumen 
 
 Portfolio Replicator implementa una arquitectura con inyección de dependencias, con la intención de seguir principios SOLID y aspirar a un pipeline ETL, escalable y mantenible.
 
-## 🎯 Arquitectura General
+##  Arquitectura General
 
 ### 🏛️ **Patrón Arquitectónico: Layered Architecture + Microservicios**
 
@@ -62,7 +60,7 @@ class Services:
     # ... 15 servicios total (14 activos + 1 implementado sin uso)
 ```
 
-**🎯 Factory + DI Container:**
+** Factory + DI Container:**
 - **Construcción centralizada** vía `build_services()`
 - **Validación de dependencias** al inicio
 - **Zero estado global** - elimina singletons problemáticos
@@ -70,7 +68,7 @@ class Services:
 
 ### **2. Services Layer - Servicios**
 
-#### **🔍 Detección de Arbitraje**
+#### **Detección de Arbitraje**
 ```python
 class ArbitrageDetector:
     def __init__(self, international_service, dollar_service, 
@@ -80,7 +78,7 @@ class ArbitrageDetector:
             raise ValueError("Usar build_services() para DI")
 ```
 
-#### **💾 Almacenamiento de Datos**
+#### **Almacenamiento de Datos**
 ```python
 class DatabaseService:
     """Servicio para guardar datos del pipeline en SQLite"""
@@ -88,7 +86,7 @@ class DatabaseService:
         # Guarda en 4 tablas relacionales estructuradas
 ```
 
-#### **💰 Obtención de Precios Multi-fuente**
+#### **Obtención de Precios Multi-fuente**
 ```python
 class PriceFetcher:
     """Servicio unificado con fallbacks automáticos"""
@@ -98,7 +96,7 @@ class PriceFetcher:
 
 ### **3. Integration Layer - APIs Externas**
 
-#### **🏦 IOL Integration (Broker Argentino)**
+#### **IOL Integration (Broker Argentino)**
 ```python
 class IOLIntegration:
     def __init__(self, dollar_service, cedear_processor):
@@ -106,7 +104,7 @@ class IOLIntegration:
         # Portfolio real en tiempo real
 ```
 
-#### **🏛️ BYMA Integration (Mercado Oficial)**
+#### **BYMA Integration (Mercado Oficial)**
 ```python
 class BYMAIntegration:
     def __init__(self, config):
@@ -116,7 +114,7 @@ class BYMAIntegration:
 
 ### **4. Data Models Layer - Estructuras de Datos (Pydantic)**
 
-#### **🎯 Portfolio Models con Validación Automática**
+#### **Portfolio Models con Validación Automática**
 ```python
 class Position(BaseModel):
     """Posición individual con validación Pydantic"""
@@ -160,12 +158,12 @@ class ConvertedPortfolio(BaseModel):
 
 ### **5. Services Layer - Transformación de Datos (Processors)**
 
-#### **📊 CEDEARProcessor (Servicio)**
+#### **CEDEARProcessor (Servicio)**
 - **Conversión automática** CEDEAR → subyacente
 - **Ratios de conversión** actualizados desde BYMA
 - **Validación de símbolos** y normalización
 
-#### **📁 PortfolioProcessor (Processor)**
+#### **PortfolioProcessor (Processor)**
 - **Procesamiento de archivos**: Excel/CSV con múltiples formatos
 - **Detección automática** de formato y delimitadores
 - **Mapeo inteligente** de columnas por broker
