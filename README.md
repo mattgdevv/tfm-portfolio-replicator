@@ -19,7 +19,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # Editar FINNHUB_API_KEY en .env (obtener gratis en https://finnhub.io/)
 
-# Demo inmediato con datos de ejemplo
+# Demo inmediato con datos de ejemplo (portfolio.csv sample para --broker cocos)
 python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 ```
 
@@ -41,7 +41,7 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 # Análisis desde IOL (requiere credenciales)
 python scripts/etl_cli.py --source iol --threshold 0.01 --verbose
 
-# Análisis desde archivo
+# Análisis desde archivo - (cargar archivo a directorio o usar data.csv)
 python scripts/etl_cli.py --source excel --file portfolio.xlsx --broker bullmarket
 
 # Ejecución programada cada 30 minutos
@@ -152,7 +152,7 @@ python scripts/etl_cli.py --source iol --schedule 30min \
   --threshold 0.005 --verbose
 
 # Testing rápido sin guardar
-python scripts/etl_cli.py --source excel --file data.csv \
+python scripts/etl_cli.py --source excel --file portfolio.csv \
   --broker cocos --no-save --verbose
 
 # Health check completo

@@ -6,7 +6,7 @@
 
 ## 📊 Resumen Ejecutivo
 
-Portfolio Replicator implementa una **arquitectura de capas moderna** con **Dependency Injection estricta**, siguiendo principios SOLID y patrones enterprise para construir un pipeline ETL robusto, escalable y mantenible.
+Portfolio Replicator implementa una arquitectura con inyección de dependencias, con la intención de seguir principios SOLID y aspirar a un pipeline ETL, escalable y mantenible.
 
 ## 🎯 Arquitectura General
 
@@ -47,7 +47,7 @@ Portfolio Replicator implementa una **arquitectura de capas moderna** con **Depe
 
 ## 🧩 Componentes Principales
 
-### **1. Core Layer - Dependency Injection Factory**
+### **1. Core Layer - Dependency Injection/Inyección de Dependencias**
 
 ```python
 @dataclass
@@ -62,13 +62,13 @@ class Services:
     # ... 15 servicios total (14 activos + 1 implementado sin uso)
 ```
 
-**🎯 Patrón Factory + DI Container:**
+**🎯 Factory + DI Container:**
 - **Construcción centralizada** vía `build_services()`
 - **Validación de dependencias** al inicio
 - **Zero estado global** - elimina singletons problemáticos
 - **Inyección estricta** - todos los servicios vía constructor
 
-### **2. Services Layer - Servicios Especializados**
+### **2. Services Layer - Servicios**
 
 #### **🔍 Detección de Arbitraje**
 ```python
@@ -80,7 +80,7 @@ class ArbitrageDetector:
             raise ValueError("Usar build_services() para DI")
 ```
 
-#### **💾 Persistencia de Datos**
+#### **💾 Almacenamiento de Datos**
 ```python
 class DatabaseService:
     """Servicio para guardar datos del pipeline en SQLite"""
@@ -173,28 +173,6 @@ class ConvertedPortfolio(BaseModel):
 - **Conversión automática**: CEDEAR → activo subyacente
 - **Responsabilidad única**: Solo transformación de datos (ETL-Transform)
 
-## 🔧 Tecnologías y Justificación
-
-### **Core Technologies**
-
-| Tecnología | Propósito | Justificación |
-|------------|-----------|---------------|
-| **Python 3.8** | Lenguaje principal | Ecosistema del ambito academico |
-| **asyncio** | Concurrencia | Manejo eficiente de múltiples APIs simultáneas |
-| **Pydantic** | Modelos de datos | Validación automática + serialización JSON |
-| **SQLite** | Base de datos | Embebida, perfecta para prototipo académico |
-| **Pandas** | Procesamiento | Para transformación de datos financieros |
-| **requests** | HTTP clients | APIs REST síncronas |
-
-### **Architectural Patterns**
-
-| Patrón | Implementación | Beneficio |
-|--------|---------------|-----------|
-| **Dependency Injection** | build_services() + Container | Testabilidad + Modularidad |
-| **Factory Pattern** | Services construction | Centralized object creation |
-| **Strategy Pattern** | Multi-source pricing | Fácil extensión de fuentes |
-| **Fallback Pattern** | Degradación elegante | Disponibilidad 24/7 |
-| **Command Pattern** | Workflow commands | Operaciones reutilizables |
 
 ### **External APIs & Data Sources**
 
@@ -438,7 +416,7 @@ async def get_ccl_rate(self, preferred_source):
 # REQUIERE: Implementar misma interfaz de retorno
 ```
 
-### **🎯 Fortalezas Reales para Mantenimiento**
+### ** Fortalezas para Mantenimiento**
 
 1. **DI Estricta**: Cambios en servicios no afectan dependientes
 2. **Configuración Centralizada**: Un solo lugar para ajustes
@@ -446,35 +424,13 @@ async def get_ccl_rate(self, preferred_source):
 4. **Separación de Responsabilidades**: 15 servicios especializados
 5. **Validación Automática**: AST checks previenen regresiones arquitectónicas
 
-### **⚠️ Limitaciones Técnicas Actuales**
+### ** Limitaciones Actuales**
 
 - **Single-threaded**: asyncio pero no paralelización real
-- **SQLite**: Adecuado para prototipo, limitado para producción
-- **Argentina-específico**: CEDEARs, IOL, BYMA hardcodeados
+- **SQLite**: Adecuado para prototipo, limitado para otros casos de uso
+- **Argentina-específico**: Posibilidad de ampliar cobertura
 - **Cache simple**: En memoria, se pierde al reiniciar
 - **Sin API REST**: Solo CLI e interactivo
-
-## 🎯 Fortalezas Arquitectónicas
-
-### **✅ Ventajas Clave**
-
-1. **Modularidad Extrema**: 15 servicios especializados, cada uno con responsabilidad única
-2. **Dependency Injection Estricta**: Zero estado global, testabilidad máxima
-3. **Resilencia**: Múltiples fallbacks garantizan operación 24/7
-4. **Configurabilidad**: Jerarquía clara de configuración con overrides
-5. **Extensibilidad**: Sistema de fallback multi-fuente facilita agregar nuevas fuentes/mercados
-6. **Observabilidad**: Logging estructurado + métricas + health checks
-7. **Persistencia Estructurada**: Base de datos relacional para análisis histórico
-
-### **🔬 Decisiones Técnicas Justificadas**
-
-| Decisión | Alternativa | Justificación |
-|----------|-------------|---------------|
-| SQLite | PostgreSQL/MySQL | Prototipo académico, deployment simple |
-| asyncio | threading | APIs I/O bound, mejor concurrencia |
-| DI Container | Service Locator | Testing + modularidad superior |
-| Factory Pattern | Singleton | Evita estado global problemático |
-| JSON + SQLite | Solo SQL | Compatibilidad + análisis flexible |
 
 ---
 
