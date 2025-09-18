@@ -36,7 +36,7 @@ Portfolio Replicator implementa una arquitectura con inyección de dependencias,
                           │ ├─ BYMAIntegration (Mercado oficial)
                           │ └─ Finnhub/DolarAPI (Internacional)
 ─────────────────────────┼─────────────────────────────────────
-💾  Data Layer           │ Persistencia y Modelos
+💾  Data Layer           │ Almacenamiento y Modelos
                           │ ├─ SQLite Database (4 tablas)
                           │ ├─ JSON Output  
                           │ ├─ Pydantic Models (Position, Portfolio)
@@ -241,7 +241,7 @@ CREATE TABLE pipeline_metrics (
 );
 ```
 
-## 🔄 Pipeline de Datos - Flujo ETL
+## Pipeline de Datos - Flujo ETL
 
 ### **Extract → Transform → Load**
 
@@ -281,7 +281,7 @@ CREATE TABLE pipeline_metrics (
 └─ Opportunity scoring
            │
            ▼
-💾 PERSISTENCE & OUTPUT
+💾 STORAGE & OUTPUT
 ├─ SQLite database (4 tablas relacionales)
 ├─ JSON export (portfolio + analysis)
 ├─ Status tracking
@@ -432,11 +432,11 @@ async def get_ccl_rate(self, preferred_source):
 
 ---
 
-## 📊 Métricas del Sistema
+## Métricas del Sistema
 
 - **15 servicios especializados** con inyección de dependencias
 - **4 fuentes de datos externas** con fallbacks automáticos  
-- **4 tablas SQLite** para persistencia relacional
+- **4 tablas SQLite** para estructura relacional
 - **2 modos de ejecución** (interactivo + automático)
 - **6 capas arquitectónicas** bien definidas
 - **Zero estado global** - DI pura

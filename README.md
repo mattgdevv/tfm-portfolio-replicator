@@ -25,17 +25,17 @@ python scripts/etl_cli.py --source excel --file data.csv --broker bullmarket
 
 ## Funcionalidades Principales
 
-- **🎯 Detección automática de arbitraje** entre CEDEARs y activos subyacentes
+- **🎯 Deteccion automática de arbitraje** entre CEDEARs y activos subyacentes
 - **📊 Pipeline ETL multi-fuente** (IOL, Excel/CSV, BYMA, Finnhub)
-- **⏰ Ejecución programada** (2min/30min/hourly/daily)
-- **💾 Persistencia estructurada** en SQLite + JSON
+- **⏰ Ejecucion programada** (2min/30min/hourly/daily)
+- **💾 Almacenamiento** en SQLite + JSON
 - **🔄 Sistema de fallbacks** para operación 24/7
 - **🏥 Health checks automáticos** y monitoreo
 
 ## Modos de Ejecución
 
 ### Modo Automático (CLI)
-**Optimizado para automatización y pipelines CI/CD**
+**Optimizado para automatizacion y pipelines CI/CD**
 
 ```bash
 # Análisis desde IOL (requiere credenciales)
@@ -52,17 +52,17 @@ python scripts/etl_cli.py --health-check --verbose
 ```
 
 ### Modo Interactivo
-**Para análisis exploratorio con menús paso a paso**
+**Para analisis exploratorio con menu paso a paso**
 
 ```bash
 python main.py
 ```
 
 Opciones del menú interactivo:
-1. **📥 IOL → Análisis → Guardado** (con confirmaciones)
-2. **📄 Archivo → Análisis → Guardado** (con validaciones)  
+1. **📥 IOL → Analisis → Guardado** (con confirmaciones)
+2. **📄 Archivo → Analisis → Guardado** (con validaciones)  
 3. **🔄 Actualizar ratios CEDEARs** (desde PDF BYMA)
-4. **🏥 Diagnóstico completo** (estado de servicios)
+4. **🏥 Diagnostico completo** (estado de servicios)
 5. **🚪 Salir**
 
 ## 📊 Formatos de Portfolio Soportados
@@ -77,7 +77,7 @@ Opciones del menú interactivo:
 ### Detección Automática
 - **Extensiones**: `.xlsx`, `.xls`, `.csv`
 - **Delimitadores**: `,`, `;`, `\t` (detección inteligente)
-- **Encoding**: UTF-8, Latin1 (automático)
+- **Encoding**: UTF-8
 - **Columnas requeridas**: Solo ticker y cantidad
 
 ## ⚙️ Configuración
@@ -102,7 +102,7 @@ Opciones del menú interactivo:
 | **BYMA** | Ratios CEDEARs, CCL oficial | Pública |
 | **DolarAPI** | Cotización CCL backup | Libre |
 
-## 📈 Ejemplo de Resultados
+## 📈 Ejemplo de Resultados (Al momento, recomedanciones superficiales)
 
 ```
 OPORTUNIDADES DE ARBITRAJE DETECTADAS:
@@ -130,7 +130,7 @@ AAPL (Apple)
 --health-check             # Solo verificación de estado del sistema
 ```
 
-### Parámetros de Configuración
+### Parametros de Configuracion
 ```bash
 --threshold 0.01           # Umbral arbitraje (default: 0.5%)
 --timeout 10               # Timeout requests en segundos (default: 5s)
@@ -171,7 +171,7 @@ python scripts/etl_cli.py --health-check --verbose
 💾  Data           → SQLite + JSON + Models
 ```
 
-**Tecnologías**: Python 3.8+, asyncio, SQLite, Pandas, Dependency Injection
+**Tecnologías**: Python 3.8+, asyncio, SQLite, Pandas, DI
 
 ## 💾 Base de Datos y Output
 

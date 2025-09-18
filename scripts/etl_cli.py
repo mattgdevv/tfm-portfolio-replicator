@@ -454,7 +454,7 @@ async def run_health_check() -> Dict[str, Any]:
         services = build_services(config)
         
         # 2. Ejecutar health check
-        monitoring = MonitoringCommands(services, None)
+        monitoring = MonitoringCommands(services, services.iol_integration)
         await monitoring.run_health_diagnostics()
         
         duration_ms = int((datetime.now() - start_time).total_seconds() * 1000)
